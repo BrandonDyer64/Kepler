@@ -1,0 +1,245 @@
+:root {
+  font-family: Arial, Helvetica, sans-serif;
+  --background: #535760;
+  --text-color: #fff;
+  --primary: #5792db;
+  --primary-transparent: #5792db22;
+  --primary-hover: #4873bb;
+  --secondary: #dba057;
+  --muted: #75787f;
+  --editor-background: #35363a;
+}
+
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text-color);
+  margin: 0px;
+}
+
+a {
+  text-decoration: none;
+  color: var(--primary);
+  outline: none;
+}
+
+.flex {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.flex-down {
+  flex-direction: column;
+}
+
+.flex-down-full {
+  flex-direction: column;
+  height: 100%;
+}
+
+.flex-full {
+  width: 100%;
+}
+
+.flex-around {
+  justify-content: space-around;
+}
+
+.flex-center {
+  justify-content: center;
+}
+
+.flex-align-center {
+  align-items: center;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.flex-grow {
+  flex-grow: 1;
+}
+
+.flex-grow-2 {
+  flex-grow: 2;
+}
+
+.full-height {
+  height: 100%;
+}
+
+.full-height-margin {
+  height: calc(100% - 6px);
+}
+
+.full-width {
+  width: 100%;
+}
+
+.full-width-margin {
+  width: calc(100% - 6px);
+}
+
+.scroll-bar {
+  overflow-y: scroll;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.panel {
+  margin: 3px;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel .panel-title {
+  display: inline-block;
+  width: 150px;
+  padding: 5px 10px;
+  background-color: var(--background);
+  border-top: 2px solid var(--muted);
+  font-size: 11px;
+  font-weight: 300;
+}
+
+.panel .panel-content {
+  background-color: var(--background);
+}
+
+.icon-large {
+  font-size: 36px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 5px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+
+.btn-icon {
+  padding: 10px 20px;
+  border-radius: 0px;
+  height: 100%;
+  border-top: 2px solid transparent;
+  background-color: transparent;
+  color: var(--muted);
+}
+
+.btn-icon i {
+  color: white;
+  font-size: 36px;
+}
+
+.btn-icon-small i {
+  font-size: 1em;
+}
+
+.btn-icon div {
+  display: inline-block;
+  padding-top: 5px;
+}
+
+.btn-icon:hover {
+  border-top: 2px solid var(--primary);
+  color: var(--primary);
+  background-color: var(--primary-transparent);
+}
+
+.btn-icon:hover i {
+  color: var(--primary);
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: var(--primary);
+}
+
+a.btn-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-none {
+  color: #fff;
+  background-color: transparent;
+}
+
+a.btn-none:hover {
+  background-color: transparent;
+}
+
+.vr {
+  width: 0px;
+  border: none;
+  border-left: 1px solid white;
+  height: 200px;
+  max-height: 100%;
+}
+
+.window {
+  height: 100vh;
+  max-height: 100vh;
+}
+
+#assets_panel {
+  justify-content: flex-start;
+}
+
+#assets_panel .asset {
+  display: inline-block;
+}
+
+/* Turn on custom 8px wide scrollbar */
+::-webkit-scrollbar {
+  width: 10px; /* 1px wider than Lion. */
+  /* This is more usable for users trying to click it. */
+  background-color: rgba(0, 0, 0, 0);
+  -webkit-border-radius: 100px;
+}
+/* hover effect for both scrollbar area, and scrollbar 'thumb' */
+::-webkit-scrollbar:hover {
+  background-color: rgba(0, 0, 0, 0.09);
+}
+
+/* The scrollbar 'thumb' ...that marque oval shape in a scrollbar */
+::-webkit-scrollbar-thumb:vertical {
+  /* This is the EXACT color of Mac OS scrollbars. 
+     Yes, I pulled out digital color meter */
+  background: rgba(0, 0, 0, 0.5);
+  -webkit-border-radius: 100px;
+  background-clip: padding-box;
+  border: 2px solid rgba(0, 0, 0, 0);
+  min-height: 30px;
+}
+::-webkit-scrollbar-thumb:vertical:active {
+  background: rgba(0, 0, 0, 0.61); /* Some darker color when you click it */
+  -webkit-border-radius: 100px;
+}
+
+background: linear-gradient(45deg, white, silver);
+min-height: 100%;

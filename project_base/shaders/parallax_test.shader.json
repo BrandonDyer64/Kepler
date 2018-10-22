@@ -1,0 +1,9 @@
+{
+  "name": "Parallax Test",
+  "props": {
+    "files": {
+      "frag": "parallax_test.frag.glsl",
+      "vert": "parallax_test.vert.glsl"
+    }
+  }
+}

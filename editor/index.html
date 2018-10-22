@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kepler Engine</title>
+    <link href="css/main.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+  </head>
+  <body>
+    <div class="window">
+      <div class="flex flex-down-full">
+        <h1 style="margin: 0px; padding-top: 20px; width: 100%;" class="text-center">Projects</h1>
+        <div class="flex flex-align-center" style="padding: 20px; width: 100%;">
+          <div></div>
+          <div class="flex flex-down flex-center flex-align-center">
+            <i class="far fa-folder-open fa-5x" style="margin-bottom: 20px;"></i>
+            <a href="Javascript:openProjectDialog();" class="btn btn-primary">Open Project</a>
+          </div>
+          <div class="vr"></div>
+          <div class="flex flex-down flex-center flex-align-center">
+            <i class="far fa-plus-square fa-5x" style="margin-bottom: 20px;"></i>
+            <a href="Javascript:void(0);" class="btn btn-primary">Create Project</a>
+          </div>
+          <div></div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+    <script>
+    const electron = require('electron')
+const remote = electron.remote
+const mainProcess = remote.require('./main')
+function openProjectDialog() {
+  mainProcess.openProjectDialog(() => {
+    console.log('not a kepler project')
+  })
+}
+function createProjectDialog() {
+  mainProcess.createProjectDialog()
+}
+</script>
+  </body>
+</html>
