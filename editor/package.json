@@ -14,9 +14,19 @@
     "tutorial",
     "demo"
   ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
+  "author": "Brandon Dyer",
+  "license": "GPLv3",
   "devDependencies": {
     "electron": "^3.0.3"
+  },
+  "dependencies": {
+    "rete": "^1.0.0-beta.4",
+    "rete-alight-render-plugin": "^0.1.5",
+    "rete-area-plugin": "^0.2.0",
+    "rete-code-plugin": "^0.1.1",
+    "rete-connection-plugin": "^0.2.2",
+    "rete-context-menu-plugin": "^0.2.4",
+    "rete-task-plugin": "^0.1.7",
+    "rete-vue-render-plugin": "^0.2.4"
   }
 }

@@ -1,0 +1,127 @@
+#editor {
+  background: #222;
+}
+
+#editor .context-menu {
+  width: 300px;
+}
+#editor .context-menu .search {
+  background: rgba(100, 100, 100, 0.6);
+  border: none;
+}
+#editor .context-menu .item {
+  background: rgba(100, 100, 100, 0.6);
+  border: none;
+}
+#editor .node {
+  min-width: 180px;
+  background: rgba(100, 100, 100, 0.6);
+  border-width: 0px;
+}
+#editor .socket {
+  margin-right: 6px;
+  margin-left: 6px;
+  width: 16px;
+  height: 16px;
+}
+#editor .socket.any {
+  background: #444;
+}
+#editor .socket.string {
+  background: #6f377e;
+}
+#editor .socket.vector2,
+#editor .socket.vector3,
+#editor .socket.vector4 {
+  text-align: center;
+  background: #cccc44;
+  color: black;
+}
+/*
+#editor .socket.vector2::before {
+  content: "2";
+}
+#editor .socket.vector3::before {
+  content: "3";
+}
+#editor .socket.vector4::before {
+  content: "4";
+}
+*/
+#editor .socket.action {
+  background: white;
+  border-color: grey;
+  border-radius: 3px;
+  width: 15px;
+}
+
+#editor .socket.float {
+  background: #44cc44;
+}
+#editor .node .title {
+  border-radius: 10px 10px 0px 0px;
+}
+/* Material Logic */
+#editor .node.if .title {
+  background: #884488;
+}
+/* Material Inputs */
+#editor .node.texcoord .title,
+#editor .node.view-vector .title,
+#editor .node.time .title {
+  background: #cc4444;
+}
+/* Material Functions */
+#editor .node.invert .title,
+#editor .node.add .title,
+#editor .node.subtract .title,
+#editor .node.multiply .title,
+#editor .node.divide .title,
+#editor .node.float .title,
+#editor .node.break-vec2 .title,
+#editor .node.vectorize .title,
+#editor .node.lerp .title,
+#editor .node.make-vec3 .title,
+#editor .node.unbalance .title,
+#editor .node.balance .title {
+  background: #44aa44;
+}
+/* Material Macros */
+#editor .node.noise .title {
+  background: #4488cc;
+}
+/* Material Output */
+#editor .node.material-output .title {
+  background: #886644;
+}
+
+#editor .input-control input {
+  width: 140px;
+}
+
+#editor .socket-output-any path.main-path {
+  stroke: #ccc;
+}
+#editor .socket-output-action path {
+  stroke: white !important;
+}
+#editor .socket-output-string path {
+  stroke: #6f377e !important;
+}
+#editor .socket-output-float path.main-path,
+#editor .socket-input-float path.main-path {
+  stroke: #44cc44;
+}
+#editor .socket-output-vector2 path.main-path,
+#editor .socket-output-vector3 path.main-path,
+#editor .socket-output-vector4 path.main-path,
+#editor .socket-input-vector2 path.main-path,
+#editor .socket-input-vector3 path.main-path,
+#editor .socket-input-vector4 path.main-path {
+  stroke: #cccc44;
+}
+
+svg.connection {
+  width: 14px;
+  height: 14px;
+}

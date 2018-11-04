@@ -1,0 +1,915 @@
+{
+  "name": "Test Material",
+  "props": {
+    "files": {},
+    "nodes": {
+      "1": {
+        "id": 1,
+        "data": {},
+        "inputs": {
+          "color": {
+            "connections": [
+              {
+                "node": 96,
+                "output": "out",
+                "data": {}
+              }
+            ]
+          },
+          "metallic": {
+            "connections": []
+          },
+          "specular": {
+            "connections": []
+          },
+          "roughness": {
+            "connections": []
+          },
+          "opacity": {
+            "connections": []
+          },
+          "normal": {
+            "connections": []
+          },
+          "subsurface_color": {
+            "connections": []
+          },
+          "subsurface_amount": {
+            "connections": []
+          },
+          "roi": {
+            "connections": []
+          },
+          "pixel_depth": {
+            "connections": []
+          },
+          "parallax_depth": {
+            "connections": [
+              {
+                "node": 93,
+                "output": "product",
+                "data": {}
+              }
+            ]
+          },
+          "bump_depth": {
+            "connections": []
+          }
+        },
+        "outputs": {},
+        "position": [
+          4632.048643227722,
+          1337.0104554520885
+        ],
+        "name": "Material Output"
+      },
+      "60": {
+        "id": 60,
+        "data": {},
+        "inputs": {},
+        "outputs": {
+          "coords": {
+            "connections": [
+              {
+                "node": 61,
+                "input": "in0",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          2344.9480678700056,
+          1457.0235528560966
+        ],
+        "name": "TexCoord"
+      },
+      "61": {
+        "id": 61,
+        "data": {},
+        "inputs": {
+          "in0": {
+            "connections": [
+              {
+                "node": 60,
+                "output": "coords",
+                "data": {}
+              }
+            ]
+          },
+          "in1": {
+            "connections": [
+              {
+                "node": 62,
+                "output": "num",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "outputs": {
+          "product": {
+            "connections": [
+              {
+                "node": 63,
+                "input": "position",
+                "data": {}
+              },
+              {
+                "node": 81,
+                "input": "in0",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          2658.098928696898,
+          1462.0210224580992
+        ],
+        "name": "Multiply"
+      },
+      "62": {
+        "id": 62,
+        "data": {
+          "num": "20.0"
+        },
+        "inputs": {},
+        "outputs": {
+          "num": {
+            "connections": [
+              {
+                "node": 61,
+                "input": "in1",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          2314.3798067012176,
+          1587.7445957447085
+        ],
+        "name": "Float"
+      },
+      "63": {
+        "id": 63,
+        "data": {},
+        "inputs": {
+          "position": {
+            "connections": [
+              {
+                "node": 61,
+                "output": "product",
+                "data": {}
+              }
+            ]
+          },
+          "depth": {
+            "connections": [
+              {
+                "node": 78,
+                "output": "num",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "outputs": {
+          "out": {
+            "connections": [
+              {
+                "node": 85,
+                "input": "in0",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          3421.637145262023,
+          1478.8134183063612
+        ],
+        "name": "Noise"
+      },
+      "78": {
+        "id": 78,
+        "data": {
+          "num": "1.0"
+        },
+        "inputs": {},
+        "outputs": {
+          "num": {
+            "connections": [
+              {
+                "node": 63,
+                "input": "depth",
+                "data": {}
+              },
+              {
+                "node": 79,
+                "input": "depth",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          3112.5680273228395,
+          1578.5539793318892
+        ],
+        "name": "Float"
+      },
+      "79": {
+        "id": 79,
+        "data": {},
+        "inputs": {
+          "position": {
+            "connections": [
+              {
+                "node": 87,
+                "output": "sum",
+                "data": {}
+              }
+            ]
+          },
+          "depth": {
+            "connections": [
+              {
+                "node": 78,
+                "output": "num",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "outputs": {
+          "out": {
+            "connections": [
+              {
+                "node": 86,
+                "input": "in0",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          3404.4403914792865,
+          1656.1227339550512
+        ],
+        "name": "Noise"
+      },
+      "81": {
+        "id": 81,
+        "data": {},
+        "inputs": {
+          "in0": {
+            "connections": [
+              {
+                "node": 61,
+                "output": "product",
+                "data": {}
+              }
+            ]
+          },
+          "in1": {
+            "connections": [
+              {
+                "node": 82,
+                "output": "num",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "outputs": {
+          "divided": {
+            "connections": [
+              {
+                "node": 87,
+                "input": "in0",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          2890.938785265019,
+          1543.5149183452406
+        ],
+        "name": "Divide"
+      },
+      "82": {
+        "id": 82,
+        "data": {
+          "num": "30.0"
+        },
+        "inputs": {},
+        "outputs": {
+          "num": {
+            "connections": [
+              {
+                "node": 81,
+                "input": "in1",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          2624.797067335818,
+          1632.4147698971956
+        ],
+        "name": "Float"
+      },
+      "85": {
+        "id": 85,
+        "data": {},
+        "inputs": {
+          "in0": {
+            "connections": [
+              {
+                "node": 63,
+                "output": "out",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "outputs": {
+          "unbalanced": {
+            "connections": [
+              {
+                "node": 93,
+                "input": "in0",
+                "data": {}
+              },
+              {
+                "node": 96,
+                "input": "alpha",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          3639.1205796075983,
+          1499.467212961484
+        ],
+        "name": "Unbalance"
+      },
+      "86": {
+        "id": 86,
+        "data": {},
+        "inputs": {
+          "in0": {
+            "connections": [
+              {
+                "node": 79,
+                "output": "out",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "outputs": {
+          "unbalanced": {
+            "connections": [
+              {
+                "node": 91,
+                "input": "in0",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          3636.6824430938063,
+          1644.8608199131727
+        ],
+        "name": "Unbalance"
+      },
+      "87": {
+        "id": 87,
+        "data": {},
+        "inputs": {
+          "in0": {
+            "connections": [
+              {
+                "node": 81,
+                "output": "divided",
+                "data": {}
+              }
+            ]
+          },
+          "in1": {
+            "connections": [
+              {
+                "node": 88,
+                "output": "time",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "outputs": {
+          "sum": {
+            "connections": [
+              {
+                "node": 79,
+                "input": "position",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          3118.1656127537535,
+          1723.8350923500118
+        ],
+        "name": "Add"
+      },
+      "88": {
+        "id": 88,
+        "data": {},
+        "inputs": {},
+        "outputs": {
+          "time": {
+            "connections": [
+              {
+                "node": 87,
+                "input": "in1",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          2868.1326046158147,
+          1785.269747538575
+        ],
+        "name": "Time"
+      },
+      "91": {
+        "id": 91,
+        "data": {},
+        "inputs": {
+          "in0": {
+            "connections": [
+              {
+                "node": 86,
+                "output": "unbalanced",
+                "data": {}
+              }
+            ]
+          },
+          "in1": {
+            "connections": [
+              {
+                "node": 92,
+                "output": "num",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "outputs": {
+          "divided": {
+            "connections": [
+              {
+                "node": 94,
+                "input": "in0",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          3863.4105362690293,
+          1676.0112851216513
+        ],
+        "name": "Divide"
+      },
+      "92": {
+        "id": 92,
+        "data": {
+          "num": "4.0"
+        },
+        "inputs": {},
+        "outputs": {
+          "num": {
+            "connections": [
+              {
+                "node": 91,
+                "input": "in1",
+                "data": {}
+              },
+              {
+                "node": 102,
+                "input": "in1",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          3329.4931762955125,
+          1834.2365188944373
+        ],
+        "name": "Float"
+      },
+      "93": {
+        "id": 93,
+        "data": {},
+        "inputs": {
+          "in0": {
+            "connections": [
+              {
+                "node": 85,
+                "output": "unbalanced",
+                "data": {}
+              }
+            ]
+          },
+          "in1": {
+            "connections": [
+              {
+                "node": 94,
+                "output": "sum",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "outputs": {
+          "product": {
+            "connections": [
+              {
+                "node": 1,
+                "input": "parallax_depth",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          4299.678199954287,
+          1647.488340637611
+        ],
+        "name": "Multiply"
+      },
+      "94": {
+        "id": 94,
+        "data": {},
+        "inputs": {
+          "in0": {
+            "connections": [
+              {
+                "node": 91,
+                "output": "divided",
+                "data": {}
+              }
+            ]
+          },
+          "in1": {
+            "connections": [
+              {
+                "node": 104,
+                "output": "difference",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "outputs": {
+          "sum": {
+            "connections": [
+              {
+                "node": 93,
+                "input": "in1",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          4070.684826465242,
+          1748.957359668591
+        ],
+        "name": "Add"
+      },
+      "95": {
+        "id": 95,
+        "data": {
+          "num": "1.0"
+        },
+        "inputs": {},
+        "outputs": {
+          "num": {
+            "connections": [
+              {
+                "node": 104,
+                "input": "in0",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          3598.2084845237964,
+          1792.061726351112
+        ],
+        "name": "Float"
+      },
+      "96": {
+        "id": 96,
+        "data": {},
+        "inputs": {
+          "a": {
+            "connections": [
+              {
+                "node": 99,
+                "output": "xyz",
+                "data": {}
+              }
+            ]
+          },
+          "b": {
+            "connections": [
+              {
+                "node": 100,
+                "output": "xyz",
+                "data": {}
+              }
+            ]
+          },
+          "alpha": {
+            "connections": [
+              {
+                "node": 85,
+                "output": "unbalanced",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "outputs": {
+          "out": {
+            "connections": [
+              {
+                "node": 1,
+                "input": "color",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          4313.492708587756,
+          1261.7322738954747
+        ],
+        "name": "Lerp"
+      },
+      "97": {
+        "id": 97,
+        "data": {
+          "num": "0.0"
+        },
+        "inputs": {},
+        "outputs": {
+          "num": {
+            "connections": [
+              {
+                "node": 99,
+                "input": "x",
+                "data": {}
+              },
+              {
+                "node": 100,
+                "input": "x",
+                "data": {}
+              },
+              {
+                "node": 100,
+                "input": "z",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          3648.5902502404997,
+          1132.556486986448
+        ],
+        "name": "Float"
+      },
+      "99": {
+        "id": 99,
+        "data": {},
+        "inputs": {
+          "x": {
+            "connections": [
+              {
+                "node": 97,
+                "output": "num",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "outputs": {
+          "xyz": {
+            "connections": [
+              {
+                "node": 96,
+                "input": "a",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          3961.893444622525,
+          1119.146638487917
+        ],
+        "name": "Vectorize"
+      },
+      "100": {
+        "id": 100,
+        "data": {},
+        "inputs": {
+          "x": {
+            "connections": [
+              {
+                "node": 97,
+                "output": "num",
+                "data": {}
+              }
+            ]
+          },
+          "y": {
+            "connections": [
+              {
+                "node": 101,
+                "output": "num",
+                "data": {}
+              }
+            ]
+          },
+          "z": {
+            "connections": [
+              {
+                "node": 97,
+                "output": "num",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "outputs": {
+          "xyz": {
+            "connections": [
+              {
+                "node": 96,
+                "input": "b",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          3962.5861486916424,
+          1243.433806373675
+        ],
+        "name": "Make Vec3"
+      },
+      "101": {
+        "id": 101,
+        "data": {
+          "num": "1.0"
+        },
+        "inputs": {},
+        "outputs": {
+          "num": {
+            "connections": [
+              {
+                "node": 100,
+                "input": "y",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          3638.1523384181382,
+          1274.2076759992678
+        ],
+        "name": "Float"
+      },
+      "102": {
+        "id": 102,
+        "data": {},
+        "inputs": {
+          "in0": {
+            "connections": [
+              {
+                "node": 103,
+                "output": "num",
+                "data": {}
+              }
+            ]
+          },
+          "in1": {
+            "connections": [
+              {
+                "node": 92,
+                "output": "num",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "outputs": {
+          "divided": {
+            "connections": [
+              {
+                "node": 104,
+                "input": "in1",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          3640.451248693483,
+          1931.527065289787
+        ],
+        "name": "Divide"
+      },
+      "103": {
+        "id": 103,
+        "data": {
+          "num": "1.0"
+        },
+        "inputs": {},
+        "outputs": {
+          "num": {
+            "connections": [
+              {
+                "node": 102,
+                "input": "in0",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          3367.4651894499657,
+          1997.1700919799148
+        ],
+        "name": "Float"
+      },
+      "104": {
+        "id": 104,
+        "data": {},
+        "inputs": {
+          "in0": {
+            "connections": [
+              {
+                "node": 95,
+                "output": "num",
+                "data": {}
+              }
+            ]
+          },
+          "in1": {
+            "connections": [
+              {
+                "node": 102,
+                "output": "divided",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "outputs": {
+          "difference": {
+            "connections": [
+              {
+                "node": 94,
+                "input": "in1",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          3839.9398855124123,
+          1831.5232462423855
+        ],
+        "name": "Subtract"
+      }
+    }
+  }
+}

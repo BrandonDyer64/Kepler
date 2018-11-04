@@ -1,4 +1,3 @@
-
 #extension GL_OES_standard_derivatives : enable
 
 #define NAIVE_IMPLEMENTATION
@@ -177,12 +176,12 @@ float snoise(vec3 v){
                                 dot(p2,x2), dot(p3,x3) ) );
 }
 
-const int passes = 5;
+const int passes = 1;
 
 float noise(vec3 coord) {
   float value = 0.0;
   for (int i = 1; i < passes + 1; i++) {
-    value += snoise(coord * vec3(i)) / float(i);
+    value += (snoise(coord * vec3(i)) / float(i)) * (i == 1 ? 1.0 : -1.0);
   }
   return value;
 }
@@ -198,103 +197,38 @@ vec2 parallaxBump(float height, vec2 coord) {
 vec2 parallaxBump(float height) {
   return parallaxBump(height, vec2(0,0));
 }
-/*
-void main(void) {
-  float scale = 200.0;
-  float timescale = u_time / 10.0;
-  float height = noise(vec3(gl_FragCoord.xy/vec2(scale), timescale));
-  height = noise(vec3(parallaxBump(height - 1.0, gl_FragCoord.xy/vec2(scale)),timescale));
-  //value = noise(vec3(parallaxBump(height * value, gl_FragCoord.xy/vec2(scale*10.0)),0));
-  gl_FragColor = vec4(vec3(height),0.0);
-}
-*/
-
-/*
-float rayheight=1.0;
-float oldray=1.0;
-vec2 offset=vec2(0);
-float oldtex=1.0;
-float texatray;
-float yintersect;
-const int MaxSteps = 32;
-
-const float stepsize = 1.0 / float(MaxSteps);
-
-void main(void) {
-  vec2 view = (u_mouse * vec2(2) - vec2(1)) * vec2(3);
-  for (int i = 0; i < MaxSteps + 2; i++) {
-    //texatray=dot(vec4(vec3(0), 1), Tex.SampleGrad(TexSampler,UV+offset,InDDX, InDDY));
-    texatray = noise((gl_FragCoord.xy + offset) / vec2(100));
-
-    if (rayheight < texatray) {
-      float xintersect = (oldray-oldtex)+(texatray-rayheight);
-      xintersect=(texatray-rayheight)/xintersect;
-      yintersect=(oldray*(xintersect))+(rayheight*(1.0-xintersect));
-      offset-=(vec2(xintersect)*gl_FragCoord.xy);
-      break;
-    }
-
-    oldray=rayheight;
-    rayheight-=stepsize;
-    //offset+=UVDist;
-    oldtex=texatray;
-  }
-
-  vec3 outp;
-  outp.xy=offset;
-  outp.z=yintersect;
-  float value = noise((gl_FragCoord.xy+offset*vec2(10)+view*vec2(10)) / vec2(100));
-  gl_FragColor = vec4(vec3(value),0.0);
-}
-*/
 
 float offsetNoise(vec2 offset) {
-  float height = noise((gl_FragCoord.xy + offset) / vec2(100)) / 2.0 + 0.5;
-  //height = 1.0 - height;
-  height = pow(height,2.0);
-  //height = 1.0 - height;
-  return clamp(height, 0.0, 1.0);
+	vec2 uv = gl_FragCoord.xy / iResolution + offset;
+	uv = uv * 2.0 - 1.0;
+	float angle = u_time * 0.0;
+	float s = sin(angle);
+	float c = cos(angle);
+	float xnew = uv.x * c - uv.y * s;
+	float ynew = uv.x * s + uv.y * c;
+	uv.x = xnew;
+	uv.y = ynew;
+  float height = noise((uv) * vec2(20)) / 2.0 + 0.5;
+  height = 1.0 - height;
+  height = pow(height,4.0);
+  height = 1.0 - height;
+	//height -= noise((uv + vec2(u_time / 5.0)) * vec2(1)) / 4.0;
+	//height = height / (1.0 + abs(height));
+  return clamp(height, 0.1, 0.9);
 }
 
-const int steps = 128;
+const int steps = 100;
 const float stepSize = 1.0 / float(steps);
-
-struct MaterialOutput {
-	vec3 baseColor;
-	float metalic;
-	float specular;
-	float roughness;
-	float normal;
-	float depth;
-};
-
-MaterialOutput execMaterial(vec2 UV) {
-	vec3 baseColor;
-	float metalic;
-	float specular;
-	float roughness;
-	float normal;
-	float depth;
-	return noise((gl_FragCoord.xy + offset) / vec2(100)) / 2.0 + 0.5;
-	MaterialOutput materialOutput = {
-		baseColor,
-		metalic,
-		specular,
-		roughness,
-		normal,
-		depth,
-	}
-	return materialOutput;
-}
 
 void main(void) {
   vec2 offset = vec2(0);
   float heightOld = -1.0;
-  vec2 view = (u_mouse * vec2(2) - vec2(1)) * vec2(1);
+  vec2 view = (vec2(0.5,0.6) * vec2(2) - vec2(1)) * vec2(1);
   vec2 uv = gl_FragCoord.xy / iResolution;
 
   for (int i = 1; i <= steps; i++) {
-    offset = view * vec2(i) * vec2(stepSize) * 300.0;
+    offset = view * vec2(i) * vec2(stepSize) * 1.0;
+		offset += (noise((uv - offset + vec2(u_time * 0.3)) * vec2(1)) / 8.0) * (vec2(1) - vec2(i) * vec2(stepSize));
     float height = offsetNoise(offset);
     //float height = texture2D(heightmap, uv + offset / iResolution).r;
     if (height <= float(i) * stepSize) {
@@ -302,20 +236,22 @@ void main(void) {
     }
   }
 
-  /*
   float shadow;
-  if (distance(uv + offset / iResolution, u_mouse) < 0.2) {
+  if (distance(uv + offset, u_mouse) < 0.2) {
     shadow = 1.0;
   } else {
     shadow = 0.2;
   }
-  */
+
 
   // gl_FragColor = texture2D(Tex, uv));
 
 	// offset = view * vec2(1) * 50.0 * offsetNoise(vec2(0));
+	vec3 grassColor = noise((uv + offset) * 3.0) < 0.3 ? vec3(0,1,0) : vec3(0.5,0.5,0);
+	vec3 color = mix(vec3(0.2,0.1,0), grassColor, 1.0 - offsetNoise(offset));
 
-  gl_FragColor = vec4(vec3((1.0 - offsetNoise(offset))),0);
+	gl_FragColor = vec4(vec3(color), 0);
+  //gl_FragColor = vec4(color,0);
   // gl_FragColor = vec4(texture2D(Tex, uv + offset / iResolution).rgb * (1.0 - offsetNoise(offset) / 2.0 + 0.5),0);
   //gl_FragColor = vec4(texture2D(Tex, uv + offset / iResolution).rgb,0);// * (1.0 - texture2D(heightmap, uv + offset / iResolution).rgb / 2.0 + 0.5),0);
   // gl_FragColor = vec4(shadow);
