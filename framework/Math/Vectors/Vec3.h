@@ -4,6 +4,8 @@
 
 #include "Vec2.h"
 
+namespace Kepler {
+
 class Vec3 {
 public:
   const float x;
@@ -27,5 +29,6 @@ public:
   float Magnitude() const;
   Vec3 Normalize() const;
 };
+}
 
 #endif

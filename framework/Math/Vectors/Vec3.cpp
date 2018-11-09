@@ -1,6 +1,8 @@
 #include <cmath>
 #include "Vec3.h"
 
+namespace Kepler {
+
 Vec3 Vec3::operator+(const Vec3& other) const {
   return Vec3(x + other.x, y + other.y, z + other.z);
 }
@@ -53,4 +55,6 @@ Vec3 Vec3::Normalize() const {
   } else {
     return *this;
   }
+}
+
 }

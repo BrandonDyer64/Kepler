@@ -349,6 +349,57 @@ class SinComponent extends Rete.Component {
   }
 }
 
+class PowerComponent extends Rete.Component {
+  constructor() {
+    super("Power");
+    this.task = {
+      outputs: { text: "output" }
+    };
+  }
+
+  builder(node) {
+    var inp0 = new Rete.Input("in0", "X", anySocket);
+    var inp1 = new Rete.Input("in1", "Exponent", floatSocket);
+    var out = new Rete.Output("product", "", anySocket);
+
+    return node
+      .addInput(inp0)
+      .addInput(inp1)
+      .addOutput(out);
+  }
+
+  code(node, inputs, add) {
+    add(
+      anyify(inputs.in0),
+      "product",
+      `pow(${inputs.in0}, ${anyify(inputs.in0)}(${inputs.in1}))`
+    );
+  }
+}
+
+class SigmoidComponent extends Rete.Component {
+  constructor() {
+    super("Sigmoid");
+    this.task = {
+      outputs: { text: "output" }
+    };
+  }
+
+  builder(node) {
+    var inp0 = new Rete.Input("in0", "X", floatSocket);
+    var out = new Rete.Output("out", "", floatSocket);
+
+    return node.addInput(inp0).addOutput(out);
+  }
+
+  code(node, inputs, add, outputs, imports) {
+    if (!imports.includes("sigmoid")) {
+      imports.push("sigmoid");
+    }
+    add("float", "out", `sigmoid(${inputs.in0})`);
+  }
+}
+
 class FloatComponent extends Rete.Component {
   constructor() {
     super("Float");
@@ -600,10 +651,12 @@ var components = [
   new MultiplyComponent(),
   new DivideComponent(),
   new SinComponent(),
+  new PowerComponent(),
   new IfComponent(),
   new VectorizeComponent(),
   new FloatifyComponent(),
   new LerpComponent(),
+  new SigmoidComponent(),
   new InvertComponent(),
   new BreakVec2Component(),
   new MakeVec3Component(),
