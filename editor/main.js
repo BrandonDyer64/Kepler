@@ -49,7 +49,7 @@ function createEditorWindow(callback) {
   //editorWindow.setMenu(null)
 
   // Open the DevTools.
-  editorWindow.webContents.openDevTools();
+  //editorWindow.webContents.openDevTools();
 
   editorWindow.on("focus", callback);
 
@@ -111,7 +111,7 @@ exports.openAssetEditor = (type, path) => {
   //assetEditorWindow.setMenu(null)
 
   // Open the DevTools.
-  assetEditorWindow.webContents.openDevTools();
+  //assetEditorWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
   assetEditorWindow.on("closed", function() {
@@ -130,9 +130,9 @@ exports.openProjectDialog = callbackFail => {
     },
     paths => {
       console.log(paths);
-      console.log(path.posix.basename(paths[0]));
-      if (paths[0] && path.posix.basename(paths[0]) == "kepler.json") {
-        projectDirectory.dir = path.posix.dirname(paths[0]);
+      console.log(path.basename(paths[0]));
+      if (paths[0] && path.basename(paths[0]) == "kepler.json") {
+        projectDirectory.dir = path.dirname(paths[0]);
         createEditorWindow(() => {
           if (projectWindow) {
             projectWindow.close();
