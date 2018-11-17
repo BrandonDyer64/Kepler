@@ -30,16 +30,19 @@ function receiveUser(msg) {
 
 var actSocket = new Rete.Socket("Action");
 var strSocket = new Rete.Socket("String");
+var boolSocket = new Rete.Socket("Boolean");
 var floatSocket = new Rete.Socket("Float");
 var vector2Socket = new Rete.Socket("Vector2");
 var vector3Socket = new Rete.Socket("Vector3");
 var vector4Socket = new Rete.Socket("Vector4");
 var anySocket = new Rete.Socket("Any");
 
+anySocket.combineWith(boolSocket);
 anySocket.combineWith(floatSocket);
 anySocket.combineWith(vector2Socket);
 anySocket.combineWith(vector3Socket);
 anySocket.combineWith(vector4Socket);
+boolSocket.combineWith(anySocket);
 floatSocket.combineWith(anySocket);
 floatSocket.combineWith(vector2Socket);
 floatSocket.combineWith(vector3Socket);
@@ -127,6 +130,11 @@ class MaterialOutputComponent extends Rete.Component {
     );
     var inp11 = new Rete.Input("parallax_depth", "Parallax Depth", floatSocket);
     var inp12 = new Rete.Input("bump_depth", "Bump Depth", floatSocket);
+    var inp13 = new Rete.Input(
+      "parallax_overlap",
+      "Parallax Overlap",
+      boolSocket
+    );
 
     //var ctrl = new FloatInputControl("text");
     //inp2.addControl(ctrl);
@@ -143,6 +151,7 @@ class MaterialOutputComponent extends Rete.Component {
       .addInput(inp9)
       .addInput(inp10)
       .addInput(inp11)
+      .addInput(inp13)
       .addInput(inp12);
   }
 
@@ -171,6 +180,25 @@ class TexCoordComponent extends Rete.Component {
 
   code(node, inputs, add) {
     add("vec3", "coords", "vec3(texCoord,0)");
+  }
+}
+
+class ParallaxDepthComponent extends Rete.Component {
+  constructor() {
+    super("Parallax Depth");
+    this.task = {
+      outputs: { text: "output" }
+    };
+  }
+
+  builder(node) {
+    var out = new Rete.Output("depth", "", floatSocket);
+
+    return node.addOutput(out);
+  }
+
+  code(node, inputs, add) {
+    add("float", "depth", "depth");
   }
 }
 
@@ -458,6 +486,69 @@ class IfComponent extends Rete.Component {
   }
 }
 
+class IfBoolComponent extends Rete.Component {
+  constructor() {
+    super("If Boolean");
+    this.task = {
+      outputs: { text: "output" }
+    };
+  }
+
+  builder(node) {
+    var a = new Rete.Input("a", "", boolSocket);
+    var t = new Rete.Input("t", "True", anySocket);
+    var f = new Rete.Input("f", "False", anySocket);
+    var out = new Rete.Output("out", "", anySocket);
+
+    return node
+      .addInput(a)
+      .addInput(t)
+      .addInput(f)
+      .addOutput(out);
+  }
+
+  code(node, inputs, add, outputs) {
+    add(anyify(inputs.t), "out");
+    add(`
+      if (${inputs.a}) {
+        ${outputs.out} = ${inputs.t};
+      } else {
+        ${outputs.out} = ${inputs.f};
+      }
+    `);
+  }
+}
+
+class CompareComponent extends Rete.Component {
+  constructor() {
+    super("Compare");
+    this.task = {
+      outputs: { text: "output" }
+    };
+  }
+
+  builder(node) {
+    var a = new Rete.Input("a", "A", anySocket);
+    var b = new Rete.Input("b", "B", anySocket);
+    var g = new Rete.Output("g", ">", boolSocket);
+    var e = new Rete.Output("e", "=", boolSocket);
+    var l = new Rete.Output("l", "<", boolSocket);
+
+    return node
+      .addInput(a)
+      .addInput(b)
+      .addOutput(g)
+      .addOutput(e)
+      .addOutput(l);
+  }
+
+  code(node, inputs, add, outputs) {
+    add("bool", "g", `${inputs.a} > ${inputs.b}`);
+    add("bool", "e", `${inputs.a} == ${inputs.b}`);
+    add("bool", "l", `${inputs.a} < ${inputs.b}`);
+  }
+}
+
 class BreakVec2Component extends Rete.Component {
   constructor() {
     super("Break Vec2");
@@ -643,6 +734,29 @@ class NoiseComponent extends Rete.Component {
   }
 }
 
+class DitherComponent extends Rete.Component {
+  constructor() {
+    super("Dither");
+    this.task = {
+      outputs: { text: "output" }
+    };
+  }
+
+  builder(node) {
+    var out0 = new Rete.Output("out", "", boolSocket);
+
+    return node.addOutput(out0);
+  }
+
+  code(node, inputs, add, outputs, imports) {
+    add(
+      "bool",
+      "out",
+      `mod(floor(gl_FragCoord.x) + floor(gl_FragCoord.y),2.0) == 0.0`
+    );
+  }
+}
+
 var components = [
   new TexCoordComponent(),
   new FloatComponent(),
@@ -653,6 +767,8 @@ var components = [
   new SinComponent(),
   new PowerComponent(),
   new IfComponent(),
+  new IfBoolComponent(),
+  new CompareComponent(),
   new VectorizeComponent(),
   new FloatifyComponent(),
   new LerpComponent(),
@@ -665,6 +781,8 @@ var components = [
   new UnbalanceComponent(),
   new ViewVectorComponent(),
   new NoiseComponent(),
+  new ParallaxDepthComponent(),
+  new DitherComponent(),
   new MaterialOutputComponent()
 ];
 
@@ -763,9 +881,9 @@ editor
             }
             if (output.parallax_depth.length > 0) {
               atomFile += `
-                const int steps = 32;
+                const int steps = 128;
                 const float stepSize = 1.0 / float(steps);
-                float getParallaxValue(vec2 offset) {
+                float getParallaxValue(vec2 offset, float depth) {
                   vec2 texCoord = gl_FragCoord.xy / iResolution.xy - offset;
                   vec2 viewVector = iMouse.xy * 2.0 - 1.0;
                   ${sourceCode}
@@ -775,13 +893,20 @@ editor
                   vec2 texCoord = gl_FragCoord.xy / iResolution.xy;
                   vec2 viewVector = iMouse.xy * 2.0 - 1.0;
                   vec2 offset = vec2(0);
+                  float depth = 0.0;
                   float heightOld = -1.0;
+                  int parallaxPass = 0;
+                  int parallaxPasses = mod(floor(gl_FragCoord.x) + floor(gl_FragCoord.y),2.0) == 0.0 ? 1 : 2;
 
                   for (int i = 1; i <= steps; i++) {
-                    offset = viewVector * vec2(i) * vec2(stepSize);
-                		float height = 1.0 - getParallaxValue(offset);
+                    depth = float(i) * stepSize;
+                    offset = viewVector * depth;
+                		float height = 1.0 - getParallaxValue(offset, depth);
                     if (height <= float(i) * stepSize) {
-                      break;
+                      parallaxPass++;
+                      if (parallaxPass >= parallaxPasses) {
+                        break;
+                      }
                     }
                   }
                   texCoord -= offset;

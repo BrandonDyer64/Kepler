@@ -4,10 +4,16 @@
 
 #editor .context-menu {
   width: 300px;
+  max-height: 400px;
+  overflow-y: scroll;
+  padding: 0px;
 }
 #editor .context-menu .search {
   background: rgba(100, 100, 100, 0.6);
   border: none;
+}
+#editor .context-menu .search input:focus {
+  outline: none;
 }
 #editor .context-menu .item {
   background: rgba(100, 100, 100, 0.6);
@@ -26,6 +32,9 @@
 }
 #editor .socket.any {
   background: #444;
+}
+#editor .socket.boolean {
+  background: #cc4444;
 }
 #editor .socket.string {
   background: #6f377e;
@@ -68,7 +77,8 @@
 /* Material Inputs */
 #editor .node.texcoord .title,
 #editor .node.view-vector .title,
-#editor .node.time .title {
+#editor .node.time .title,
+#editor .node.parallax-depth .title {
   background: #cc4444;
 }
 /* Material Functions */
@@ -107,6 +117,10 @@
 }
 #editor .socket-output-string path {
   stroke: #6f377e !important;
+}
+#editor .socket-output-boolean path.main-path,
+#editor .socket-input-boolean path.main-path {
+  stroke: #cc4444;
 }
 #editor .socket-output-float path.main-path,
 #editor .socket-input-float path.main-path {
