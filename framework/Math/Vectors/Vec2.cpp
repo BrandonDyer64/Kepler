@@ -32,4 +32,8 @@ int TestFun() {
   return 984;
 }
 
+int TestFun4() {
+  return 984;
+}
+
 }

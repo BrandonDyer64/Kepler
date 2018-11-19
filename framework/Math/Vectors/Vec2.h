@@ -9,6 +9,7 @@ namespace Kepler {
     const float x;
     const float y;
   public:
+    Vec2(): x(0), y(0) {};
     Vec2(float x, float y): x(x), y(y) {};
     Vec2 operator+(const Vec2& other) const;
     Vec2 operator-(const Vec2& other) const;
@@ -18,6 +19,7 @@ namespace Kepler {
     float DistanceTo(const Vec2& other) const;
   };
   int TestFun();
+  int TestFun4();
 }
 
 #endif
