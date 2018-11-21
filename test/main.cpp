@@ -3,7 +3,6 @@
 #include "Math/Vectors/Vec2.h"
 
 int main() {
-    Kepler::DesktopApplication app(false, "Kepler Test");
-    app.WaitForClose();
+    Kepler::CreateDesktopApplication(false, "hello world");
     return 0;
 }

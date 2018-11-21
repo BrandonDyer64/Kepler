@@ -6,14 +6,7 @@
 
 namespace Kepler {
 
-class DesktopApplication {
-private:
-  void* window;
-  void* vulkanInstance;
-public:
-  DesktopApplication(bool isFullscreen, const char* title);
-  void WaitForClose();
-};
+void CreateDesktopApplication(bool isFullscreen, const char* title);
 
 }
 
