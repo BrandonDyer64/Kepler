@@ -15,7 +15,6 @@
 #include "TinyObjLoader.h"
 
 #include <iostream>
-#include <fstream>
 #include <stdexcept>
 #include <algorithm>
 #include <chrono>
@@ -27,13 +26,18 @@
 #include <set>
 #include <unordered_map>
 
+#include "Tools/FS.h"
+#include "../Math/Vectors/Vec3.h"
+#include "../Math/Vectors/Vec2.h"
+#include "../Rendering/Vertex.h"
+
 namespace Kepler {
 
-const int WIDTH = 800;
-const int HEIGHT = 600;
+const int WIDTH =1280;
+const int HEIGHT = 720;
 
-const std::string MODEL_PATH = "../chalet.obj";
-const std::string TEXTURE_PATH = "../chalet.jpg";
+const std::string MODEL_PATH = "../rust2.obj";
+const std::string TEXTURE_PATH = "../rust.jpg";
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -81,58 +85,6 @@ struct SwapChainSupportDetails {
     std::vector<VkSurfaceFormatKHR> formats;
     std::vector<VkPresentModeKHR> presentModes;
 };
-
-struct Vertex {
-    glm::vec3 pos;
-    glm::vec3 color;
-    glm::vec2 texCoord;
-
-    static VkVertexInputBindingDescription getBindingDescription() {
-        VkVertexInputBindingDescription bindingDescription = {};
-        bindingDescription.binding = 0;
-        bindingDescription.stride = sizeof(Vertex);
-        bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-        return bindingDescription;
-    }
-
-    static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescriptions() {
-        std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions = {};
-
-        attributeDescriptions[0].binding = 0;
-        attributeDescriptions[0].location = 0;
-        attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-        attributeDescriptions[0].offset = offsetof(Vertex, pos);
-
-        attributeDescriptions[1].binding = 0;
-        attributeDescriptions[1].location = 1;
-        attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-        attributeDescriptions[1].offset = offsetof(Vertex, color);
-
-        attributeDescriptions[2].binding = 0;
-        attributeDescriptions[2].location = 2;
-        attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
-        attributeDescriptions[2].offset = offsetof(Vertex, texCoord);
-
-        return attributeDescriptions;
-    }
-
-    bool operator==(const Vertex& other) const {
-        return pos == other.pos && color == other.color && texCoord == other.texCoord;
-    }
-};
-
-}
-
-namespace std {
-    template<> struct hash<Kepler::Vertex> {
-        size_t operator()(Kepler::Vertex const& vertex) const {
-            return ((hash<glm::vec3>()(vertex.pos) ^ (hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^ (hash<glm::vec2>()(vertex.texCoord) << 1);
-        }
-    };
-}
-
-namespace Kepler {
 
 struct UniformBufferObject {
     glm::mat4 model;
@@ -639,8 +591,8 @@ private:
     }
 
     void createGraphicsPipeline() {
-        auto vertShaderCode = readFile("../vert.spv");
-        auto fragShaderCode = readFile("../frag.spv");
+        auto vertShaderCode = ReadFile("../vert.spv");
+        auto fragShaderCode = ReadFile("../frag.spv");
 
         VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
         VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
@@ -662,8 +614,8 @@ private:
         VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-        auto bindingDescription = Vertex::getBindingDescription();
-        auto attributeDescriptions = Vertex::getAttributeDescriptions();
+        auto bindingDescription = Vertex::GetBindingDescription();
+        auto attributeDescriptions = Vertex::GetAttributeDescriptions();
 
         vertexInputInfo.vertexBindingDescriptionCount = 1;
         vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
@@ -1172,20 +1124,22 @@ VkSampleCountFlagBits getMaxUsableSampleCount() {
 
         for (const auto& shape : shapes) {
             for (const auto& index : shape.mesh.indices) {
-                Vertex vertex = {};
+                Vec3 pos(
+                  attrib.vertices[3 * index.vertex_index + 0],
+                  attrib.vertices[3 * index.vertex_index + 1],
+                  attrib.vertices[3 * index.vertex_index + 2]
+                );
 
-                vertex.pos = {
-                    attrib.vertices[3 * index.vertex_index + 0],
-                    attrib.vertices[3 * index.vertex_index + 1],
-                    attrib.vertices[3 * index.vertex_index + 2]
-                };
+                Vec2 texCoord(
+                  attrib.texcoords[2 * index.texcoord_index + 0],
+                  1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
+                );
 
-                vertex.texCoord = {
-                    attrib.texcoords[2 * index.texcoord_index + 0],
-                    1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
-                };
+                Vec3 color(
+                  1.0f, 1.0f, 1.0f
+                );
 
-                vertex.color = {1.0f, 1.0f, 1.0f};
+                Vertex vertex(pos, color, texCoord);
 
                 if (uniqueVertices.count(vertex) == 0) {
                     uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
@@ -1582,14 +1536,18 @@ VkSampleCountFlagBits getMaxUsableSampleCount() {
 
     VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes) {
         VkPresentModeKHR bestMode = VK_PRESENT_MODE_FIFO_KHR;
-
+        #define USE_VSYNC
+        #ifndef USE_VSYNC
         for (const auto& availablePresentMode : availablePresentModes) {
             if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
                 return availablePresentMode;
+                std::cout << "VK_PRESENT_MODE_MAILBOX_KHR"<<std::endl;
             } else if (availablePresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) {
                 bestMode = availablePresentMode;
+                std::cout << "VK_PRESENT_MODE_IMMEDIATE_KHR" << std::endl;
             }
         }
+        #endif
 
         return bestMode;
     }
@@ -1739,24 +1697,6 @@ VkSampleCountFlagBits getMaxUsableSampleCount() {
         }
 
         return true;
-    }
-
-    static std::vector<char> readFile(const std::string& filename) {
-        std::ifstream file(filename, std::ios::ate | std::ios::binary);
-
-        if (!file.is_open()) {
-            throw std::runtime_error("failed to open file!");
-        }
-
-        size_t fileSize = (size_t) file.tellg();
-        std::vector<char> buffer(fileSize);
-
-        file.seekg(0);
-        file.read(buffer.data(), fileSize);
-
-        file.close();
-
-        return buffer;
     }
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {

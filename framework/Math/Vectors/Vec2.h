@@ -15,6 +15,7 @@ namespace Kepler {
     Vec2 operator-(const Vec2& other) const;
     Vec2 operator*(const Vec2& other) const;
     Vec2 operator/(const Vec2& other) const;
+    bool operator==(const Vec2& other) const;
     float Dot(const Vec2& other) const;
     float DistanceTo(const Vec2& other) const;
   };

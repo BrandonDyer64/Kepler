@@ -3,3 +3,6 @@ target
 bin
 build/
 config.cmake
+*.obj
+*.mtl
+*.jpg
