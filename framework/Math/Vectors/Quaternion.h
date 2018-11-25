@@ -1,28 +1,25 @@
 
+// For reference view:
+// https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Quaternion.java
+
 #ifndef Quaternion_h
 #define Quaternion_h
 
-#include "Vec4.h"
+#include "Vec3.h"
 
 namespace Kepler {
 
 class Quaternion {
 public:
-  const Vec4 q;
+  const float x, y, z, w;
 public:
-  Quaternion(): q(Vec4(0,0,0,1)) {}
-  Quaternion(float w, float x, float y, float z): q(Vec4(x, y, z, w)) {};
-  Quaternion(Vec4 vector): q(vector) {};
-  Vec4 operator+(const Vec4& other) const;
-  Vec4 operator-(const Vec4& other) const;
-  Vec4 operator*(const Vec4& other) const;
-  Vec4 operator*(const float& other) const;
-  Vec4 operator/(const Vec4& other) const;
-  Vec4 operator/(const float& other) const;
-  float Dot(const Vec4& other) const;
-  float DistanceTo(const Vec4& other) const;
-  float Magnitude() const;
-  Vec4 Normalize() const;
+  Quaternion(): x(0), y(0), z(0), w(0) {}
+  Quaternion(float x, float y, float z, float w): x(0), y(0), z(0), w(0) {}
+  Quaternion(Quaternion& other): x(other.x), y(other.y), z(other.z), w(other.w) {}
+  Quaternion(Vec3& axis, float angle): x(axis.x), y(axis.y), z(axis.z), w(angle) {}
+  float Magnitude();
+public:
+  static Quaternion FromEuler(float yaw, float pitch, float roll);
 };
 
 }

@@ -19,6 +19,10 @@ Vec2 Vec2::operator/(const Vec2& other) const {
   return Vec2(x / other.x, y / other.y);
 }
 
+bool Vec2::operator==(const Vec2& other) const {
+  return x == other.x && y == other.y;
+}
+
 float Vec2::Dot(const Vec2& other) const {
   return x * other.x + y * other.y;
 }
@@ -29,6 +33,10 @@ float Vec2::DistanceTo(const Vec2& other) const {
 }
 
 int TestFun() {
+  return 984;
+}
+
+int TestFun4() {
   return 984;
 }
 

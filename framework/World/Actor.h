@@ -2,20 +2,18 @@
 #ifndef Actor_h
 #define Actor_h
 
+#include <vector>
+#include "../Math/Vectors/Vec3.h"
+#include "../Math/Vectors/Quaternion.h"
+
 namespace Kepler {
 
   class Actor {
   public:
-    const float x;
-    const float y;
+    Vec3 location;
+    std::vector<Actor> actors;
   public:
-    Vec2(float x, float y): x(x), y(y) {};
-    Vec2 operator+(const Vec2& other) const;
-    Vec2 operator-(const Vec2& other) const;
-    Vec2 operator*(const Vec2& other) const;
-    Vec2 operator/(const Vec2& other) const;
-    float Dot(const Vec2& other) const;
-    float DistanceTo(const Vec2& other) const;
+    Actor& AddActor(Actor& child);
   };
 }
 
