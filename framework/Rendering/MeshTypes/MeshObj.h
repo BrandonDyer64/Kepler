@@ -2,6 +2,7 @@
 #define MeshObj_h
 
 #include <string>
+#include <unordered_map>
 #include "../Mesh.h"
 #include "../../Engine/TinyObjLoader.h"
 

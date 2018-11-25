@@ -11,9 +11,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "StbImage.h"
 
-#define TINYOBJLOADER_IMPLEMENTATION
-#include "TinyObjLoader.h"
-
 #include <iostream>
 #include <stdexcept>
 #include <algorithm>
@@ -25,18 +22,18 @@
 #include <optional>
 #include <set>
 
-#include "Tools/FS.h"
-#include "../Math/Vectors/Vec3.h"
-#include "../Math/Vectors/Vec2.h"
-#include "../Rendering/Vertex.h"
+#include "DesktopApplication.h"
+
+#define TINYOBJLOADER_IMPLEMENTATION
+#include "TinyObjLoader.h"
 
 namespace Kepler {
 
-const int WIDTH =1280;
+const int WIDTH = 1280;
 const int HEIGHT = 720;
 
-const std::string MODEL_PATH = "../rust2.obj";
-const std::string TEXTURE_PATH = "../rust.jpg";
+const std::string MODEL_PATH = "../chalet.obj";
+const std::string TEXTURE_PATH = "../chalet.jpg";
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -93,6 +90,7 @@ struct UniformBufferObject {
 
 class HelloTriangleApplication {
 public:
+    HelloTriangleApplication() {};
     void run() {
         initWindow();
         initVulkan();
@@ -142,8 +140,9 @@ private:
     VkImageView textureImageView;
     VkSampler textureSampler;
 
-    std::vector<Vertex> vertices;
-    std::vector<uint32_t> indices;
+    Mesh mesh;
+    //std::vector<Vertex> vertices;
+    //std::vector<uint32_t> indices;
     VkBuffer vertexBuffer;
     VkDeviceMemory vertexBufferMemory;
     VkBuffer indexBuffer;
@@ -1110,47 +1109,11 @@ VkSampleCountFlagBits getMaxUsableSampleCount() {
     }
 
     void loadModel() {
-        tinyobj::attrib_t attrib;
-        std::vector<tinyobj::shape_t> shapes;
-        std::vector<tinyobj::material_t> materials;
-        std::string warn, err;
-
-        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, /*&warn,*/ &err, MODEL_PATH.c_str())) {
-            throw std::runtime_error(warn + err);
-        }
-
-        std::unordered_map<Vertex, uint32_t> uniqueVertices = {};
-
-        for (const auto& shape : shapes) {
-            for (const auto& index : shape.mesh.indices) {
-                Vec3 pos(
-                  attrib.vertices[3 * index.vertex_index + 0],
-                  attrib.vertices[3 * index.vertex_index + 1],
-                  attrib.vertices[3 * index.vertex_index + 2]
-                );
-
-                Vec2 texCoord(
-                  attrib.texcoords[2 * index.texcoord_index + 0],
-                  1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
-                );
-
-                Vec3 color(
-                  1.0f, 1.0f, 1.0f
-                );
-
-                Vertex vertex(pos, color, texCoord);
-
-                if (uniqueVertices.count(vertex) == 0) {
-                    uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
-                    vertices.push_back(vertex);
-                }
-
-                indices.push_back(uniqueVertices[vertex]);
-            }
-        }
+        mesh = MeshObj(MODEL_PATH);
     }
 
     void createVertexBuffer() {
+        std::vector<Vertex> vertices = mesh.GetFrame(0,0).vertices;
         VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 
         VkBuffer stagingBuffer;
@@ -1171,6 +1134,7 @@ VkSampleCountFlagBits getMaxUsableSampleCount() {
     }
 
     void createIndexBuffer() {
+        std::vector<uint32_t> indices = mesh.GetFrame(0,0).indices;
         VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
 
         VkBuffer stagingBuffer;
@@ -1383,8 +1347,10 @@ VkSampleCountFlagBits getMaxUsableSampleCount() {
             renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
             renderPassInfo.pClearValues = clearValues.data();
 
-            vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+            std::vector<uint32_t> indices = mesh.GetFrame(0,0).indices;
 
+            vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+            {
                 vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
                 VkBuffer vertexBuffers[] = {vertexBuffer};
@@ -1396,7 +1362,7 @@ VkSampleCountFlagBits getMaxUsableSampleCount() {
                 vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
 
                 vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
-
+            }
             vkCmdEndRenderPass(commandBuffers[i]);
 
             if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS) {

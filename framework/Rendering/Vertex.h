@@ -1,3 +1,7 @@
+#ifndef Vertex_h
+#define Vertex_h
+
+
 #ifdef LIB_KEPLER
 
 #define GLFW_INCLUDE_VULKAN
@@ -69,4 +73,6 @@ namespace std {
   };
 
 };
+#endif
+
 #endif

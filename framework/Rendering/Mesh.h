@@ -11,6 +11,7 @@ namespace Kepler {
   public:
     std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
+    Mesh() {};
     Mesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices): vertices(vertices), indices(indices) {};
     Mesh& GetFrame(float time, float delta);
   };

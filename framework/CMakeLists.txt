@@ -13,7 +13,7 @@ include(config.cmake)
 
 project(kepler VERSION 0.0.1 DESCRIPTION "Kepler Engine API")
 
-file(GLOB_RECURSE SOURCES *.cpp *.h)
+file(GLOB_RECURSE SOURCES *.cpp)
 
 add_library(kepler SHARED ${SOURCES})
 
