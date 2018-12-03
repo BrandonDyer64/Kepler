@@ -5,9 +5,9 @@ namespace Kepler {
 
 class Game {
 public:
-    Game();
+  Game();
 };
 
-}
+} // namespace Kepler
 
 #endif

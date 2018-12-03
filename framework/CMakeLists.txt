@@ -8,6 +8,7 @@ SET(CMAKE_CROSSCOMPILING 1)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wfatal-errors")
 
 add_compile_definitions(LIB_KEPLER)
+add_compile_definitions(ASSET_DIR="data")
 
 option(PLATFORM "Target platform (Windows, Linux)" OFF)
 if (NOT ${PLATFORM})
@@ -27,7 +28,7 @@ if (${IS_SERVER})
 else()
   add_compile_definitions("__Client")
   add_compile_definitions("__Render${RENDER_ENGINE}")
-  add_compile_definitions(__RenderEngine=${RENDER_ENGINE})
+  add_compile_definitions(__RenderEngine="${RENDER_ENGINE}")
 endif()
 
 message("Kepler Engine")
@@ -37,13 +38,13 @@ message("Server: ${IS_SERVER}")
 
 include(config.cmake)
 
-project(kepler VERSION 0.0.1 DESCRIPTION "Kepler Engine API")
+project(kepler DESCRIPTION "Kepler Engine API")
 
 file(GLOB_RECURSE SOURCES *.cpp)
 
 add_library(kepler SHARED ${SOURCES})
 
-set_target_properties(kepler PROPERTIES VERSION ${PROJECT_VERSION})
+#set_target_properties(kepler PROPERTIES VERSION ${PROJECT_VERSION})
 
 include_directories(${VULKAN_SDK_PATH}/include)
 find_library(VULKAN_LIBRARY vulkan HINTS ${VULKAN_SDK_PATH}/lib)
@@ -56,4 +57,4 @@ target_link_libraries(kepler ${GLFW_LIBRARIES})
 target_link_libraries(kepler ${GLFW_STATIC_LIBRARIES})
 
 # Use "sudo make install" to apply
-#install(TARGETS kepler DESTINATION /usr/lib)
+install(TARGETS kepler DESTINATION /usr/lib)

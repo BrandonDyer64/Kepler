@@ -4,7 +4,10 @@
 namespace Kepler {
 
 Game::Game() {
-    std::cout << __Platform << std::endl;
+#ifdef __Platform
+  std::cout << "Platform: " << __Platform << std::endl;
+  std::cout << "Render Engine: " << __RenderEngine << std::endl;
+#endif
 }
 
-}
+} // namespace Kepler
