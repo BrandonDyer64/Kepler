@@ -5,6 +5,7 @@
 namespace Kepler {
 
 std::vector<char> ReadFile(const std::string &filename) {
+  std::cout << "Load file: " << filename << std::endl;
   std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
   if (!file.is_open()) {

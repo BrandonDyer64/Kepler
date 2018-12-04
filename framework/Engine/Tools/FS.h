@@ -2,13 +2,15 @@
 #define ReadFile_h
 
 #include <iostream>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace Kepler {
 
-std::vector<char> ReadFile(const std::string& filename);
+std::vector<char> ReadFile(const std::string &filename);
 
-}
+std::string ExecPath();
+
+} // namespace Kepler
 
 #endif

@@ -282,7 +282,7 @@ a.btn-none:hover {
 
 /* The scrollbar 'thumb' ...that marque oval shape in a scrollbar */
 ::-webkit-scrollbar-thumb:vertical {
-  /* This is the EXACT color of Mac OS scrollbars. 
+  /* This is the EXACT color of Mac OS scrollbars.
      Yes, I pulled out digital color meter */
   background: rgba(0, 0, 0, 0.5);
   -webkit-border-radius: 100px;

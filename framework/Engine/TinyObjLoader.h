@@ -39,7 +39,7 @@ THE SOFTWARE.
 //   #include "tiny_obj_loader.h"
 //
 
-#ifndef TINY_OBJ_LOADER_H_
+#if !defined(TINY_OBJ_LOADER_H_) && defined(LIB_KEPLER)
 #define TINY_OBJ_LOADER_H_
 
 #include <map>

@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "DesktopApplication.h"
+#include "Game.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "TinyObjLoader.h"
@@ -32,8 +33,8 @@ namespace Kepler {
 const int WIDTH = 1280;
 const int HEIGHT = 720;
 
-const std::string MODEL_PATH = "data/chalet.obj";
-const std::string TEXTURE_PATH = "data/chalet.jpg";
+std::string MODEL_PATH = "data/chalet.obj";
+std::string TEXTURE_PATH = "data/chalet.jpg";
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -97,6 +98,7 @@ class HelloTriangleApplication {
 public:
   HelloTriangleApplication(){};
   void run() {
+    Game();
     initWindow();
     initVulkan();
     mainLoop();
@@ -630,8 +632,8 @@ private:
   }
 
   void createGraphicsPipeline() {
-    auto vertShaderCode = ReadFile("../vert.spv");
-    auto fragShaderCode = ReadFile("../frag.spv");
+    auto vertShaderCode = ReadFile("data/vert.spv");
+    auto fragShaderCode = ReadFile("data/frag.spv");
 
     VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
     VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
@@ -1864,8 +1866,13 @@ private:
   }
 };
 
-void CreateDesktopApplication(bool isFullscreen, const char *title) {
+void CreateDesktopApplication(bool isFullscreen, const char *title,
+                              std::string model_path,
+                              std::string texture_path) {
   HelloTriangleApplication app;
+
+  MODEL_PATH = model_path;
+  TEXTURE_PATH = texture_path;
 
   try {
     app.run();
