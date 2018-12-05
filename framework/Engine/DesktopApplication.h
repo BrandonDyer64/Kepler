@@ -6,12 +6,12 @@
 #include "../Math/Vectors/Vec3.h"
 #include "../Rendering/MeshTypes/MeshObj.h"
 #include "../Rendering/Vertex.h"
+#include "../World/Actors/Level.h"
 #include "Tools/FS.h"
 #include <string>
 
 namespace Kepler {
-void CreateDesktopApplication(bool isFullscreen, const char *title,
-                              std::string model_path, std::string texture_path);
+void CreateDesktopApplication(Level &startingLevel);
 }
 
 #endif

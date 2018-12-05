@@ -2,7 +2,7 @@
 #include <iostream>
 
 namespace Kepler {
-
+/*
 Game::Game() {
 #ifdef __Platform
   std::cout << "Platform: " << __Platform << std::endl;
@@ -10,5 +10,6 @@ Game::Game() {
   std::cout << "Server: " << (__IsServer ? "yes" : "no") << std::endl;
 #endif
 }
+*/
 
 } // namespace Kepler

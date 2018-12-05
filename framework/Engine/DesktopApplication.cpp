@@ -94,11 +94,10 @@ struct UniformBufferObject {
   glm::mat4 proj;
 };
 
-class HelloTriangleApplication {
+class DesktopApplication {
 public:
-  HelloTriangleApplication(){};
+  DesktopApplication(Game game) : game(game){};
   void run() {
-    Game();
     initWindow();
     initVulkan();
     mainLoop();
@@ -106,6 +105,7 @@ public:
   }
 
 private:
+  Game game;
   GLFWwindow *window;
 
   VkInstance instance;
@@ -182,7 +182,7 @@ private:
 
   static void framebufferResizeCallback(GLFWwindow *window, int width,
                                         int height) {
-    auto app = reinterpret_cast<HelloTriangleApplication *>(
+    auto app = reinterpret_cast<DesktopApplication *>(
         glfwGetWindowUserPointer(window));
     app->framebufferResized = true;
   }
@@ -1866,13 +1866,9 @@ private:
   }
 };
 
-void CreateDesktopApplication(bool isFullscreen, const char *title,
-                              std::string model_path,
-                              std::string texture_path) {
-  HelloTriangleApplication app;
-
-  MODEL_PATH = model_path;
-  TEXTURE_PATH = texture_path;
+void CreateDesktopApplication(Level &startingLevel) {
+  Game game(startingLevel);
+  DesktopApplication app(game);
 
   try {
     app.run();

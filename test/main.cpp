@@ -1,9 +1,10 @@
 #include "Engine/DesktopApplication.h"
 #include "Math/Vectors/Vec2.h"
+#include "MyLevel.h"
 #include <iostream>
 
 int main() {
-  Kepler::CreateDesktopApplication(false, "hello world", "data/chalet.obj",
-                                   "data/chalet.jpg");
+  MyLevel startingLevel;
+  Kepler::CreateDesktopApplication(startingLevel);
   return 0;
 }

@@ -4,6 +4,7 @@
 
 #include "../Math/Vectors/Quaternion.h"
 #include "../Math/Vectors/Vec3.h"
+#include "Component.h"
 #include <vector>
 
 namespace Kepler {
@@ -12,14 +13,21 @@ class Actor {
 public:
   Vec3 location;
   Vec3 velocity;
-  std::vector<Actor> actors;
+  Quaternion rotation;
+  Quaternion angularVelocity;
+  float mass;
+  std::vector<Actor *> actors;
+  std::vector<Component *> components;
 
 public:
+  Actor() {}
   Actor(Vec3 location) : location(location){};
-  Actor(Vec3 location, Vec3 velocity){};
-  Actor &AddActor(Actor &child);
-  Vec3 DefineGravity(Vec3 pollLocation);
+  Actor(Vec3 location, Vec3 velocity)
+      : location(location), velocity(velocity){};
+  Actor &AddActor(Actor *child);
+  Actor &AddComponent(Component *component);
 };
+
 } // namespace Kepler
 
 #endif
