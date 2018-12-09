@@ -6,8 +6,8 @@
 #include "../Math/Vectors/Vec3.h"
 #include "../Rendering/MeshTypes/MeshObj.h"
 #include "../Rendering/Vertex.h"
-#include "../World/Actors/Level.h"
 #include "Tools/FS.h"
+#include "World/Level.h"
 #include <string>
 
 namespace Kepler {
