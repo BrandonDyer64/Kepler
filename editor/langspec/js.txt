@@ -1,0 +1,37 @@
+# declare
+let {{name}}
+
+# initialize
+let {{name}} = {{value}}
+
+# set
+{{name}} = {{value}}
+
+# increase
+{{name}} += {{value}}
+
+# decrease
+{{name}} -= {{value}}
+
+# if
+if ( {{condition}} ) {
+  {{statement}}
+}
+{{then}}
+
+# branch
+if ( {{condition}} ) {
+  {{statement[0]}}
+} else {
+  {{statement[1]}}
+}
+{{then}}
+{{converge}}
+
+# function
+function {{name}} ( {{params}} ) {
+  {{statement}}
+}
+
+# array
+[ {{values}} ]

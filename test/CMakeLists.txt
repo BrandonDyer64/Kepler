@@ -51,6 +51,7 @@ target_link_libraries(kepler_test ${KEPLER_LIBRARY})
 # Copy assets
 file(
   GLOB_RECURSE ASSETS
+  *.lua
   *.obj
   *.spv
   *.jpg

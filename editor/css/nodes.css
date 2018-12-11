@@ -3,9 +3,9 @@
 }
 
 #editor .context-menu {
-  width: 300px;
+  /*width: 300px;
   max-height: 400px;
-  overflow-y: scroll;
+  overflow-y: scroll;*/
   padding: 0px;
 }
 #editor .context-menu .search {
@@ -19,6 +19,11 @@
   background: rgba(100, 100, 100, 0.6);
   border: none;
 }
+
+#editor .node .title {
+  padding: 6px;
+}
+
 #editor .node {
   min-width: 180px;
   background: rgba(100, 100, 100, 0.6);
@@ -37,7 +42,7 @@
   background: #cc4444;
 }
 #editor .socket.string {
-  background: #6f377e;
+  background: #8844cc;
 }
 #editor .socket.vector2,
 #editor .socket.vector3,
@@ -105,6 +110,22 @@
   background: #886644;
 }
 
+/* Lua event */
+#editor .node.on-create .title,
+#editor .node.on-tick .title {
+  background: linear-gradient(to right, transparent, #cc4444);
+}
+
+/* Lua logic */
+#editor .node.branch .title {
+  background: linear-gradient(to right, transparent, #88aacc);
+}
+
+/* Lua commands */
+#editor .node.print .title {
+  background: linear-gradient(to right, transparent, #8844cc);
+}
+
 #editor .input-control input {
   width: 140px;
 }
@@ -116,7 +137,7 @@
   stroke: white !important;
 }
 #editor .socket-output-string path {
-  stroke: #6f377e !important;
+  stroke: #8844cc !important;
 }
 #editor .socket-output-boolean path.main-path,
 #editor .socket-input-boolean path.main-path {

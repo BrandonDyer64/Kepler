@@ -26,6 +26,7 @@
     "rete-code-plugin": "^0.1.1",
     "rete-connection-plugin": "^0.2.2",
     "rete-context-menu-plugin": "^0.2.4",
+    "rete-stage0-menu-plugin": "^0.3.7",
     "rete-task-plugin": "^0.1.7",
     "rete-vue-render-plugin": "^0.2.4"
   }

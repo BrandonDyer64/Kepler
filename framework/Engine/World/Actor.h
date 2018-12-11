@@ -7,10 +7,13 @@ namespace Kepler {
 
 class Actor {
 public:
-  Actor(Entity& entity);
+  const Entity *entity;
+
+public:
+  Actor(Entity &entity);
   virtual void Tick();
 };
 
-}
+} // namespace Kepler
 
 #endif

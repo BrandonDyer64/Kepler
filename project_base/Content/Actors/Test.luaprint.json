@@ -1,0 +1,400 @@
+{
+  "name": "Test",
+  "props": {
+    "files": {},
+    "nodes": {
+      "23": {
+        "id": 23,
+        "data": {
+          "value": "They are the same"
+        },
+        "inputs": {},
+        "outputs": {
+          "value": {
+            "connections": [
+              {
+                "node": 24,
+                "input": "str",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          787.424345017451,
+          -1766.4942130024342
+        ],
+        "name": "String"
+      },
+      "24": {
+        "id": 24,
+        "data": {},
+        "inputs": {
+          "exec": {
+            "connections": [
+              {
+                "node": 28,
+                "output": "execTrue",
+                "data": {}
+              }
+            ]
+          },
+          "str": {
+            "connections": [
+              {
+                "node": 23,
+                "output": "value",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "outputs": {
+          "exec": {
+            "connections": [
+              {
+                "node": 34,
+                "input": "exec",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          1181.8610384994504,
+          -1703.6282465220395
+        ],
+        "name": "Print"
+      },
+      "25": {
+        "id": 25,
+        "data": {},
+        "inputs": {},
+        "outputs": {
+          "exec": {
+            "connections": [
+              {
+                "node": 28,
+                "input": "exec",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          418.52325123829297,
+          -1649.628391056227
+        ],
+        "name": "On Create"
+      },
+      "28": {
+        "id": 28,
+        "data": {},
+        "inputs": {
+          "exec": {
+            "connections": [
+              {
+                "node": 25,
+                "output": "exec",
+                "data": {}
+              }
+            ]
+          },
+          "condition": {
+            "connections": [
+              {
+                "node": 32,
+                "output": "value",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "outputs": {
+          "execTrue": {
+            "connections": [
+              {
+                "node": 24,
+                "input": "exec",
+                "data": {}
+              }
+            ]
+          },
+          "execFalse": {
+            "connections": [
+              {
+                "node": 36,
+                "input": "exec",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          810.1257080273544,
+          -1623.9233656320548
+        ],
+        "name": "Branch"
+      },
+      "30": {
+        "id": 30,
+        "data": {
+          "value": "They are different"
+        },
+        "inputs": {},
+        "outputs": {
+          "value": {
+            "connections": [
+              {
+                "node": 34,
+                "input": "str",
+                "data": {}
+              },
+              {
+                "node": 35,
+                "input": "str",
+                "data": {}
+              },
+              {
+                "node": 36,
+                "input": "str",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          796.5345337014575,
+          -1417.143933112406
+        ],
+        "name": "String"
+      },
+      "31": {
+        "id": 31,
+        "data": {
+          "value": "mystr"
+        },
+        "inputs": {},
+        "outputs": {
+          "value": {
+            "connections": [
+              {
+                "node": 32,
+                "input": "inA",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          226.7010393065753,
+          -1456.408463777227
+        ],
+        "name": "String"
+      },
+      "32": {
+        "id": 32,
+        "data": {},
+        "inputs": {
+          "inA": {
+            "connections": [
+              {
+                "node": 31,
+                "output": "value",
+                "data": {}
+              }
+            ]
+          },
+          "inB": {
+            "connections": [
+              {
+                "node": 33,
+                "output": "value",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "outputs": {
+          "value": {
+            "connections": [
+              {
+                "node": 28,
+                "input": "condition",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          553.5968692578319,
+          -1457.981322988475
+        ],
+        "name": "Equals"
+      },
+      "33": {
+        "id": 33,
+        "data": {
+          "value": "mystr2"
+        },
+        "inputs": {},
+        "outputs": {
+          "value": {
+            "connections": [
+              {
+                "node": 32,
+                "input": "inB",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          231.0581086332932,
+          -1300.0840931217112
+        ],
+        "name": "String"
+      },
+      "34": {
+        "id": 34,
+        "data": {},
+        "inputs": {
+          "exec": {
+            "connections": [
+              {
+                "node": 24,
+                "output": "exec",
+                "data": {}
+              },
+              {
+                "node": 36,
+                "output": "exec",
+                "data": {}
+              }
+            ]
+          },
+          "str": {
+            "connections": [
+              {
+                "node": 30,
+                "output": "value",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "outputs": {
+          "exec": {
+            "connections": [
+              {
+                "node": 35,
+                "input": "exec",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          1590.1484817018181,
+          -1543.8786157818188
+        ],
+        "name": "Print"
+      },
+      "35": {
+        "id": 35,
+        "data": {},
+        "inputs": {
+          "exec": {
+            "connections": [
+              {
+                "node": 34,
+                "output": "exec",
+                "data": {}
+              }
+            ]
+          },
+          "str": {
+            "connections": [
+              {
+                "node": 30,
+                "output": "value",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "outputs": {
+          "exec": {
+            "connections": []
+          }
+        },
+        "position": [
+          1826.8479074330007,
+          -1494.150896169736
+        ],
+        "name": "Print"
+      },
+      "36": {
+        "id": 36,
+        "data": {},
+        "inputs": {
+          "exec": {
+            "connections": [
+              {
+                "node": 28,
+                "output": "execFalse",
+                "data": {}
+              }
+            ]
+          },
+          "str": {
+            "connections": [
+              {
+                "node": 30,
+                "output": "value",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "outputs": {
+          "exec": {
+            "connections": [
+              {
+                "node": 34,
+                "input": "exec",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          1166.9424196617006,
+          -1534.4757242400342
+        ],
+        "name": "Print"
+      },
+      "37": {
+        "id": 37,
+        "data": {
+          "code": ""
+        },
+        "inputs": {
+          "exec": {
+            "connections": []
+          }
+        },
+        "outputs": {
+          "exec": {
+            "connections": []
+          }
+        },
+        "position": [
+          879.0962098534832,
+          -1089.3406831340646
+        ],
+        "name": "Custom"
+      }
+    }
+  }
+}
