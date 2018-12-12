@@ -500,6 +500,8 @@ class StringComponent extends Rete.Component {
   }
 
   builder(node) {
+    node.type = "literal";
+    node.altName = " ";
     let out = new Rete.Output("value", "", stringSocket);
 
     return node.addControl(new StringInputControl("value")).addOutput(out);
@@ -520,6 +522,8 @@ class NumberComponent extends Rete.Component {
   }
 
   builder(node) {
+    node.type = "literal";
+    node.altName = " ";
     let out = new Rete.Output("value", "", floatSocket);
 
     return node.addControl(new StringInputControl("value")).addOutput(out);

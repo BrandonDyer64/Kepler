@@ -8,7 +8,13 @@
         "data": {},
         "inputs": {
           "color": {
-            "connections": []
+            "connections": [
+              {
+                "node": 86,
+                "output": "xyz",
+                "data": {}
+              }
+            ]
           },
           "metallic": {
             "connections": []
@@ -38,7 +44,13 @@
             "connections": []
           },
           "parallax_depth": {
-            "connections": []
+            "connections": [
+              {
+                "node": 85,
+                "output": "out",
+                "data": {}
+              }
+            ]
           },
           "parallax_overlap": {
             "connections": []
@@ -53,6 +65,97 @@
           1292.709551502147
         ],
         "name": "Material Output"
+      },
+      "85": {
+        "id": 85,
+        "data": {},
+        "inputs": {
+          "position": {
+            "connections": [
+              {
+                "node": 87,
+                "output": "coords",
+                "data": {}
+              }
+            ]
+          },
+          "depth": {
+            "connections": []
+          }
+        },
+        "outputs": {
+          "out": {
+            "connections": [
+              {
+                "node": 86,
+                "input": "x",
+                "data": {}
+              },
+              {
+                "node": 84,
+                "input": "parallax_depth",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          5532.651753452374,
+          1444.9652099021969
+        ],
+        "name": "Noise"
+      },
+      "86": {
+        "id": 86,
+        "data": {},
+        "inputs": {
+          "x": {
+            "connections": [
+              {
+                "node": 85,
+                "output": "out",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "outputs": {
+          "xyz": {
+            "connections": [
+              {
+                "node": 84,
+                "input": "color",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          5736.905848984748,
+          1341.5918966079971
+        ],
+        "name": "Vectorize"
+      },
+      "87": {
+        "id": 87,
+        "data": {},
+        "inputs": {},
+        "outputs": {
+          "coords": {
+            "connections": [
+              {
+                "node": 85,
+                "input": "position",
+                "data": {}
+              }
+            ]
+          }
+        },
+        "position": [
+          5300.792163980222,
+          1399.157555632099
+        ],
+        "name": "TexCoord"
       }
     }
   }

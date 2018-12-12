@@ -34,7 +34,7 @@ div(class="node {{isSelected(node)?'selected':''}} {{toClassName(node.name)}} {{
         al-repeat='control in Array.from(node.controls.values())',
         al-control
       )
-    div(style="display: flex; flex-direction: column")
+    div(style="display: flex; flex-direction: column;",class="list-output")
       // Outputs
       div(
         al-repeat='output in Array.from(node.outputs.values())',

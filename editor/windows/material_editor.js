@@ -122,7 +122,7 @@ class MaterialOutputComponent extends Rete.Component {
       "Subsurface Amount",
       floatSocket
     );
-    var inp9 = new Rete.Input("roi", "ROI", floatSocket);
+    var inp9 = new Rete.Input("ior", "IOR", floatSocket);
     var inp10 = new Rete.Input(
       "pixel_depth",
       "Pixel Depth Offset",

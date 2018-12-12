@@ -10,7 +10,7 @@
   padding: 0px;
 }
 #editor .context-menu .search {
-  background: rgba(100, 100, 100, 0.6);
+  background: rgba(80, 80, 80, 0.9);
   border: none;
 }
 #editor .context-menu .search input {
@@ -20,7 +20,7 @@
   outline: none;
 }
 #editor .context-menu .item {
-  background: rgba(100, 100, 100, 0.6);
+  background: rgba(80, 80, 80, 0.9);
   border: none;
 }
 
@@ -60,12 +60,26 @@
   margin-right: 0px;
 }
 
+#editor .node .control {
+  padding: 6px;
+}
+
 #editor .node input {
   font-family: "Poppins", sans-serif;
 }
 
 #editor .node.number input {
   width: 100px;
+}
+
+#editor .node.operator,
+#editor .node.literal {
+  padding-bottom: 0px;
+}
+
+#editor .node.operator .list-output,
+#editor .node.literal .list-output {
+  justify-content: space-around;
 }
 
 #editor .socket {
@@ -167,8 +181,7 @@
 }
 
 /* Lua data */
-#editor .node.string .title,
-#editor .node.number .title,
+#editor .node.literal .title,
 #editor .node.operator .title {
   background: linear-gradient(to right, transparent, #44cc44);
 }
