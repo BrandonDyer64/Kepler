@@ -1,6 +1,8 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, dialog } = require("electron");
 const path = require("path");
+const fs = require("fs");
+const Git = require("nodegit");
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -88,6 +90,47 @@ let projectDirectory = { dir: "" };
 
 exports.projectDirectory = projectDirectory;
 
+function loadFilesOfTypes(dir, extentions) {
+  let files = [];
+  if (fs.existsSync(dir)) {
+    fs.readdirSync(dir).forEach((file, index) => {
+      var curPath = dir + "/" + file;
+      if (fs.lstatSync(curPath).isDirectory()) {
+        // recurse
+        if (!curPath.includes("/.")) {
+          files = files.concat(loadFilesOfTypes(curPath, extentions));
+        }
+      } else if (extentions.includes(path.extname(curPath))) {
+        const data = fs.readFileSync(curPath, "utf8");
+        files.push({
+          extention: path.extname(curPath),
+          path: curPath,
+          name: file,
+          data
+        });
+      }
+    });
+  }
+  return files;
+}
+
+function loadPackageFiles(extentions) {
+  let files = {};
+  const path = projectDirectory.dir + "/k_packages/";
+  if (fs.existsSync(path)) {
+    fs.readdirSync(path).forEach((owner, index) => {
+      files[owner] = {};
+      fs.readdirSync(path + owner).forEach((pkgname, index) => {
+        files[owner][pkgname] = loadFilesOfTypes(
+          path + owner + "/" + pkgname,
+          extentions
+        );
+      });
+    });
+  }
+  return files;
+}
+
 exports.openAssetEditor = (type, path) => {
   let assetEditorWindow;
 
@@ -100,7 +143,9 @@ exports.openAssetEditor = (type, path) => {
 
   assetEditorWindow.custom = {
     type,
-    path
+    path,
+    projectDir: projectDirectory.dir,
+    loadPackageFiles
   };
 
   // and load the index.html of the app.
@@ -122,7 +167,24 @@ exports.openAssetEditor = (type, path) => {
   });
 };
 
-exports.openProjectDialog = callbackFail => {
+var deleteFolderRecursive = function(path) {
+  if (fs.existsSync(path)) {
+    fs.readdirSync(path).forEach(function(file, index) {
+      var curPath = path + "/" + file;
+      if (fs.lstatSync(curPath).isDirectory()) {
+        // recurse
+        deleteFolderRecursive(curPath);
+      } else {
+        // delete file
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(path);
+  }
+};
+
+exports.openProjectDialog = (callbackProgress, callbackFail) => {
+  // Display file browser
   dialog.showOpenDialog(
     projectWindow,
     {
@@ -132,11 +194,55 @@ exports.openProjectDialog = callbackFail => {
       console.log(paths);
       console.log(path.basename(paths[0]));
       if (paths[0] && path.basename(paths[0]) == "kepler.json") {
+        // Load project
         projectDirectory.dir = path.dirname(paths[0]);
-        createEditorWindow(() => {
-          if (projectWindow) {
-            projectWindow.close();
-          }
+        keplerJson = JSON.parse(fs.readFileSync(paths[0]));
+        const promi = [];
+        let progress = 0;
+        for (let i in keplerJson.packages) {
+          const pkg = keplerJson.packages[i];
+          promi.push(
+            new Promise((resolve, reject) => {
+              const pkgdir = projectDirectory.dir + "/k_packages/" + pkg;
+              if (fs.existsSync(pkgdir)) {
+                // Pull repository
+                /*
+                // Pull doesn't work
+                Git.Repository.open(pkgdir).then(repo => {
+                  repo.fetchAll({}).then(() => {
+                    console.log("fetched");
+                    repo.mergeBranchs("master", "origin/master");
+                    console.log("merged");
+                    progress++;
+                    callbackProgress(progress / keplerJson.packages.length);
+                    resolve();
+                  });
+                });
+                */
+                // Instead we'll just delete the folder and clone again
+                deleteFolderRecursive(pkgdir);
+              } /*else {*/
+              // Clone repository
+              Git.Clone("https://github.com/" + pkg, pkgdir).then(function(
+                repository
+              ) {
+                progress++;
+                callbackProgress(progress / keplerJson.packages.length);
+                resolve();
+              });
+              /*}*/
+            })
+          );
+        }
+        // Open editor
+        Promise.all(promi).then(() => {
+          setTimeout(() => {
+            createEditorWindow(() => {
+              if (projectWindow) {
+                projectWindow.close();
+              }
+            });
+          }, 1000);
         });
       } else {
         callbackFail();

@@ -3,5 +3,6 @@
   "startingLevels": {
     "editor": "main",
     "publish": "title"
-  }
+  },
+  "packages": ["BrandonDyer64/k-test-package"]
 }

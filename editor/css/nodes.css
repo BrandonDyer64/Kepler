@@ -8,6 +8,15 @@
   max-height: 400px;
   overflow-y: scroll;*/
   padding: 0px;
+  min-width: 180px;
+}
+#editor .context-menu .subitems {
+  white-space: nowrap;
+  word-break: break-all;
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  hyphens: none;
+  min-width: 180px;
 }
 #editor .context-menu .search {
   background: rgba(80, 80, 80, 0.9);
@@ -170,7 +179,8 @@
 
 /* Lua logic */
 #editor .node.branch .title,
-#editor .node.repeat .title {
+#editor .node.repeat .title,
+#editor .node.control .title {
   background: linear-gradient(to right, transparent, #88aacc);
 }
 
@@ -184,6 +194,11 @@
 #editor .node.literal .title,
 #editor .node.operator .title {
   background: linear-gradient(to right, transparent, #44cc44);
+}
+
+/* Lua plugins */
+#editor .node.plugin .title {
+  background: linear-gradient(to right, transparent, #cc8844);
 }
 
 #editor .input-control input {

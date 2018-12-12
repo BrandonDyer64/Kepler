@@ -21,6 +21,8 @@ function receiveBot(msg) {
   }, telegram.botSleep);
 }
 
+var pluginsIncluded = [];
+
 function receiveUser(msg) {
   telegram.sendBot(msg);
 }
@@ -99,17 +101,16 @@ function converge(codeA, codeB) {
 function createExecs(
   nameIn = "exec",
   nameOut = "exec",
-  displayIn = "▶",
-  displayOut = "▶"
+  displayIn = null,
+  displayOut = null
 ) {
   return {
-    execIn: new Rete.Input(nameIn, displayIn, actSocket, true),
-    execOut: new Rete.Output(nameOut, displayOut, actSocket, false)
+    execIn: new Rete.Input(nameIn, displayIn || "▶", actSocket, true),
+    execOut: new Rete.Output(nameOut, displayOut || "▶", actSocket, false)
   };
 }
 
 var actSocket = new Rete.Socket("Action");
-var strSocket = new Rete.Socket("String");
 var boolSocket = new Rete.Socket("Boolean");
 var floatSocket = new Rete.Socket("Float");
 var stringSocket = new Rete.Socket("String");
@@ -117,6 +118,14 @@ var vector2Socket = new Rete.Socket("Vector2");
 var vector3Socket = new Rete.Socket("Vector3");
 var vector4Socket = new Rete.Socket("Vector4");
 var anySocket = new Rete.Socket("Any");
+
+var typeRef = {
+  Action: actSocket,
+  Boolean: boolSocket,
+  Number: floatSocket,
+  String: stringSocket,
+  Any: anySocket
+};
 
 anySocket.combineWith(boolSocket);
 anySocket.combineWith(floatSocket);
@@ -285,7 +294,7 @@ class IfComponent extends Rete.Component {
     const { execIn, execOut: execTrue } = createExecs(
       "exec",
       "execTrue",
-      "▶",
+      null,
       "True"
     );
     const { execOut: execFalse } = createExecs("", "execFalse", "", "False");
@@ -346,10 +355,10 @@ class RepeatComponent extends Rete.Component {
     const { execIn, execOut: execTrue } = createExecs(
       "exec",
       "execRepeat",
-      "▶",
+      null,
       "Repeat"
     );
-    const { execOut: execFalse } = createExecs("", "execThen", "", "Then");
+    const { execOut: execFalse } = createExecs("", "execThen", "", "");
 
     var conditionIn = new Rete.Input("iterations", "Times", floatSocket);
     var itOut = new Rete.Output("iteration", "X", floatSocket);
@@ -394,6 +403,61 @@ ${codeThen || ""}`;
       }
     };
     outputs.iteration = iVar;
+  }
+}
+
+class SplitComponent extends Rete.Component {
+  constructor() {
+    super("Split");
+    this.path = ["Control"];
+    this.task = {
+      outputs: { text: "output" }
+    };
+  }
+
+  builder(node) {
+    node.type = "control";
+    node.altName = " ";
+    const { execIn, execOut: execFirst } = createExecs(
+      "exec",
+      "execFirst",
+      null,
+      null
+    );
+    const { execOut: execSecond } = createExecs("", "execSecond", null, null);
+
+    return node
+      .addInput(execIn)
+      .addOutput(execFirst)
+      .addOutput(execSecond);
+  }
+
+  code(node, inputs, add, outputs) {
+    let codeFirst = null;
+    let codeSecond = null;
+    function checkBoth() {
+      if (
+        (codeFirst || node.outputs.execFirst.connections.length == 0) &&
+        (codeSecond || node.outputs.execSecond.connections.length == 0)
+      ) {
+        const code = `${codeFirst || ""}\n${codeSecond || ""}`;
+        for (let i in inputs.exec) {
+          inputs.exec[i].primary(code);
+        }
+      }
+    }
+    outputs.execFirst = {
+      primary: code => {
+        codeFirst = code;
+        checkBoth();
+      }
+    };
+    outputs.execSecond = {
+      primary: code => {
+        codeSecond = code;
+        checkBoth();
+      }
+    };
   }
 }
 
@@ -567,8 +631,84 @@ class OperatorComponent extends Rete.Component {
   }
 }
 
+function extractPluginData(code) {
+  const name = code.match(/function (.*) \(/)[1];
+  const types = code.match(/-- params: (.*)\n/)[1].split(", ");
+  const params = code.match(/function(.*)\((.*)\)/)[2].split(", ");
+  const returnTypeString = code.match(/return(.*)-- (.*)\n/);
+  const returnType =
+    returnTypeString && returnTypeString.length == 3
+      ? returnTypeString[2]
+      : null;
+  return {
+    name,
+    types,
+    params,
+    returnType
+  };
+}
+
+class PluginComponent extends Rete.Component {
+  constructor(owner, pkg, data) {
+    super(name);
+    this.name = data.name.split(".")[0];
+    this.path = [owner, pkg];
+    this.plugindata = data;
+    this.paramTypes = extractPluginData(data.data);
+    this.task = {
+      outputs: { text: "output" }
+    };
+  }
+
+  builder(node) {
+    node.type = "plugin";
+    if (!this.paramTypes.returnType) {
+      const { execIn, execOut } = createExecs("exec", "exec");
+      node.addInput(execIn).addOutput(execOut);
+    } else {
+      node.addOutput(
+        new Rete.Output("out", "out", typeRef[this.paramTypes.returnType])
+      );
+    }
+
+    for (let i in this.paramTypes.params) {
+      const paramName = this.paramTypes.params[i];
+      const type =
+        this.paramTypes.types.length > i ? this.paramTypes.types[i] : "Any";
+      node.addInput(new Rete.Input(paramName, paramName, typeRef[type]));
+    }
+
+    return node;
+  }
+
+  code(node, inputs, add, outputs) {
+    if (!pluginsIncluded.includes(this.name)) {
+      pluginsIncluded.push(this.name);
+      add(this.plugindata.data);
+    }
+    let paramString = [];
+    for (let i in this.paramTypes.params) {
+      const paramName = this.paramTypes.params[i];
+      paramString.push(`${inputs[paramName]}`);
+    }
+    paramString = paramString.join(", ");
+    if (!this.paramTypes.returnType) {
+      statement(
+        node,
+        add,
+        inputs,
+        outputs,
+        `${this.paramTypes.name}(${paramString})`
+      );
+    } else {
+      outputs.out = `${this.paramTypes.name}(${paramString})`;
+    }
+  }
+}
+
 var components = [
   new IfComponent(),
+  new SplitComponent(),
   new FunctionComponent(),
   new CustomComponent(),
   new StringComponent(),
@@ -591,6 +731,17 @@ var components = [
   new OperatorComponent(["Logical"], boolSocket, "And", "and", boolSocket),
   new OperatorComponent(["Logical"], boolSocket, "Or", "or", boolSocket)
 ];
+
+const pluginLua = currentWindow.custom.loadPackageFiles([".lua"]);
+for (let owner in pluginLua) {
+  for (let pkg in pluginLua[owner]) {
+    for (let data in pluginLua[owner][pkg]) {
+      components.push(
+        new PluginComponent(owner, pkg, pluginLua[owner][pkg][data])
+      );
+    }
+  }
+}
 
 var container = document.getElementById("editor");
 var editor = new Rete.NodeEditor("demo@0.1.0", container);
@@ -617,6 +768,15 @@ const materialConfig = JSON.parse(
   fs.readFileSync(currentWindow.custom.path, "utf8")
 );
 
+let hasMoved = false;
+
+setInterval(() => {
+  if (hasMoved) {
+    hasMoved = false;
+    editor.trigger("process");
+  }
+}, 1000);
+
 console.log(materialConfig);
 editor
   .fromJSON({
@@ -627,6 +787,10 @@ editor
   .then(() => {
     editor.on("error", err => {
       alertify.error(err.message);
+    });
+
+    editor.on("nodetranslated", () => {
+      hasMoved = true;
     });
 
     editor.on(
@@ -657,6 +821,7 @@ editor
           }
         );
         uVars.clear();
+        pluginsIncluded = [];
       }
     );
 

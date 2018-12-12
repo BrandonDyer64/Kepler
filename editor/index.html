@@ -24,7 +24,10 @@
           </div>
           <div></div>
         </div>
-        <div></div>
+        <div style="width:100%;">
+          <div id="load_progress" style="width:0%; height: 10px; background:var(--primary);">
+          </div>
+        </div>
       </div>
     </div>
     <script>
@@ -32,7 +35,11 @@
 const remote = electron.remote
 const mainProcess = remote.require('./main')
 function openProjectDialog() {
-  mainProcess.openProjectDialog(() => {
+  mainProcess.openProjectDialog((progress) => {
+    progressBar = document.getElementById('load_progress')
+    progressBar.style.width = `${progress*100}%`
+    console.log(progress)
+  },() => {
     console.log('not a kepler project')
   })
 }
