@@ -1,0 +1,49 @@
+div(class="node {{isSelected(node)?'selected':''}} {{toClassName(node.name)}} {{node.type}}")
+  div.title(
+    al-if='!node.hideTitle'
+  )
+    | {{node.altName || node.name}}
+  
+  div(style="display: flex; flex-direction: row; justify-content: space-between")
+    div(style="display: flex; flex-direction: column")
+      // Inputs
+      div(al-repeat='input in Array.from(node.inputs.values())',style="text-align: left; white-space: nowrap")
+        .socket.input(
+          al-socket="input",
+          class="{{toClassName(input.socket.name)}} {{input.multipleConnections?'multiple':''}}"
+          title='{{input.socket.name}}'
+        )
+        .input-title(
+          al-if='!input.showControl()'
+        )
+          | {{input.name}}
+        .input-control(
+          al-if='input.showControl()'
+          al-control
+        )
+    // Center Title
+    div(
+      al-if='node.showCenterTitle'
+      style="display: flex; flex-direction: column; justify-content: center;"
+    )
+      div.center-title()
+        | {{node.altName || node.name}}
+    // Controls
+    div(style="display: flex; flex-direction: column")
+      div.control(
+        al-repeat='control in Array.from(node.controls.values())',
+        al-control
+      )
+    div(style="display: flex; flex-direction: column")
+      // Outputs
+      div(
+        al-repeat='output in Array.from(node.outputs.values())',
+        style="text-align: right; white-space: nowrap"
+      )
+        .output-title
+          | {{output.name}}
+        .socket.output(
+          al-socket="output",
+          class="{{toClassName(output.socket.name)}}",
+          title='{{output.socket.name}}\n{{output.socket.hint}}'
+        )

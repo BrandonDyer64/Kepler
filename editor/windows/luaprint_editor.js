@@ -10,6 +10,8 @@ const AreaPlugin = require("rete-area-plugin");
 const remote = electron.remote;
 const mainProcess = remote.require("./main");
 const CodePlugin = require(path.resolve("./js/CodePluginLogical"));
+const pug = require("pug");
+const nodeTemplate = pug.compileFile(path.resolve("./js/nodeTemplate.pug"));
 const currentWindow = remote.getCurrentWindow();
 
 var onMessageTask = null;
@@ -24,8 +26,6 @@ function receiveUser(msg) {
 }
 
 function statement(node, add, inputs, outputs, code) {
-  console.log(node);
-  console.log(node.outputs.exec.connections.length);
   function execute(code) {
     for (let i in inputs.exec) {
       inputs.exec[i].primary(code);
@@ -43,6 +43,20 @@ function statement(node, add, inputs, outputs, code) {
   }
 }
 
+const uVars = new Map();
+
+function uniqueVar(varname = null) {
+  if (varname) varname = `_${varname}_`;
+  else varname = "_";
+  let varnum = 1;
+  if (uVars.has(varname)) varnum = uVars.get(varname);
+  else uVars.set(varname, varnum);
+  uVars.set(varname, varnum + 1);
+  var text = "ku" + varname + varnum;
+
+  return text;
+}
+
 function formatCode(code) {
   code = code.replace(/\r/g, "");
   code = code.replace(/ +(?= )/g, "");
@@ -56,7 +70,12 @@ function indentCode(code) {
 }
 
 function converge(codeA, codeB) {
-  console.log("converging");
+  if (!codeA || !codeB)
+    return {
+      codeA: indentCode(codeA || ""),
+      codeB: indentCode(codeB || ""),
+      convergent: ""
+    };
   codeA = codeA.split("\n");
   codeB = codeB.split("\n");
   //return { codeA, codeB, convergent: "" };
@@ -80,8 +99,8 @@ function converge(codeA, codeB) {
 function createExecs(
   nameIn = "exec",
   nameOut = "exec",
-  displayIn = "",
-  displayOut = ""
+  displayIn = "▶",
+  displayOut = "▶"
 ) {
   return {
     execIn: new Rete.Input(nameIn, displayIn, actSocket, true),
@@ -167,6 +186,7 @@ class StringInputControl extends Rete.Control {
     super(key);
     this.render = "js";
     this.key = key;
+    this.events = [];
   }
 
   handler(el, editor) {
@@ -178,6 +198,9 @@ class StringInputControl extends Rete.Control {
     input.value = text;
     this.putData(this.key, text);
     input.addEventListener("change", () => {
+      for (let i in this.events) {
+        this.events[i](input.value);
+      }
       this.putData(this.key, input.value);
       editor.trigger("process");
     });
@@ -208,35 +231,41 @@ class TextInputControl extends Rete.Control {
 
 class FunctionComponent extends Rete.Component {
   constructor() {
-    super("Event");
+    super("Function");
+    this.path = ["Custom"];
+    this.numParams = 5;
     this.task = {
       outputs: { text: "output" }
     };
   }
 
   builder(node) {
-    var nameIn = new Rete.Input("name", "Name", anySocket);
-    var paramsIn = new Rete.Input("params", "Params", anySocket);
+    console.log(node);
     var out = new Rete.Output("exec", "", actSocket, false);
+    node.addOutput(out);
+    for (let i = 1; i <= this.numParams; i++) {
+      node.addOutput(new Rete.Output(`p${i}`, `${i}`, anySocket));
+    }
 
-    nameIn.addControl(new StringInputControl("name"));
-    paramsIn.addControl(new StringInputControl("params"));
-
-    return node
-      .addInput(nameIn)
-      .addInput(paramsIn)
-      .addOutput(out);
+    return node.addControl(new StringInputControl("name"));
   }
 
   code(node, inputs, add, outputs) {
+    const varnames = [];
+    for (let i = 1; i <= this.numParams; i++) {
+      const varname = uniqueVar(`${node.data.name}`);
+      outputs[`p${i}`] = varname;
+      varnames.push(varname);
+    }
+    const params = varnames.join(", ");
     outputs.exec = {
       primary: code => {
         code = indentCode(code);
         add(
           "" +
-            `function ${node.data.name} (${node.data.params})` +
-            `${code}` +
-            `end`
+            `\nfunction ${node.data.name} (${params})\n` +
+            `${code}\n` +
+            `end\n`
         );
       }
     };
@@ -246,6 +275,7 @@ class FunctionComponent extends Rete.Component {
 class IfComponent extends Rete.Component {
   constructor() {
     super("Branch");
+    this.path = ["Control"];
     this.task = {
       outputs: { text: "output" }
     };
@@ -255,7 +285,7 @@ class IfComponent extends Rete.Component {
     const { execIn, execOut: execTrue } = createExecs(
       "exec",
       "execTrue",
-      "",
+      "▶",
       "True"
     );
     const { execOut: execFalse } = createExecs("", "execFalse", "", "False");
@@ -273,7 +303,10 @@ class IfComponent extends Rete.Component {
     let codeTrue = null;
     let codeFalse = null;
     function checkBoth() {
-      if (codeTrue && codeFalse) {
+      if (
+        (codeTrue || node.outputs.execTrue.connections.length == 0) &&
+        (codeFalse || node.outputs.execFalse.connections.length == 0)
+      ) {
         const { codeA, codeB, convergent } = converge(codeTrue, codeFalse);
         const code = `if ${inputs.condition} then
 ${codeA}
@@ -300,6 +333,70 @@ end${convergent}`;
   }
 }
 
+class RepeatComponent extends Rete.Component {
+  constructor() {
+    super("Repeat");
+    this.path = ["Control"];
+    this.task = {
+      outputs: { text: "output" }
+    };
+  }
+
+  builder(node) {
+    const { execIn, execOut: execTrue } = createExecs(
+      "exec",
+      "execRepeat",
+      "▶",
+      "Repeat"
+    );
+    const { execOut: execFalse } = createExecs("", "execThen", "", "Then");
+
+    var conditionIn = new Rete.Input("iterations", "Times", floatSocket);
+    var itOut = new Rete.Output("iteration", "X", floatSocket);
+
+    return node
+      .addInput(execIn)
+      .addInput(conditionIn)
+      .addOutput(execTrue)
+      .addOutput(itOut)
+      .addOutput(execFalse);
+  }
+
+  code(node, inputs, add, outputs) {
+    let codeRepeat = null;
+    let codeThen = null;
+    const iVar = uniqueVar("Repeat");
+    function checkBoth() {
+      if (
+        codeRepeat &&
+        (codeThen || node.outputs.execThen.connections.length == 0)
+      ) {
+        codeRepeat = indentCode(codeRepeat);
+        const code = `for ${iVar} = 1, ${inputs.iterations}, 1 do
+${codeRepeat}
+end
+${codeThen || ""}`;
+        for (let i in inputs.exec) {
+          inputs.exec[i].primary(code);
+        }
+      }
+    }
+    outputs.execRepeat = {
+      primary: code => {
+        codeRepeat = code;
+        checkBoth();
+      }
+    };
+    outputs.execThen = {
+      primary: code => {
+        codeThen = code;
+        checkBoth();
+      }
+    };
+    outputs.iteration = iVar;
+  }
+}
+
 class EventComponent extends Rete.Component {
   constructor(eventName, eventParams) {
     super("On " + eventName);
@@ -318,6 +415,7 @@ class EventComponent extends Rete.Component {
   }
 
   builder(node) {
+    node.type = "event";
     var out = new Rete.Output("exec", "", actSocket, false);
     node.addOutput(out);
 
@@ -349,6 +447,7 @@ end`);
 class CustomComponent extends Rete.Component {
   constructor() {
     super("Custom");
+    this.path = ["Custom"];
     this.task = {
       outputs: { text: "output" }
     };
@@ -394,7 +493,7 @@ class PrintComponent extends Rete.Component {
 class StringComponent extends Rete.Component {
   constructor() {
     super("String");
-    this.path = ["Literals"];
+    this.path = ["Data"];
     this.task = {
       outputs: { text: "output" }
     };
@@ -411,21 +510,47 @@ class StringComponent extends Rete.Component {
   }
 }
 
-class CompareComponent extends Rete.Component {
-  constructor(name, operator) {
-    super(name);
-    this.name = name;
-    this.operator = operator;
-    this.path = ["Compare"];
+class NumberComponent extends Rete.Component {
+  constructor() {
+    super("Number");
+    this.path = ["Data"];
     this.task = {
       outputs: { text: "output" }
     };
   }
 
   builder(node) {
-    let inA = new Rete.Input("inA", "", anySocket);
-    let inB = new Rete.Input("inB", "", anySocket);
-    let out = new Rete.Output("value", "", boolSocket);
+    let out = new Rete.Output("value", "", floatSocket);
+
+    return node.addControl(new StringInputControl("value")).addOutput(out);
+  }
+
+  code(node, inputs, add, outputs) {
+    outputs.value = node.data.value;
+  }
+}
+
+class OperatorComponent extends Rete.Component {
+  constructor(menu, socketType, name, operator, inputSocketType = anySocket) {
+    super(name);
+    this.name = name;
+    this.operator = operator;
+    this.socketType = socketType;
+    this.inputSocketType = inputSocketType;
+    this.path = [...["Operators"], ...menu];
+    this.task = {
+      outputs: { text: "output" }
+    };
+  }
+
+  builder(node) {
+    node.type = "operator";
+    node.hideTitle = true;
+    node.showCenterTitle = true;
+    node.altName = this.operator;
+    let inA = new Rete.Input("inA", "", this.inputSocketType);
+    let inB = new Rete.Input("inB", "", this.inputSocketType);
+    let out = new Rete.Output("value", "", this.socketType);
 
     return node
       .addInput(inA)
@@ -443,20 +568,29 @@ var components = [
   new FunctionComponent(),
   new CustomComponent(),
   new StringComponent(),
+  new NumberComponent(),
   new PrintComponent(),
+  new RepeatComponent(),
   new EventComponent("Tick", [{ name: "delta", socket: floatSocket }]),
   new EventComponent("Create", []),
-  new CompareComponent("Equals", "=="),
-  new CompareComponent("Not", "~="),
-  new CompareComponent("Greater Than", ">"),
-  new CompareComponent("Less Than", "<"),
-  new CompareComponent("Greater or Equal", ">="),
-  new CompareComponent("Less or Equal", "<=")
+  new OperatorComponent(["Compare"], boolSocket, "Equals", "=="),
+  new OperatorComponent(["Compare"], boolSocket, "Not Equal", "~="),
+  new OperatorComponent(["Compare"], boolSocket, "Greater Than", ">"),
+  new OperatorComponent(["Compare"], boolSocket, "Less Than", "<"),
+  new OperatorComponent(["Compare"], boolSocket, "Greater or Equal", ">="),
+  new OperatorComponent(["Compare"], boolSocket, "Less or Equal", "<="),
+  new OperatorComponent(["Math"], floatSocket, "Add", "+", floatSocket),
+  new OperatorComponent(["Math"], floatSocket, "Subtract", "-", floatSocket),
+  new OperatorComponent(["Math"], floatSocket, "Multiply", "*", floatSocket),
+  new OperatorComponent(["Math"], floatSocket, "Divide", "/", floatSocket),
+  new OperatorComponent(["Math"], floatSocket, "Modulo", "%", floatSocket),
+  new OperatorComponent(["Logical"], boolSocket, "And", "and", boolSocket),
+  new OperatorComponent(["Logical"], boolSocket, "Or", "or", boolSocket)
 ];
 
 var container = document.getElementById("editor");
 var editor = new Rete.NodeEditor("demo@0.1.0", container);
-editor.use(AlightRenderPlugin);
+editor.use(AlightRenderPlugin, { template: nodeTemplate() });
 editor.use(ConnectionPlugin);
 editor.use(ContextMenuPlugin, {
   searchBar: true,
@@ -492,7 +626,7 @@ editor
     });
 
     editor.on(
-      "process connectioncreated connectionremoved nodecreated",
+      "process connectioncreated connectionremoved nodecreated noderemoved",
       async function() {
         if (engine.silent) return;
         console.log("process");
@@ -518,6 +652,7 @@ editor
             console.log(materialConfig);
           }
         );
+        uVars.clear();
       }
     );
 

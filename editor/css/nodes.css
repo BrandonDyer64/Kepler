@@ -1,4 +1,5 @@
 #editor {
+  font-family: "Poppins", sans-serif;
   background: #222;
 }
 
@@ -12,6 +13,9 @@
   background: rgba(100, 100, 100, 0.6);
   border: none;
 }
+#editor .context-menu .search input {
+  font-family: "Poppins", sans-serif;
+}
 #editor .context-menu .search input:focus {
   outline: none;
 }
@@ -20,15 +24,50 @@
   border: none;
 }
 
+#editor .node .title,
+#editor .node .center-title {
+  white-space: nowrap;
+}
+
+#editor .node,
+#editor .node .title,
+#editor .node .center-title {
+  font-family: "Poppins", sans-serif;
+}
+
 #editor .node .title {
-  padding: 6px;
+  font-weight: bold;
+  padding: 4px;
+  padding-left: 7px;
+  padding-right: 30px;
+}
+
+#editor .node .center-title {
+  font-weight: bold;
+  font-size: 30px;
 }
 
 #editor .node {
-  min-width: 180px;
+  min-width: 100px;
   background: rgba(100, 100, 100, 0.6);
   border-width: 0px;
 }
+
+#editor .node .input-title,
+#editor .node .output-title {
+  font-family: "Poppins", sans-serif;
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
+#editor .node input {
+  font-family: "Poppins", sans-serif;
+}
+
+#editor .node.number input {
+  width: 100px;
+}
+
 #editor .socket {
   margin-right: 6px;
   margin-left: 6px;
@@ -111,19 +150,27 @@
 }
 
 /* Lua event */
-#editor .node.on-create .title,
-#editor .node.on-tick .title {
+#editor .node.event .title {
   background: linear-gradient(to right, transparent, #cc4444);
 }
 
 /* Lua logic */
-#editor .node.branch .title {
+#editor .node.branch .title,
+#editor .node.repeat .title {
   background: linear-gradient(to right, transparent, #88aacc);
 }
 
 /* Lua commands */
-#editor .node.print .title {
+#editor .node.print .title,
+#editor .node.custom .title {
   background: linear-gradient(to right, transparent, #8844cc);
+}
+
+/* Lua data */
+#editor .node.string .title,
+#editor .node.number .title,
+#editor .node.operator .title {
+  background: linear-gradient(to right, transparent, #44cc44);
 }
 
 #editor .input-control input {
@@ -158,5 +205,5 @@
 
 svg.connection {
   width: 14px;
-  height: 14px;
+  height: 18px;
 }

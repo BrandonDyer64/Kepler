@@ -65,43 +65,18 @@ value += (snoise(coord * vec3(i)) / float(i)) * (i == 1 ? 1.0 : -1.0);
 }
 return value;
 }
-float sigmoid(float x) {
-if (x >= 1.0) return 1.0;
-else if (x <= -1.0) return 0.0;
-else return 0.5 + x * (1.0 - abs(x) * 0.5);
-}
 const int steps = 128;
 const float stepSize = 1.0 / float(steps);
 float getParallaxValue(vec2 offset, float depth) {
 vec2 texCoord = gl_FragCoord.xy / iResolution.xy - offset;
 vec2 viewVector = iMouse.xy * 2.0 - 1.0;
-float float_m_parallaxDepth116depth = depth;
-float float_m_invert120inverted = 1.0 - float_m_parallaxDepth116depth;
-float float_m_float167num = 4.0;
-float float_m_power166product = pow(float_m_invert120inverted, float(float_m_float167num));
-vec3 vec3_m_vectorize113xyz = vec3(float_m_power166product);
-vec3 vec3_m_texCoord60coords = vec3(texCoord,0);
-float float_m_float164num = 1.0;
-float float_m_float162num = 1.0;
-float float_m_parallaxDepth146depth = depth;
-float float_m_subtract161difference = float_m_float162num - float_m_parallaxDepth146depth;
-float float_m_float160num = 2.0;
-float float_m_power159product = pow(float_m_subtract161difference, float(float_m_float160num));
-float float_m_subtract163difference = float_m_float164num - float_m_power159product;
-float float_m_float153num = 0.0;
-vec3 vec3_m_makeVec3152xyz = vec3(float_m_subtract163difference, float_m_float153num, float_m_float153num);
-vec3 vec3_m_add145sum = vec3_m_texCoord60coords + vec3_m_makeVec3152xyz;
-float float_m_float144num = 120.0;
-vec3 vec3_m_multiply114product = vec3_m_add145sum * float_m_float144num;
-float float_m_float158num = 8.0;
-float float_m_float157num = 1.0;
-vec3 vec3_m_makeVec3156xyz = vec3(float_m_float158num, float_m_float157num, float_m_float157num);
-vec3 vec3_m_divide155divided = vec3_m_multiply114product / vec3_m_makeVec3156xyz;
-float float_m_float137num = 1.0;
-float float_m_noise108out = noise(vec3_m_divide155divided,float_m_float137num);
-float float_m_sigmoid165out = sigmoid(float_m_noise108out);
-float float_m_unbalance117unbalanced = float_m_sigmoid165out / 2.0 + 0.5;
-return float_m_unbalance117unbalanced;
+vec3 vec3_m_texCoord170coords = vec3(texCoord,0);
+float float_m_float171num = 10.0;
+vec3 vec3_m_multiply172product = vec3_m_texCoord170coords * float_m_float171num;
+float float_m_noise168out = noise(vec3_m_multiply172product,float_m_float171num);
+float float_m_unbalance173unbalanced = float_m_noise168out / 2.0 + 0.5;
+vec3 vec3_m_vectorize169xyz = vec3(float_m_unbalance173unbalanced);
+return float_m_unbalance173unbalanced;
 }
 void main() {
 vec2 texCoord = gl_FragCoord.xy / iResolution.xy;
@@ -123,31 +98,11 @@ break;
 }
 }
 texCoord -= offset;
-float float_m_parallaxDepth116depth = depth;
-float float_m_invert120inverted = 1.0 - float_m_parallaxDepth116depth;
-float float_m_float167num = 4.0;
-float float_m_power166product = pow(float_m_invert120inverted, float(float_m_float167num));
-vec3 vec3_m_vectorize113xyz = vec3(float_m_power166product);
-vec3 vec3_m_texCoord60coords = vec3(texCoord,0);
-float float_m_float164num = 1.0;
-float float_m_float162num = 1.0;
-float float_m_parallaxDepth146depth = depth;
-float float_m_subtract161difference = float_m_float162num - float_m_parallaxDepth146depth;
-float float_m_float160num = 2.0;
-float float_m_power159product = pow(float_m_subtract161difference, float(float_m_float160num));
-float float_m_subtract163difference = float_m_float164num - float_m_power159product;
-float float_m_float153num = 0.0;
-vec3 vec3_m_makeVec3152xyz = vec3(float_m_subtract163difference, float_m_float153num, float_m_float153num);
-vec3 vec3_m_add145sum = vec3_m_texCoord60coords + vec3_m_makeVec3152xyz;
-float float_m_float144num = 120.0;
-vec3 vec3_m_multiply114product = vec3_m_add145sum * float_m_float144num;
-float float_m_float158num = 8.0;
-float float_m_float157num = 1.0;
-vec3 vec3_m_makeVec3156xyz = vec3(float_m_float158num, float_m_float157num, float_m_float157num);
-vec3 vec3_m_divide155divided = vec3_m_multiply114product / vec3_m_makeVec3156xyz;
-float float_m_float137num = 1.0;
-float float_m_noise108out = noise(vec3_m_divide155divided,float_m_float137num);
-float float_m_sigmoid165out = sigmoid(float_m_noise108out);
-float float_m_unbalance117unbalanced = float_m_sigmoid165out / 2.0 + 0.5;
-gl_FragColor = vec4(vec3_m_vectorize113xyz,0);
+vec3 vec3_m_texCoord170coords = vec3(texCoord,0);
+float float_m_float171num = 10.0;
+vec3 vec3_m_multiply172product = vec3_m_texCoord170coords * float_m_float171num;
+float float_m_noise168out = noise(vec3_m_multiply172product,float_m_float171num);
+float float_m_unbalance173unbalanced = float_m_noise168out / 2.0 + 0.5;
+vec3 vec3_m_vectorize169xyz = vec3(float_m_unbalance173unbalanced);
+gl_FragColor = vec4(vec3_m_vectorize169xyz,0);
 }
