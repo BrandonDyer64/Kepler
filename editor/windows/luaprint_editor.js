@@ -632,20 +632,30 @@ class OperatorComponent extends Rete.Component {
 }
 
 function extractPluginData(code) {
-  const name = code.match(/function (.*) \(/)[1];
-  const types = code.match(/-- params: (.*)\n/)[1].split(", ");
-  const params = code.match(/function(.*)\((.*)\)/)[2].split(", ");
-  const returnTypeString = code.match(/return(.*)-- (.*)\n/);
-  const returnType =
-    returnTypeString && returnTypeString.length == 3
-      ? returnTypeString[2]
-      : null;
-  return {
-    name,
-    types,
-    params,
-    returnType
-  };
+  try {
+    const name = code.match(/function (.*) \(/)[1];
+    const types = code.match(/-- params: (.*)\n/)[1].split(", ");
+    const params = code.match(/function(.*)\((.*)\)/)[2].split(", ");
+    const returnTypeString = code.match(/return(.*)-- (.*)\n/);
+    const returnType =
+      returnTypeString && returnTypeString.length == 3
+        ? returnTypeString[2]
+        : null;
+    return {
+      name,
+      types,
+      params,
+      returnType
+    };
+  } catch (e) {
+    return {
+      name: "Error.",
+      types: ["Any"],
+      params: ["Invalid Lua"],
+      returnType: null,
+      error: true
+    };
+  }
 }
 
 class PluginComponent extends Rete.Component {
@@ -662,6 +672,7 @@ class PluginComponent extends Rete.Component {
 
   builder(node) {
     node.type = "plugin";
+    node.altName = this.paramTypes.name;
     if (!this.paramTypes.returnType) {
       const { execIn, execOut } = createExecs("exec", "exec");
       node.addInput(execIn).addOutput(execOut);
@@ -736,9 +747,10 @@ const pluginLua = currentWindow.custom.loadPackageFiles([".lua"]);
 for (let owner in pluginLua) {
   for (let pkg in pluginLua[owner]) {
     for (let data in pluginLua[owner][pkg]) {
-      components.push(
-        new PluginComponent(owner, pkg, pluginLua[owner][pkg][data])
-      );
+      if (pluginLua[owner][pkg][data].data)
+        components.push(
+          new PluginComponent(owner, pkg, pluginLua[owner][pkg][data])
+        );
     }
   }
 }
