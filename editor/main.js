@@ -13,7 +13,8 @@ function createProjectWindow() {
   projectWindow = new BrowserWindow({
     width: 800,
     height: 380,
-    autoHideMenuBar: true
+    autoHideMenuBar: true,
+    icon: path.join(__dirname, "logo.png")
   });
 
   // and load the index.html of the app.
@@ -40,7 +41,8 @@ function createEditorWindow(callback) {
   editorWindow = new BrowserWindow({
     width: 1920,
     height: 720,
-    autoHideMenuBar: true
+    autoHideMenuBar: true,
+    icon: path.join(__dirname, "logo.png")
   });
 
   // and load the index.html of the app.

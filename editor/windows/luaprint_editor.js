@@ -4,9 +4,13 @@ const path = require("path");
 const Rete = require("rete");
 const AlightRenderPlugin = require("rete-alight-render-plugin");
 const ConnectionPlugin = require("rete-connection-plugin");
+const ConnectionPathPlugin = require("rete-connection-path-plugin");
 const ContextMenuPlugin = require("rete-context-menu-plugin");
-const TaskPlugin = require("rete-task-plugin");
 const AreaPlugin = require("rete-area-plugin");
+const extraComponents = require(path.resolve("./js/LuaFlow/index.js"));
+const { statement, uVars, uniqueVar } = require(path.resolve(
+  "./js/LuaFlow/utils.js"
+));
 const remote = electron.remote;
 const mainProcess = remote.require("./main");
 const CodePlugin = require(path.resolve("./js/CodePluginLogical"));
@@ -14,50 +18,7 @@ const pug = require("pug");
 const nodeTemplate = pug.compileFile(path.resolve("./js/nodeTemplate.pug"));
 const currentWindow = remote.getCurrentWindow();
 
-var onMessageTask = null;
-function receiveBot(msg) {
-  setTimeout(async () => {
-    await onMessageTask.run(msg);
-  }, telegram.botSleep);
-}
-
 var pluginsIncluded = [];
-
-function receiveUser(msg) {
-  telegram.sendBot(msg);
-}
-
-function statement(node, add, inputs, outputs, code) {
-  function execute(code) {
-    for (let i in inputs.exec) {
-      inputs.exec[i].primary(code);
-    }
-  }
-  if (!node.outputs.exec || node.outputs.exec.connections.length == 0) {
-    execute(code);
-  } else {
-    outputs.exec = {
-      primary: c => {
-        const outcode = code + "\n" + c;
-        execute(outcode);
-      }
-    };
-  }
-}
-
-const uVars = new Map();
-
-function uniqueVar(varname = null) {
-  if (varname) varname = `_${varname}_`;
-  else varname = "_";
-  let varnum = 1;
-  if (uVars.has(varname)) varnum = uVars.get(varname);
-  else uVars.set(varname, varnum);
-  uVars.set(varname, varnum + 1);
-  var text = "ku" + varname + varnum;
-
-  return text;
-}
 
 function formatCode(code) {
   code = code.replace(/\r/g, "");
@@ -114,6 +75,7 @@ var actSocket = new Rete.Socket("Action");
 var boolSocket = new Rete.Socket("Boolean");
 var floatSocket = new Rete.Socket("Float");
 var stringSocket = new Rete.Socket("String");
+var entitySocket = new Rete.Socket("Entity");
 var vector2Socket = new Rete.Socket("Vector2");
 var vector3Socket = new Rete.Socket("Vector3");
 var vector4Socket = new Rete.Socket("Vector4");
@@ -124,7 +86,8 @@ var typeRef = {
   Boolean: boolSocket,
   Number: floatSocket,
   String: stringSocket,
-  Any: anySocket
+  Any: anySocket,
+  Entity: entitySocket
 };
 
 anySocket.combineWith(boolSocket);
@@ -133,6 +96,7 @@ anySocket.combineWith(vector2Socket);
 anySocket.combineWith(vector3Socket);
 anySocket.combineWith(vector4Socket);
 anySocket.combineWith(stringSocket);
+anySocket.combineWith(entitySocket);
 boolSocket.combineWith(anySocket);
 floatSocket.combineWith(anySocket);
 floatSocket.combineWith(vector2Socket);
@@ -146,6 +110,7 @@ vector3Socket.combineWith(anySocket);
 vector3Socket.combineWith(vector4Socket);
 vector4Socket.combineWith(anySocket);
 stringSocket.combineWith(anySocket);
+entitySocket.combineWith(anySocket);
 
 function anyify(name) {
   if (Array.isArray(name)) {
@@ -464,6 +429,7 @@ class EventComponent extends Rete.Component {
   constructor(eventName, eventParams) {
     super("On " + eventName);
     this.path = ["Events"];
+    this.contextMenuName = eventName;
     this.eventName = eventName;
     this.eventParams = eventParams;
     let formatedParams = [];
@@ -728,6 +694,7 @@ var components = [
   new PrintComponent(),
   new RepeatComponent(),
   new EventComponent("Tick", [{ name: "delta", socket: floatSocket }]),
+  new EventComponent("Collide", [{ name: "other", socket: entitySocket }]),
   new EventComponent("Create", []),
   new OperatorComponent(["Compare"], boolSocket, "Equals", "=="),
   new OperatorComponent(["Compare"], boolSocket, "Not Equal", "~="),
@@ -743,6 +710,8 @@ var components = [
   new OperatorComponent(["Logical"], boolSocket, "And", "and", boolSocket),
   new OperatorComponent(["Logical"], boolSocket, "Or", "or", boolSocket)
 ];
+
+components = components.concat(extraComponents);
 
 const pluginLua = currentWindow.custom.loadPackageFiles([".lua"]);
 for (let owner in pluginLua) {
@@ -770,7 +739,28 @@ function refreshNode(node) {
 var container = document.getElementById("editor");
 var editor = new Rete.NodeEditor("demo@0.1.0", container);
 editor.use(AlightRenderPlugin, { template: nodeTemplate() });
-editor.use(ConnectionPlugin, { curvature: 0 });
+editor.use(ConnectionPlugin);
+editor.use(ConnectionPathPlugin, {
+  options: { curvature: 0.4 },
+  transformer: () => ([x1, y1, x2, y2]) => {
+    const difX = Math.abs(x2 - x1);
+    const difY = Math.abs(y2 - y1);
+    if (difX < difY || difX > difY * 40) {
+      return [[x1, y1], [x2, y2]];
+    }
+    const midX = (x1 + x2) / 2;
+    return [
+      [x1, y1],
+      [midX - difY / 2, y1],
+      [midX - difY / 2, y1],
+      [midX - difY / 2, y1],
+      [midX + difY / 2, y2],
+      [midX + difY / 2, y2],
+      [midX + difY / 2, y2],
+      [x2, y2]
+    ];
+  }
+});
 editor.use(ContextMenuPlugin, {
   searchBar: true,
   delay: 100,
@@ -782,7 +772,6 @@ editor.use(ContextMenuPlugin, {
   }
 });
 editor.use(JsRenderPlugin);
-editor.use(TaskPlugin);
 editor.use(AreaPlugin, {
   scaleExtent: true,
   snap: { size: 8, dynamic: true }

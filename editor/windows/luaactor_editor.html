@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kepler Engine - Material</title>
+    <link href="../css/main.css" rel="stylesheet">
+    <link href="../css/nodes.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+    <link rel="stylesheet" href="../css/themify/themify-icons.css">
+    <link rel="stylesheet" href="../js/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="../js/codemirror/theme/material.css">
+    <script src="../js/codemirror/lib/codemirror.js"></script>
+    <script src="../js/codemirror/mode/lua/lua.js"></script>
+    <script src="../js/codemirror/addon/selection/active-line.js"></script>
+    <script src="../js/codemirror/addon/edit/matchbrackets.js"></script>
+    <script src="../js/codemirror/keymap/sublime.js"></script>
+    <style>
+    #editor {
+      background-color: #263238;
+    }
+    .CodeMirror {
+      font-size: 24px;
+      font-weight: bold;
+      width: 100%;
+      height: 100%;
+    }
+    .CodeMirror-activeline,
+    .CodeMirror-activeline-gutter {
+      background-color: #00000011;
+    }
+    </style>
+  </head>
+  <body style="background: var(--editor-background)">
+    <div class="window">
+      <div class="flex flex-full full-height">
+        <div class="flex flex-down-full full-width">
+          <div class="flex flex-full full-height">
+
+            <div class="flex flex-down-full full-width">
+
+              <!-- Toolbar -->
+              <div class="full-width-margin panel" style="display: block;">
+                <!--<div class="panel-title"><span>Toolbar</span></div>-->
+                <div class="panel-content flex" style="padding: 0px;justify-content: flex-start;">
+                  <a href="JavaScript:editorSave();" class="btn btn-icon"><i class="ti-save"></i></a>
+                </div>
+              </div>
+
+              <!-- Editor -->
+              <div class="full-width-margin flex-grow panel">
+                <div class="panel-title"><span id="editor-name">Lua Actor</span></div>
+                <div id="editor" class="panel-content flex-grow scroll-bar">
+                  <textarea id="code" name="code" class="full-height full-width">
+function Create ()
+end
+
+function Tick(delta)
+end</textarea>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+        <!--
+        <div class="flex flex-down-full full-width" style="width: 300px">
+
+          <!-- Preview --
+          <div class="full-width-margin flex-grow panel">
+            <div class="panel-title"><span>Preview</span></div>
+            <div class="panel-content flex-grow">
+            </div>
+          </div>
+
+          <!-- Details --
+          <div class="full-width-margin flex-grow-2 panel">
+            <div class="panel-title"><span>Details</span></div>
+            <div class="panel-content flex-grow">
+            </div>
+          </div>
+
+        </div>
+      -->
+      </div>
+    </div>
+    <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script>if (window.module) module = window.module;</script>
+    <script>
+      var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: "lua",
+        keyMap: "sublime",
+        theme: "material"
+      });
+      editor.setOption("extraKeys", {
+        Tab: function(cm) {
+          var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
+          cm.replaceSelection(spaces);
+        },
+        'Ctrl-S': (cm) => {
+          console.log('save')
+          document.getElementById('editor-name').innerHTML = 'Lua Actor'
+        }
+      });
+      editor.on("change",() => {
+        console.log("change")
+        document.getElementById('editor-name').innerHTML ='Lua Actor*'
+      })
+    </script>
+  </body>
+</html>

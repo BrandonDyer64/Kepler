@@ -106,6 +106,9 @@
 #editor .socket.string {
   background: #8844cc;
 }
+#editor .socket.entity {
+  background: #44aaee;
+}
 #editor .socket.vector2,
 #editor .socket.vector3,
 #editor .socket.vector4 {
@@ -221,6 +224,10 @@
 #editor .socket-output-float path.main-path,
 #editor .socket-input-float path.main-path {
   stroke: #44cc44;
+}
+#editor .socket-output-entity path.main-path,
+#editor .socket-input-entity path.main-path {
+  stroke: #44aaee;
 }
 #editor .socket-output-vector2 path.main-path,
 #editor .socket-output-vector3 path.main-path,

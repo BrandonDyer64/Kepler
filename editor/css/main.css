@@ -214,6 +214,16 @@ a {
   border-top: 2px solid transparent;
   background-color: transparent;
   color: var(--muted);
+  text-align: center;
+}
+
+.octicon {
+  text-align: center;
+}
+
+.octicon::before {
+  margin: auto;
+  text-align: center;
 }
 
 .btn-icon i {

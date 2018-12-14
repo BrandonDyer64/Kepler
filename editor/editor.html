@@ -7,6 +7,7 @@
     <link href="css/main.css" rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
     <link rel="stylesheet" href="css/themify/themify-icons.css">
+    <link rel="stylesheet" href="node_modules/octicons/build/font/octicons.css">
   </head>
   <body style="background: var(--editor-background)">
     <div class="window">
@@ -28,11 +29,10 @@
                 <div class="panel-title"><span>Toolbar</span></div>
                 <div class="panel-content flex" style="padding: 0px;justify-content: flex-start;">
                   <a href="#" class="btn btn-icon"><i class="ti-control-play"></i><br><div>Play</div></a>
-                  <a href="#" class="btn btn-icon"><i class="ti-package"></i><br><div>Compile</div></a>
-                  <a href="#" class="btn btn-icon"><i class="ti-save"></i><br><div>Save</div></a>
-                  <a href="#" class="btn btn-icon"><i class="ti-cloud-up"></i><br><div>Push</div></a>
-                  <a href="#" class="btn btn-icon"><i class="ti-cloud-down"></i><br><div>Pull</div></a>
-                  <a href="#" class="btn btn-icon"><i class="ti-panel"></i><br><div>Settings</div></a>
+                  <a href="#" class="btn btn-icon"><i class="octicon octicon-package"></i><br><div>Compile</div></a>
+                  <a href="#" class="btn btn-icon"><i class="octicon octicon-cloud-upload"></i><br><div>Push</div></a>
+                  <a href="#" class="btn btn-icon"><i class="octicon octicon-cloud-download"></i><br><div>Pull</div></a>
+                  <a href="#" class="btn btn-icon"><i class="octicon octicon-settings"></i><br><div>Settings</div></a>
                 </div>
               </div>
 
@@ -101,16 +101,16 @@ function loadAssetViewer(dir) {
     (dir != ''
       ? `
       <div class="asset">
-        <a href="Javascript:assetClick('dir','${parentDir}');" class="btn btn-icon"><i class="ti-share-alt"></i><br><div>..</div></a>
+        <a href="Javascript:assetClick('dir','${parentDir}');" class="btn btn-icon"><i class="octicon octicon-chevron-left"></i><br><div>..</div></a>
       </div>
     `
       : '') +
       `
       <div class="asset">
-        <a href="Javascript:assetClick('new','${dir}');" class="btn btn-icon"><i class="ti-plus"></i><br><div>New</div></a>
+        <a href="Javascript:assetClick('new','${dir}');" class="btn btn-icon"><i class="octicon octicon-plus"></i><br><div>New</div></a>
       </div>
       <div class="asset">
-        <a href="Javascript:assetClick('import','${dir}');" class="btn btn-icon"><i class="ti-import"></i><br><div>Import</div></a>
+        <a href="Javascript:assetClick('import','${dir}');" class="btn btn-icon"><i class="octicon octicon-inbox"></i><br><div>Import</div></a>
       </div>
       `
   )
@@ -137,16 +137,18 @@ function loadAssetViewer(dir) {
       }
     }
     const icon = {
-      dir: 'folder',
-      kepler: 'ruler-pencil',
-      shader: 'brush',
-      material: 'palette',
-      level: 'map-alt',
-      luaprint: 'flag-alt-2'
+      dir: 'octicon octicon-file-directory',
+      kepler: 'octicon octicon-telescope',
+      shader: 'ti-brush',
+      material: 'octicon octicon-paintcan',
+      level: 'ti-map-alt',
+      luaprint: 'octicon octicon-circuit-board',
+      luaactor: 'octicon octicon-file-code',
+      cppactor: 'octicon octicon-file-code'
     }[type]
     $('#assets_panel').append(`
         <div class="asset">
-          <a href="Javascript:assetClick('${type}','${assetFileRaw}');" class="btn btn-icon"><i class="ti-${icon}"></i><br><div>${assetName}</div></a>
+          <a href="Javascript:assetClick('${type}','${assetFileRaw}');" class="btn btn-icon"><i class="${icon}"></i><br><div>${assetName}</div></a>
         </div>
       `)
   }
@@ -160,6 +162,7 @@ function assetClick(type, path) {
       break
     case 'material':
     case 'luaprint':
+    case 'luaactor':
       mainProcess.openAssetEditor(type, projectDirectory + path)
       break
     default:
