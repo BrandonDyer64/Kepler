@@ -159,7 +159,6 @@ const JsRenderPlugin = {
   install(editor, params = {}) {
     editor.on("rendercontrol", ({ el, control }) => {
       if (control.render && control.render !== "js") return;
-      console.log(el);
       control.handler(el, editor);
     });
   }
@@ -480,7 +479,7 @@ class EventComponent extends Rete.Component {
 
   builder(node) {
     node.type = "event";
-    var out = new Rete.Output("exec", "", actSocket, false);
+    var out = new Rete.Output("exec", "▶", actSocket, false);
     node.addOutput(out);
 
     for (let i in this.eventParams) {
@@ -661,10 +660,11 @@ function extractPluginData(code) {
 class PluginComponent extends Rete.Component {
   constructor(owner, pkg, data) {
     super(name);
-    this.name = data.name.split(".")[0];
+    this.paramTypes = extractPluginData(data.data);
+    this.name = owner + "." + pkg + "." + this.paramTypes.name;
+    this.contextMenuName = this.paramTypes.name;
     this.path = [owner, pkg];
     this.plugindata = data;
-    this.paramTypes = extractPluginData(data.data);
     this.task = {
       outputs: { text: "output" }
     };
@@ -700,7 +700,8 @@ class PluginComponent extends Rete.Component {
     let paramString = [];
     for (let i in this.paramTypes.params) {
       const paramName = this.paramTypes.params[i];
-      paramString.push(`${inputs[paramName]}`);
+      console.log(inputs[paramName]);
+      paramString.push(inputs[paramName][0] || "nil");
     }
     paramString = paramString.join(", ");
     if (!this.paramTypes.returnType) {
@@ -755,19 +756,37 @@ for (let owner in pluginLua) {
   }
 }
 
+function refreshNodes() {
+  const nodesView = Array.from(editor.view.nodes.values());
+  nodesView.map(node => {
+    refreshNode(node);
+  });
+}
+
+function refreshNode(node) {
+  node.translate(node.node.position[0], node.node.position[1]);
+}
+
 var container = document.getElementById("editor");
 var editor = new Rete.NodeEditor("demo@0.1.0", container);
 editor.use(AlightRenderPlugin, { template: nodeTemplate() });
-editor.use(ConnectionPlugin);
+editor.use(ConnectionPlugin, { curvature: 0 });
 editor.use(ContextMenuPlugin, {
   searchBar: true,
   delay: 100,
   allocate(component) {
     return component.path || [];
+  },
+  rename(component) {
+    return component.contextMenuName || component.name;
   }
 });
 editor.use(JsRenderPlugin);
 editor.use(TaskPlugin);
+editor.use(AreaPlugin, {
+  scaleExtent: true,
+  snap: { size: 8, dynamic: true }
+});
 
 var engine = new Rete.Engine("demo@0.1.0");
 
@@ -789,7 +808,6 @@ setInterval(() => {
   }
 }, 1000);
 
-console.log(materialConfig);
 editor
   .fromJSON({
     id: "demo@0.1.0",
@@ -806,10 +824,9 @@ editor
     });
 
     editor.on(
-      "process connectioncreated connectionremoved nodecreated noderemoved",
+      "process connectionremoved nodecreated noderemoved",
       async function() {
         if (engine.silent) return;
-        console.log("process");
         await engine.abort();
         await engine.process(editor.toJSON());
         const editorJSON = editor.toJSON();
@@ -823,13 +840,11 @@ editor
               sourceCode,
               "utf8"
             );
-            console.log(sourceCode);
             fs.writeFileSync(
               currentWindow.custom.path,
               JSON.stringify(materialConfig, null, 2),
               "utf8"
             );
-            console.log(materialConfig);
           }
         );
         uVars.clear();
@@ -837,7 +852,14 @@ editor
       }
     );
 
+    editor.on("connectioncreated", connection => {
+      editor.trigger("process");
+    });
+
     editor.trigger("process");
     editor.view.resize();
     AreaPlugin.zoomAt(editor);
+    setTimeout(() => {
+      refreshNodes();
+    }, 500);
   });
