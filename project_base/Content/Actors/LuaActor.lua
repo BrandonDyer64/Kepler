@@ -1,5 +1,5 @@
-function Create ()
-  
+
+function Create (entity)
 end
 
 function Tick (delta)

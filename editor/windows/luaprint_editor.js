@@ -563,6 +563,71 @@ class NumberComponent extends Rete.Component {
   }
 }
 
+class MakeVarComponent extends Rete.Component {
+  constructor() {
+    super("Variable");
+    this.contextMenuName = "New Variable";
+    this.path = ["Data"];
+    this.task = {
+      outputs: { text: "output" }
+    };
+  }
+
+  builder(node) {
+    const { execIn, execOut } = createExecs();
+    let valIn = new Rete.Input("value", "", anySocket);
+
+    return node
+      .addInput(execIn)
+      .addInput(valIn)
+      .addControl(new StringInputControl("varname"))
+      .addOutput(execOut);
+  }
+
+  code(node, inputs, add, outputs) {
+    statement(
+      node,
+      add,
+      inputs,
+      outputs,
+      `local ${node.data.varname} = ${inputs.value[0] || "0"}`
+    );
+  }
+}
+
+class SetVarComponent extends Rete.Component {
+  constructor() {
+    super("Set");
+    this.contextMenuName = "Set Variable";
+    this.path = ["Data"];
+    this.task = {
+      outputs: { text: "output" }
+    };
+  }
+
+  builder(node) {
+    node.altName = " ";
+    const { execIn, execOut } = createExecs();
+    let valIn = new Rete.Input("value", "", anySocket);
+
+    return node
+      .addInput(execIn)
+      .addInput(valIn)
+      .addControl(new StringInputControl("varname"))
+      .addOutput(execOut);
+  }
+
+  code(node, inputs, add, outputs) {
+    statement(
+      node,
+      add,
+      inputs,
+      outputs,
+      `${node.data.varname} = ${inputs.value}`
+    );
+  }
+}
+
 class OperatorComponent extends Rete.Component {
   constructor(menu, socketType, name, operator, inputSocketType = anySocket) {
     super(name);
@@ -691,6 +756,8 @@ var components = [
   new CustomComponent(),
   new StringComponent(),
   new NumberComponent(),
+  new MakeVarComponent(),
+  new SetVarComponent(),
   new PrintComponent(),
   new RepeatComponent(),
   new EventComponent("Tick", [{ name: "delta", socket: floatSocket }]),

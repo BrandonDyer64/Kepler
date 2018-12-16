@@ -39,24 +39,12 @@
 
             <div class="flex flex-down-full full-width">
 
-              <!-- Toolbar -->
-              <div class="full-width-margin panel" style="display: block;">
-                <!--<div class="panel-title"><span>Toolbar</span></div>-->
-                <div class="panel-content flex" style="padding: 0px;justify-content: flex-start;">
-                  <a href="JavaScript:editorSave();" class="btn btn-icon"><i class="ti-save"></i></a>
-                </div>
-              </div>
-
               <!-- Editor -->
               <div class="full-width-margin flex-grow panel">
                 <div class="panel-title"><span id="editor-name">Lua Actor</span></div>
                 <div id="editor" class="panel-content flex-grow scroll-bar">
                   <textarea id="code" name="code" class="full-height full-width">
-function Create ()
-end
-
-function Tick (delta)
-end</textarea>
+                  </textarea>
                 </div>
               </div>
 
@@ -93,6 +81,14 @@ end</textarea>
     const fs = require("fs")
     const remote = electron.remote;
     const currentWindow = remote.getCurrentWindow();
+
+    const filepath = currentWindow.custom.path.split(".")[0] + ".lua"
+    let content;
+    if (fs.existsSync(filepath)) {
+      content = fs.readFileSync(filepath, 'utf8')
+    } else {
+      content = "function Create ()\nend\n\nfunction Tick (delta)\nend"
+    }
       var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
         lineNumbers: true,
         styleActiveLine: true,
@@ -101,13 +97,20 @@ end</textarea>
         keyMap: "sublime",
         theme: "material"
       });
+      editor.setValue(content)
       function save() {
-        fs.writeFileSync(
-          currentWindow.custom.path.split(".")[0] + ".lua",
+        fs.writeFile(
+          filepath,
           editor.getValue(),
-          "utf8"
+          "utf8",
+          (err) => {
+            if (err) {
+              console.error(err)
+              return
+            }
+            document.getElementById('editor-name').innerHTML = 'Lua Actor'
+          }
         );
-        document.getElementById('editor-name').innerHTML = 'Lua Actor'
       }
       editor.setOption("extraKeys", {
         Tab: function(cm) {
