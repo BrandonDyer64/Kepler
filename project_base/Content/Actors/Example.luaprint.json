@@ -18,12 +18,23 @@
             ]
           },
           "other": {
-            "connections": []
+            "connections": [
+              {
+                "node": 84,
+                "input": "inA",
+                "data": {}
+              },
+              {
+                "node": 84,
+                "input": "inB",
+                "data": {}
+              }
+            ]
           }
         },
         "position": [
           -432,
-          -1840
+          -1752
         ],
         "name": "On Collide"
       },
@@ -41,7 +52,13 @@
             ]
           },
           "condition": {
-            "connections": []
+            "connections": [
+              {
+                "node": 84,
+                "output": "value",
+                "data": {}
+              }
+            ]
           }
         },
         "outputs": {
@@ -65,7 +82,7 @@
           }
         },
         "position": [
-          -136,
+          -80,
           -1752
         ],
         "name": "Branch"
@@ -105,8 +122,8 @@
           }
         },
         "position": [
-          256,
-          -1808
+          264,
+          -1800
         ],
         "name": "Print"
       },
@@ -146,7 +163,7 @@
         },
         "position": [
           264,
-          -1664
+          -1672
         ],
         "name": "Print"
       },
@@ -168,8 +185,8 @@
           }
         },
         "position": [
-          -120,
-          -1864
+          -80,
+          -1848
         ],
         "name": "String"
       },
@@ -191,8 +208,8 @@
           }
         },
         "position": [
-          -104,
-          -1536
+          -80,
+          -1600
         ],
         "name": "String"
       },
@@ -215,7 +232,13 @@
             ]
           },
           "str": {
-            "connections": []
+            "connections": [
+              {
+                "node": 81,
+                "output": "value",
+                "data": {}
+              }
+            ]
           }
         },
         "outputs": {
@@ -224,121 +247,73 @@
           }
         },
         "position": [
-          544,
-          -1728
+          664,
+          -1736
         ],
         "name": "Print"
       },
-      "77": {
-        "id": 77,
+      "81": {
+        "id": 81,
         "data": {
-          "name": "Dad"
+          "value": "!"
         },
         "inputs": {},
         "outputs": {
-          "exec": {
+          "value": {
             "connections": [
               {
-                "node": 78,
-                "input": "exec",
-                "data": {}
-              }
-            ]
-          },
-          "p1": {
-            "connections": [
-              {
-                "node": 78,
+                "node": 76,
                 "input": "str",
                 "data": {}
               }
             ]
-          },
-          "p2": {
-            "connections": []
-          },
-          "p3": {
-            "connections": []
-          },
-          "p4": {
-            "connections": []
-          },
-          "p5": {
-            "connections": []
           }
         },
         "position": [
-          -600,
-          -1320
+          264,
+          -1544
         ],
-        "name": "Function"
+        "name": "String"
       },
-      "78": {
-        "id": 78,
+      "84": {
+        "id": 84,
         "data": {},
         "inputs": {
-          "exec": {
+          "inA": {
             "connections": [
               {
-                "node": 77,
-                "output": "exec",
+                "node": 70,
+                "output": "other",
                 "data": {}
               }
             ]
           },
-          "str": {
+          "inB": {
             "connections": [
               {
-                "node": 77,
-                "output": "p1",
+                "node": 70,
+                "output": "other",
                 "data": {}
               }
             ]
           }
         },
         "outputs": {
-          "exec": {
+          "value": {
             "connections": [
               {
-                "node": 79,
-                "input": "exec",
+                "node": 71,
+                "input": "condition",
                 "data": {}
               }
             ]
           }
         },
         "position": [
-          -32,
-          -1408
+          -240,
+          -1688
         ],
-        "name": "Print"
-      },
-      "79": {
-        "id": 79,
-        "data": {
-          "code": "Dad(\"hi\")"
-        },
-        "inputs": {
-          "exec": {
-            "connections": [
-              {
-                "node": 78,
-                "output": "exec",
-                "data": {}
-              }
-            ]
-          }
-        },
-        "outputs": {
-          "exec": {
-            "connections": []
-          }
-        },
-        "position": [
-          352,
-          -1344
-        ],
-        "name": "Custom"
+        "name": "Equals"
       }
     }
   }
