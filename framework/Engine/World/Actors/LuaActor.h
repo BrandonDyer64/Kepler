@@ -7,7 +7,7 @@ namespace Kepler {
 
 class LuaActor : public Actor {
 public:
-  LuaActor(Entity &entity);
+  LuaActor(std::string &filename);
 };
 
 } // namespace Kepler

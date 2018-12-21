@@ -9,18 +9,18 @@ namespace Kepler {
     this->world = &world;
   }
   
-  Bag<EntitySystem*> & SystemManager::getSystems() {
+  Bag<EntitySystem*> & SystemManager::GetSystems() {
     return bagged;
   }
   
-  void SystemManager::initializeAll() {
+  void SystemManager::InitializeAll() {
     for(int i=0; i< bagged.getCount(); i++) {
       bagged.get(i)->initialize();
     }
     
   }
   
-  EntitySystem* SystemManager::setSystem(EntitySystem* stm) {
+  EntitySystem* SystemManager::SetSystem(EntitySystem* stm) {
     bool bitFlag = false;
     int index = 0;
     
@@ -48,7 +48,7 @@ namespace Kepler {
         stm->setWorld(world);
         systems[&typeid(*stm)]  = stm;
         bagged.add(stm);
-        stm->setSystemBit(SystemBitManager::getBitFor(typeid(*stm)));
+        stm->SetSystemBit(SystemBitManager::getBitFor(typeid(*stm)));
       }
     }
     

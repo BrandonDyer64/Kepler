@@ -12,7 +12,7 @@ namespace Kepler {
 
 	bool DelayedEntitySystem::checkProcessing() {
 		if(running) {
-			acc += world->getDelta();
+			acc += world->GetDelta();
 
 			if(acc >= delay) {
 				return true;

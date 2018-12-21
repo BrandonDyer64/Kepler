@@ -20,8 +20,8 @@ namespace Kepler {
     void remove(Entity &e);
     void removeComponentsOfEntity(Entity & e);
     bool isActive(int entityId);
-    void addComponent(Entity &e, Component * c);
-    void refresh(Entity &e);
+    void AddComponent(Entity &e, Component * c);
+    void Refresh(Entity &e);
     
     void removeAllEntities();
     

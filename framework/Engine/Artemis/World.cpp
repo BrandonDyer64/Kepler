@@ -22,15 +22,15 @@ namespace Kepler {
 			deleted.add(&e);
 	}
   
-	float World::getDelta() {
+	float World::GetDelta() {
 		return this->delta;
 	}
   
-	SystemManager* World::getSystemManager() {
+	SystemManager* World::GetSystemManager() {
 		return systemManager;
 	}
   
-	EntityManager* World::getEntityManager() {
+	EntityManager* World::GetEntityManager() {
 		return entityManager;
 	}
 	
@@ -42,11 +42,11 @@ namespace Kepler {
 		return tagManager;
 	}
   
-	void World::loopStart() {
+	void World::LoopStart() {
 		if(!refreshed.isEmpty()) {
 			for(int i=0; i<refreshed.getCount(); i++) {
 				//TODO ADD  MANAGERs
-				entityManager->refresh(*refreshed.get(i));
+				entityManager->Refresh(*refreshed.get(i));
 			}
       
 			refreshed.clear();
@@ -79,7 +79,7 @@ namespace Kepler {
 		refreshed.add(&e);
 	}
   
-	void World::setDelta(float delta) {
+	void World::SetDelta(float delta) {
 		this->delta = delta;
 	}
   

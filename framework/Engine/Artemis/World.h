@@ -23,17 +23,17 @@ namespace Kepler {
   public:
     World();
     ~World();
-    SystemManager * getSystemManager();
-    EntityManager * getEntityManager();
+    SystemManager * GetSystemManager();
+    EntityManager * GetEntityManager();
     TagManager *   getTagManager();
     GroupManager * getGroupManager();
-    float getDelta();
-    void setDelta(float delta);
+    float GetDelta();
+    void SetDelta(float delta);
     void deleteEntity(Entity& e);
     void refreshEntity(Entity& e);
     Entity& createEntity();
     Entity& getEntity(int entityId);
-    void loopStart();
+    void LoopStart();
     
     
     

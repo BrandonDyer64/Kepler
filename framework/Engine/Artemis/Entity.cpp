@@ -10,7 +10,7 @@ namespace Kepler {
   
   Entity::Entity(World * world, int id) {
     this->world = world;
-    this->entityManager = world->getEntityManager();
+    this->entityManager = world->GetEntityManager();
     this->id = id;
   }
   
@@ -40,7 +40,7 @@ namespace Kepler {
     return id;
   }
   
-  bitset<BITSIZE> Entity::getSystemBits() {
+  bitset<BITSIZE> Entity::GetSystemBits() {
     return systemBits;
   }
   
@@ -56,12 +56,12 @@ namespace Kepler {
     return entityManager->isActive(this->getId());
   }
   
-  void Entity::refresh() {
+  void Entity::Refresh() {
     world->refreshEntity(*this);
   }
   
-  void Entity::addComponent(Component * c){
-    entityManager->addComponent(*this,c);
+  void Entity::AddComponent(Component * c){
+    entityManager->AddComponent(*this,c);
   }
   
   void Entity::removeComponent(ComponentType & type) {
@@ -86,7 +86,7 @@ namespace Kepler {
     world->getGroupManager()->set(group, *this);
   }
   
-  void Entity::setSystemBits(bitset<BITSIZE> systemBits) {
+  void Entity::SetSystemBits(bitset<BITSIZE> systemBits) {
     this->systemBits = systemBits;
   }
   

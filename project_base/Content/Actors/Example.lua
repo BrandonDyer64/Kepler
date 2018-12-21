@@ -1,9 +1,7 @@
 
-function Collide (other)
-  if (other == other) then
-    print("Hello")
-  else
-    print("World")
+function Create ()
+  for ku_Repeat = 1, 100, 1 do
+    print("Hello, World!")
   end
-  print("!")
+  
 end

@@ -15,7 +15,7 @@ namespace Kepler {
 	}
   
 	void EntitySystem::change(Entity& e) {
-		bool contains = (systemBit & e.getSystemBits()) == systemBit;
+		bool contains = (systemBit & e.GetSystemBits()) == systemBit;
 		bool interest = (typeFlags & e.getTypeBits()) == typeFlags;
     
 		if(interest && !contains && typeFlags.any()) {
@@ -27,7 +27,7 @@ namespace Kepler {
 		}
 	}
   
-	void EntitySystem::process() {
+	void EntitySystem::Process() {
 		if(checkProcessing()) {
 			begin();
 			processEntities(actives);
@@ -45,7 +45,7 @@ namespace Kepler {
 		removed(e);
 	};
   
-	void  EntitySystem::setSystemBit(bitset<BITSIZE> bit) {
+	void  EntitySystem::SetSystemBit(bitset<BITSIZE> bit) {
 		systemBit = bit;
 	}
   

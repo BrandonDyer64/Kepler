@@ -28,16 +28,16 @@ namespace Kepler {
     void printTypeFlag() {
       std::cout << typeFlags;
     }
-    std::bitset<BITSIZE> getSystemBit() {
+    std::bitset<BITSIZE> GetSystemBit() {
       return systemBit;
     }
-    void setSystemBit(std::bitset<BITSIZE> bit);
+    void SetSystemBit(std::bitset<BITSIZE> bit);
     virtual ~EntitySystem();
     /*override these functions*/
     virtual void initialize() {};
     void setWorld(World *world);
     void change(Entity &e);
-    void process();
+    void Process();
     int getEntityCount();
   protected:
     EntitySystem() { this->world = NULL; };
@@ -46,7 +46,7 @@ namespace Kepler {
      * Call this in the constructor of the derived system
      */
     template<typename component_type>
-    void addComponentType() {
+    void AddComponentType() {
       //Add Bits to typeflags
       typeFlags |= ComponentTypeManager::getBit<component_type>();
     }

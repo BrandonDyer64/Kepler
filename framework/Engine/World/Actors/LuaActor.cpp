@@ -2,6 +2,6 @@
 
 namespace Kepler {
 
-LuaActor::LuaActor(Entity &entity) : Actor(entity) {}
+LuaActor::LuaActor(std::string &filename) : Actor() {}
 
 } // namespace Kepler

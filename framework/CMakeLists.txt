@@ -42,7 +42,12 @@ include(config.cmake)
 
 project(kepler DESCRIPTION "Kepler Engine API")
 
-file(GLOB_RECURSE SOURCES *.cpp)
+file(GLOB_RECURSE SOURCES *.cpp *.c)
+FOREACH(item ${SOURCES})
+  IF(${item} MATCHES "/*\\/CMakeFiles\\/*/")
+    LIST(REMOVE_ITEM SOURCES ${item})
+  ENDIF()
+ENDFOREACH()
 
 add_library(kepler SHARED ${SOURCES})
 

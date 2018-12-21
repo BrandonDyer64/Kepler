@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.7.1)
 set(CMAKE_BUILD_TYPE Release)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -no-pie -Wfatal-errors")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -no-pie -pthread -Wfatal-errors")
 
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/out)
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/out)
@@ -10,7 +10,7 @@ set(ASSET_DIR "data")
 
 project(kepler_test DESCRIPTION "Kepler Engine Test")
 
-file(GLOB_RECURSE SOURCES *.cpp *.h)
+file(GLOB_RECURSE SOURCES *.cpp)
 FOREACH(item ${SOURCES})
   IF(${item} MATCHES "/*\\/CMakeFiles\\/*/")
     LIST(REMOVE_ITEM SOURCES ${item})
@@ -51,6 +51,7 @@ target_link_libraries(kepler_test ${KEPLER_LIBRARY})
 # Copy assets
 file(
   GLOB_RECURSE ASSETS
+  *.h
   *.lua
   *.obj
   *.spv

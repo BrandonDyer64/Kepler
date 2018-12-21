@@ -37,7 +37,7 @@
           "subsurface_amount": {
             "connections": []
           },
-          "roi": {
+          "ior": {
             "connections": []
           },
           "pixel_depth": {

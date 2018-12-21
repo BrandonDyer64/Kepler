@@ -17,7 +17,7 @@ EntityManager::EntityManager(World &world) : componentsByType(64) {
   totalRemoved = 0;
 };
 
-void EntityManager::addComponent(Entity &e, Component *c) {
+void EntityManager::AddComponent(Entity &e, Component *c) {
   ComponentType type = ComponentTypeManager::getTypeFor(typeid(*c));
 
   if (type.getId() >= componentsByType.getCapacity()) {
@@ -35,7 +35,7 @@ void EntityManager::addComponent(Entity &e, Component *c) {
       // Entity already had this component, need to perform component removal
       // first
       removeComponent(e, type);
-      refresh(e);
+      Refresh(e);
     }
   }
   components->set(e.getId(), c);
@@ -107,9 +107,9 @@ bool EntityManager::isActive(int entityId) {
   return activeEntities.get(entityId) != NULL;
 };
 
-void EntityManager::refresh(Entity &e) {
-  SystemManager *systemManager = world->getSystemManager();
-  Bag<EntitySystem *> &systems = systemManager->getSystems();
+void EntityManager::Refresh(Entity &e) {
+  SystemManager *systemManager = world->GetSystemManager();
+  Bag<EntitySystem *> &systems = systemManager->GetSystems();
 
   for (int i = 0; i < systems.getCount(); i++) {
     systems.get(i)->change(e);
@@ -119,7 +119,7 @@ void EntityManager::refresh(Entity &e) {
 void EntityManager::remove(Entity &e) {
   activeEntities.set(e.getId(), NULL);
   e.setTypeBits(0);
-  refresh(e);
+  Refresh(e);
   removeComponentsOfEntity(e);
   count--;
   totalRemoved++;

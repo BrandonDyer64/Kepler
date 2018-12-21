@@ -1,17 +1,15 @@
 #ifndef Actor_h
 #define Actor_h
 
-#include "Engine/Artemis.h"
+#include "../Artemis.h"
 
 namespace Kepler {
 
 class Actor {
 public:
-  const Entity *entity;
-
-public:
-  Actor(Entity &entity);
-  virtual void Tick();
+  Actor();
+  virtual void Create(Entity &entity);
+  virtual void Tick(Entity &entity, float delta);
 };
 
 } // namespace Kepler

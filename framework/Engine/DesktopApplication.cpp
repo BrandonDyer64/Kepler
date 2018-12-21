@@ -23,7 +23,6 @@
 #include <vector>
 
 #include "DesktopApplication.h"
-#include "Game.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "TinyObjLoader.h"
@@ -96,7 +95,7 @@ struct UniformBufferObject {
 
 class DesktopApplication {
 public:
-  DesktopApplication(Game game) : game(game){};
+  DesktopApplication(){};
   void run() {
     initWindow();
     initVulkan();
@@ -105,7 +104,6 @@ public:
   }
 
 private:
-  Game game;
   GLFWwindow *window;
 
   VkInstance instance;
@@ -1866,15 +1864,14 @@ private:
   }
 };
 
-void CreateDesktopApplication(Level &startingLevel) {
-  Game game(startingLevel);
-  DesktopApplication app(game);
+void CreateDesktopApplication() {
+  /*DesktopApplication app();
 
   try {
-    app.run();
+    // app.run();
   } catch (const std::exception &e) {
     std::cerr << e.what() << std::endl;
-  }
+  }*/
 }
 
 } // namespace Kepler

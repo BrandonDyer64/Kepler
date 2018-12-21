@@ -25,7 +25,7 @@ namespace Kepler {
     }
     
     void init(World& world){
-      em = world.getEntityManager();
+      em = world.GetEntityManager();
     }
     
     /**

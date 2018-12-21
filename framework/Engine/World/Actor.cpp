@@ -2,6 +2,10 @@
 
 namespace Kepler {
 
-Actor::Actor(Entity &entity) : entity(&entity) {}
+Actor::Actor() {}
+
+void Actor::Create(Entity &entity) {}
+
+void Actor::Tick(Entity &entity, float delta) {}
 
 } // namespace Kepler

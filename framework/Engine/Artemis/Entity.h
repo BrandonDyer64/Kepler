@@ -48,16 +48,16 @@ namespace Kepler {
     std::bitset<BITSIZE> getTypeBits();
     void addTypeBit(std::bitset<BITSIZE> bit);
     void removeTypeBit(std::bitset<BITSIZE> bit);
-    std::bitset<BITSIZE> getSystemBits();
+    std::bitset<BITSIZE> GetSystemBits();
     void addSystemBit(std::bitset<BITSIZE> bit);
     void removeSystemBit(std::bitset<BITSIZE> bit);
-    void setSystemBits(std::bitset<BITSIZE> systemBits);
+    void SetSystemBits(std::bitset<BITSIZE> systemBits);
     void setTypeBits(std::bitset<BITSIZE> typeBits);
     void reset();
     
     std::string toString();
     
-    void addComponent(Component * c);
+    void AddComponent(Component * c);
     
     //Might change to non template
     template<typename c>
@@ -78,7 +78,7 @@ namespace Kepler {
     ImmutableBag<Component*> & getComponents();
     
     bool isActive();
-    void refresh();
+    void Refresh();
     void remove();
     void setGroup(std::string group);
     void setTag(std::string tag);

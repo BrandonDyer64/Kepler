@@ -3,7 +3,7 @@
 ** Lua compiler (saves bytecodes to files; also lists bytecodes)
 ** See Copyright Notice in lua.h
 */
-
+#ifdef USE_LUAC_C
 #define luac_c
 #define LUA_CORE
 
@@ -448,3 +448,5 @@ static void PrintFunction(const Proto* f, int full)
  if (full) PrintDebug(f);
  for (i=0; i<n; i++) PrintFunction(f->p[i],full);
 }
+
+#endif
