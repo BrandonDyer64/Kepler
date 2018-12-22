@@ -36,7 +36,7 @@ namespace Kepler {
     return entityManager->getComponents(*this);
   }
   
-  int Entity::getId() {
+  int Entity::GetId() {
     return id;
   }
   
@@ -53,7 +53,7 @@ namespace Kepler {
   }
   
   bool Entity::isActive() {
-    return entityManager->isActive(this->getId());
+    return entityManager->isActive(this->GetId());
   }
   
   void Entity::Refresh() {
@@ -64,8 +64,8 @@ namespace Kepler {
     entityManager->AddComponent(*this,c);
   }
   
-  void Entity::removeComponent(ComponentType & type) {
-    entityManager->removeComponent(*this, type);
+  void Entity::RemoveComponent(ComponentType & type) {
+    entityManager->RemoveComponent(*this, type);
   }
   
   void Entity::removeSystemBit(bitset<BITSIZE> bit) {
@@ -98,7 +98,7 @@ namespace Kepler {
     this->typeBits = typeBits;
   }
   
-  void Entity::setUniqueId(long int uniqueId) {
+  void Entity::SetUniqueId(long int uniqueId) {
     this->uniqueId = uniqueId;
   }
   

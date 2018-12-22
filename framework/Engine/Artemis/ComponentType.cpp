@@ -15,7 +15,7 @@ namespace Kepler {
 		return bit;
 	}
   
-	int ComponentType::getId() const {
+	int ComponentType::GetId() const {
 		return id;
 	}
   

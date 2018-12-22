@@ -18,18 +18,18 @@ namespace Kepler {
     ~EntityManager();
     Entity & create();
     void remove(Entity &e);
-    void removeComponentsOfEntity(Entity & e);
+    void RemoveComponentsOfEntity(Entity & e);
     bool isActive(int entityId);
     void AddComponent(Entity &e, Component * c);
     void Refresh(Entity &e);
     
     void removeAllEntities();
     
-    void removeComponent(Entity & e, ComponentType & type);
+    void RemoveComponent(Entity & e, ComponentType & type);
     
     template<typename c>
-    void removeComponent(Entity & e) {
-      removeComponent(e,ComponentTypeManager::getTypeFor<c>());
+    void RemoveComponent(Entity & e) {
+      RemoveComponent(e,ComponentTypeManager::getTypeFor<c>());
     }
     
     Component * getComponent(Entity & e, ComponentType & type);

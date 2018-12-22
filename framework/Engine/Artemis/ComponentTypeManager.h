@@ -57,13 +57,13 @@ namespace Kepler {
      * Gets the component id
      **/
     template<typename c>
-    static int getId() {
+    static int GetId() {
       
       //Check if we are being legal with components and shizzle
       
       //assert((std::is_base_of< Component, c >::value == true));
       
-      return getTypeFor(typeid(c)).getId();
+      return getTypeFor(typeid(c)).GetId();
     };
     
     

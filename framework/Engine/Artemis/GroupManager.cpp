@@ -17,8 +17,8 @@ namespace Kepler {
 	}
 
 	std::string GroupManager::getGroupOf(Entity& e) {
-		if(e.getId() < groupByEntity.getCapacity()){
-			std::string * group = groupByEntity.get(e.getId());
+		if(e.GetId() < groupByEntity.getCapacity()){
+			std::string * group = groupByEntity.get(e.GetId());
 			if(group == NULL) 
 				return empty_string;
 			return  *group;
@@ -37,11 +37,11 @@ namespace Kepler {
 	}
 
 	void GroupManager::remove(Entity& e) {
-		if(e.getId() < groupByEntity.getCapacity()){
+		if(e.GetId() < groupByEntity.getCapacity()){
 			
-			std::string * groupId = groupByEntity.get(e.getId());
+			std::string * groupId = groupByEntity.get(e.GetId());
 			if(groupId != NULL){
-				groupByEntity.set(e.getId(), NULL);
+				groupByEntity.set(e.GetId(), NULL);
 				
 				Bag<Entity*> * entities = entitiesByGroup[*groupId];
 				if(entities != NULL){
@@ -66,7 +66,7 @@ namespace Kepler {
 		}
 		entities->add(&e);
 		entities = NULL;
-		groupByEntity.set(e.getId(), new std::string(group));
+		groupByEntity.set(e.GetId(), new std::string(group));
 		
 	}
 	

@@ -15,7 +15,7 @@ namespace Kepler {
     ComponentType();
     //==================================
     std::bitset<BITSIZE> getBit() const;
-    int getId() const;
+    int GetId() const;
     static void reset();
   private:
     //

@@ -20,25 +20,25 @@ EntityManager::EntityManager(World &world) : componentsByType(64) {
 void EntityManager::AddComponent(Entity &e, Component *c) {
   ComponentType type = ComponentTypeManager::getTypeFor(typeid(*c));
 
-  if (type.getId() >= componentsByType.getCapacity()) {
+  if (type.GetId() >= componentsByType.getCapacity()) {
     // Resize
-    componentsByType.set(type.getId(), NULL);
+    componentsByType.set(type.GetId(), NULL);
   }
 
-  Bag<Component *> *components = componentsByType.get(type.getId());
+  Bag<Component *> *components = componentsByType.get(type.GetId());
 
   if (components == NULL) {
     components = new Bag<Component *>();
-    componentsByType.set(type.getId(), components);
+    componentsByType.set(type.GetId(), components);
   } else {
-    if (components->get(e.getId()) != NULL) {
+    if (components->get(e.GetId()) != NULL) {
       // Entity already had this component, need to perform component removal
       // first
-      removeComponent(e, type);
+      RemoveComponent(e, type);
       Refresh(e);
     }
   }
-  components->set(e.getId(), c);
+  components->set(e.GetId(), c);
   e.addTypeBit(type.getBit());
 
   components = NULL;
@@ -54,8 +54,8 @@ Entity &EntityManager::create() {
     e->reset();
   }
 
-  e->setUniqueId(uniqueEntityId++);
-  activeEntities.set(e->getId(), e);
+  e->SetUniqueId(uniqueEntityId++);
+  activeEntities.set(e->GetId(), e);
   count++;
   totalCreated++;
   return *e;
@@ -73,10 +73,10 @@ long EntityManager::getTotalRemoved() { return totalRemoved; };
 
 Component *EntityManager::getComponent(Entity &e, ComponentType &type) {
 
-  Bag<Component *> *bag = componentsByType.get(type.getId());
+  Bag<Component *> *bag = componentsByType.get(type.GetId());
 
-  if (bag != NULL && e.getId() < bag->getCapacity())
-    return bag->get(e.getId());
+  if (bag != NULL && e.GetId() < bag->getCapacity())
+    return bag->get(e.GetId());
 
   return NULL;
 };
@@ -91,8 +91,8 @@ Bag<Component *> &EntityManager::getComponents(Entity &e) {
   for (int i = 0; i < componentsByType.getCapacity(); i++) {
     Bag<Component *> *components = componentsByType.get(i);
 
-    if (components != NULL && e.getId() < components->getCapacity()) {
-      Component *c = components->get(e.getId());
+    if (components != NULL && e.GetId() < components->getCapacity()) {
+      Component *c = components->get(e.GetId());
 
       if (c != NULL) {
         entityComponents.add(c);
@@ -117,32 +117,32 @@ void EntityManager::Refresh(Entity &e) {
 };
 
 void EntityManager::remove(Entity &e) {
-  activeEntities.set(e.getId(), NULL);
+  activeEntities.set(e.GetId(), NULL);
   e.setTypeBits(0);
   Refresh(e);
-  removeComponentsOfEntity(e);
+  RemoveComponentsOfEntity(e);
   count--;
   totalRemoved++;
   removedAndAvailable.add(&e);
 };
 
-void EntityManager::removeComponent(Entity &e, ComponentType &type) {
-  Bag<Component *> *components = componentsByType.get(type.getId());
+void EntityManager::RemoveComponent(Entity &e, ComponentType &type) {
+  Bag<Component *> *components = componentsByType.get(type.GetId());
 
-  delete components->get(e.getId());
-  components->set(e.getId(), NULL);
+  delete components->get(e.GetId());
+  components->set(e.GetId(), NULL);
   e.removeTypeBit(type.getBit());
   components = NULL;
 };
 
-void EntityManager::removeComponentsOfEntity(Entity &e) {
+void EntityManager::RemoveComponentsOfEntity(Entity &e) {
   for (int i = 0; i < componentsByType.getCapacity(); i++) {
     Bag<Component *> *components = componentsByType.get(i);
 
-    if (components != NULL && e.getId() < components->getCapacity()) {
+    if (components != NULL && e.GetId() < components->getCapacity()) {
 
-      delete components->get(e.getId());
-      components->set(e.getId(), NULL);
+      delete components->get(e.GetId());
+      components->set(e.GetId(), NULL);
     }
 
     components = NULL;
@@ -160,7 +160,7 @@ void EntityManager::removeAllEntities() {
 
 EntityManager::~EntityManager() {
   // Removes every active entity and puts it in removeAndAvailable.
-  // Also calls removeComponentsOfEntity. All systems will be updated and will
+  // Also calls RemoveComponentsOfEntity. All systems will be updated and will
   // remove each entity.
   this->removeAllEntities();
   // Destroy the data from memory; activeEntities should be empty by now.
