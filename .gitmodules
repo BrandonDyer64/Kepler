@@ -1,0 +1,3 @@
+[submodule "framework/ThirdParty/libRocket"]
+	path = framework/ThirdParty/libRocket
+	url = https://github.com/libRocket/libRocket.git
