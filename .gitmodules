@@ -1,3 +1,6 @@
 [submodule "framework/ThirdParty/libRocket"]
 	path = framework/ThirdParty/libRocket
 	url = https://github.com/libRocket/libRocket.git
+[submodule "editor/js/codemirror"]
+	path = editor/js/codemirror
+	url = https://github.com/codemirror/CodeMirror.git
