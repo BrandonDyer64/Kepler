@@ -51,12 +51,22 @@ ENDFOREACH()
 
 add_library(kepler SHARED ${SOURCES})
 
-#set_target_properties(kepler PROPERTIES VERSION ${PROJECT_VERSION})
+target_include_directories(
+  kepler PUBLIC
+  ./Engine/Lua/Sources           # Lua
+  ./ThirdParty/libRocket/Include # libRocket
+)
 
+# Freetype
+find_package(Freetype REQUIRED)
+include_directories(${FREETYPE_INCLUDE_DIRS})
+
+# Vulkan
 include_directories(${VULKAN_SDK_PATH}/include)
 find_library(VULKAN_LIBRARY vulkan HINTS ${VULKAN_SDK_PATH}/lib)
 target_link_libraries(kepler ${VULKAN_LIBRARY})
 
+# GLFW
 find_package(PkgConfig REQUIRED)
 pkg_search_module(GLFW REQUIRED glfw3)
 include_directories(${GLFW_INCLUDE_DIRS})
