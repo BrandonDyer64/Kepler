@@ -40,6 +40,21 @@ message("Server: ${IS_SERVER}")
 
 include(config.cmake)
 
+function(message)
+  list(GET ARGV 0 MessageType)
+  if(MessageType STREQUAL FATAL_ERROR OR
+     MessageType STREQUAL SEND_ERROR OR
+     MessageType STREQUAL WARNING OR
+     MessageType STREQUAL AUTHOR_WARNING)
+    list(REMOVE_AT ARGV 0)
+    _message(${MessageType} "${ARGV}")
+  endif()
+  if(MessageType STREQUAL LOG)
+    list(REMOVE_AT ARGV 0)
+    _message("${ARGV}")
+  endif()
+endfunction()
+
 project(kepler DESCRIPTION "Kepler Engine API")
 
 file(GLOB_RECURSE SOURCES *.cpp *.c)
@@ -60,11 +75,17 @@ target_include_directories(
 # Freetype
 find_package(Freetype REQUIRED)
 include_directories(${FREETYPE_INCLUDE_DIRS})
+target_link_libraries(kepler ${FREETYPE_LIBRARIES})
 
 # Vulkan
-include_directories(${VULKAN_SDK_PATH}/include)
 find_library(VULKAN_LIBRARY vulkan HINTS ${VULKAN_SDK_PATH}/lib)
-target_link_libraries(kepler ${VULKAN_LIBRARY})
+if (VULKAN_LIBRARY)
+  message(LOG "Vulkan: Yes")
+  include_directories(${VULKAN_SDK_PATH}/include)
+  target_link_libraries(kepler ${VULKAN_LIBRARY})
+else()
+  message(LOG "Vulkan: No")
+endif()
 
 # GLFW
 find_package(PkgConfig REQUIRED)

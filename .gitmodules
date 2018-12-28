@@ -1,6 +1,3 @@
 [submodule "editor/js/codemirror"]
 	path = editor/js/codemirror
 	url = https://github.com/codemirror/CodeMirror.git
-[submodule "framework/ThirdParty/zlib"]
-	path = framework/ThirdParty/zlib
-	url = https://github.com/madler/zlib.git
