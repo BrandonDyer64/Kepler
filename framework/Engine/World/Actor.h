@@ -7,7 +7,10 @@ namespace Kepler {
 
 class Actor {
 public:
-  Actor();
+  const std::string name;
+
+public:
+  Actor(std::string name) : name(name){};
   virtual void Create(Entity &entity);
   virtual void Tick(Entity &entity, float delta);
 };

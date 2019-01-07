@@ -1,6 +1,7 @@
 #editor {
-  font-family: "Poppins", sans-serif;
-  background: #222;
+  font-family: 'Poppins', sans-serif;
+  /*background: #222;*/
+  background: var(--background);
 }
 
 #editor .context-menu {
@@ -23,7 +24,7 @@
   border: none;
 }
 #editor .context-menu .search input {
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 #editor .context-menu .search input:focus {
   outline: none;
@@ -41,7 +42,7 @@
 #editor .node,
 #editor .node .title,
 #editor .node .center-title {
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 #editor .node .title {
@@ -64,7 +65,7 @@
 
 #editor .node .input-title,
 #editor .node .output-title {
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
   margin-left: 0px;
   margin-right: 0px;
 }
@@ -74,7 +75,7 @@
 }
 
 #editor .node input {
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 #editor .node.number input {

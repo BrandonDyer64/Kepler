@@ -1,51 +1,112 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kepler Engine</title>
-    <link href="css/main.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Open Project</title>
+    <link href="css/main.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"
+      integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz"
+      crossorigin="anonymous"
+    />
   </head>
   <body>
     <div class="window">
       <div class="flex flex-down-full">
-        <h1 style="margin: 0px; padding-top: 20px; width: 100%;" class="text-center">Projects</h1>
-        <div class="flex flex-align-center" style="padding: 20px; width: 100%;">
+        <h1
+          style="margin: 0px; padding-top: 20px; width: 100%;"
+          class="text-center"
+        >
+          Kepler Engine
+        </h1>
+        <!-- Open / Create buttons -->
+        <div
+          id="open-create-buttons"
+          class="flex flex-align-center"
+          style="padding: 20px; width: 100%;"
+        >
           <div></div>
           <div class="flex flex-down flex-center flex-align-center">
-            <i class="far fa-folder-open fa-5x" style="margin-bottom: 20px;"></i>
-            <a href="Javascript:openProjectDialog();" class="btn btn-primary">Open Project</a>
+            <i
+              class="far fa-folder-open fa-5x"
+              style="margin-bottom: 20px;"
+            ></i>
+            <a href="Javascript:openProjectDialog();" class="btn btn-primary"
+              >Open Project</a
+            >
           </div>
           <div class="vr"></div>
           <div class="flex flex-down flex-center flex-align-center">
-            <i class="far fa-plus-square fa-5x" style="margin-bottom: 20px;"></i>
-            <a href="Javascript:void(0);" class="btn btn-primary">Create Project</a>
+            <i
+              class="far fa-plus-square fa-5x"
+              style="margin-bottom: 20px;"
+            ></i>
+            <a href="Javascript:newProject();" class="btn btn-primary"
+              >Create Project</a
+            >
           </div>
           <div></div>
         </div>
-        <div style="width:100%;">
-          <div id="load_progress" style="width:0%; height: 10px; background:var(--primary);">
+
+        <!-- New project form -->
+        <div
+          id="new-project-form"
+          class="flex flex-align-center"
+          style="display:none; padding: 20px; width: 100%; justify-content: center;"
+        >
+          <div style="display: inline-block;">
+            <h3 class="center">New Project</h3>
+            <form id="form-new-project">
+              <input
+                id="project-name"
+                name="name"
+                placeholder="Project Name"
+                class="center"
+              />
+            </form>
           </div>
+        </div>
+
+        <!-- Progress bar -->
+        <div style="width:100%;">
+          <div
+            id="load_progress"
+            style="width:0%; height: 10px; background:var(--primary);"
+          ></div>
         </div>
       </div>
     </div>
     <script>
-    const electron = require('electron')
-const remote = electron.remote
-const mainProcess = remote.require('./main')
-function openProjectDialog() {
-  mainProcess.openProjectDialog((progress) => {
-    progressBar = document.getElementById('load_progress')
-    progressBar.style.width = `${progress*100}%`
-    console.log(progress)
-  },() => {
-    console.log('not a kepler project')
-  })
-}
-function createProjectDialog() {
-  mainProcess.createProjectDialog()
-}
-</script>
+      const electron = require('electron')
+      const remote = electron.remote
+      const mainProcess = remote.require('./main')
+      function openProjectDialog() {
+        mainProcess.openProjectDialog(
+          progress => {
+            progressBar = document.getElementById('load_progress')
+            progressBar.style.width = `${progress * 100}%`
+            console.log(progress)
+          },
+          () => {
+            console.log('not a kepler project')
+          }
+        )
+      }
+      function newProject() {
+        document.getElementById('open-create-buttons').style.display = 'none'
+        document.getElementById('new-project-form').style.display = ''
+      }
+      document
+        .querySelector('#form-new-project')
+        .addEventListener('submit', function(e) {
+          e.preventDefault()
+          mainProcess.createProject(
+            document.getElementById('project-name').value
+          )
+          return false
+        })
+    </script>
   </body>
 </html>

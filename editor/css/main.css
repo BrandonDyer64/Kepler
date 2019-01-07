@@ -1,13 +1,13 @@
 :root {
-  font-family: "Poppins", sans-serif;
-  --background: #535760;
+  font-family: 'Poppins', sans-serif;
+  --background: #263238;
   --text-color: #fff;
-  --primary: #5792db;
-  --primary-transparent: #5792db22;
+  --primary: #82b1ff;
+  --primary-transparent: #82b1ff22;
   --primary-hover: #4873bb;
   --secondary: #dba057;
-  --muted: #75787f;
-  --editor-background: #35363a;
+  --muted: rgb(83, 127, 126);
+  --editor-background: #1f292e;
   --blue: #2196f3;
   --blue-light: #bbdefb;
   --blue-dark: #1976d2;
@@ -65,13 +65,13 @@
 }
 
 @font-face {
-  font-family: "poppins";
-  src: url("poppins/Poppins-Regular.ttf");
+  font-family: 'poppins';
+  src: url('poppins/Poppins-Regular.ttf');
 }
 
 @font-face {
-  font-family: "poppins";
-  src: url("poppins/Poppins-Bold.ttf");
+  font-family: 'poppins';
+  src: url('poppins/Poppins-Bold.ttf');
   font-weight: bold;
 }
 
@@ -91,6 +91,10 @@ a {
   text-decoration: none;
   color: var(--primary);
   outline: none;
+}
+
+.center {
+  text-align: center;
 }
 
 .flex {
@@ -175,6 +179,7 @@ a {
   border-top: 2px solid var(--muted);
   font-size: 11px;
   font-weight: 300;
+  color: var(--muted);
 }
 
 .panel .panel-content {
@@ -279,6 +284,17 @@ a.btn-none:hover {
 .window {
   height: 100vh;
   max-height: 100vh;
+}
+
+input {
+  background: var(--editor-background);
+  border: none;
+  padding: 5px 10px;
+  color: white;
+}
+
+input:focus {
+  outline: none;
 }
 
 #assets_panel {

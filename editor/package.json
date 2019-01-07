@@ -1,5 +1,5 @@
 {
-  "name": "electron-quick-start",
+  "name": "kepler-engine",
   "version": "1.0.0",
   "description": "A minimal Electron application",
   "main": "main.js",
@@ -20,9 +20,11 @@
     "electron": "^3.0.3"
   },
   "dependencies": {
+    "@prettier/plugin-lua": "0.0.1",
     "codemirror": "^5.42.2",
     "nodegit": "^0.23.0",
     "octicons": "4.0.0",
+    "prettier": "^1.15.3",
     "pug": "^2.0.3",
     "rete": "^1.0.0-beta.4",
     "rete-alight-render-plugin": "^0.1.5",

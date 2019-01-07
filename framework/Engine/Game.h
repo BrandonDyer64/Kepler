@@ -2,7 +2,9 @@
 #define Game_h
 
 #include "Artemis.h"
+#include "World/Actor.h"
 #include "World/Level.h"
+#include <map>
 #include <thread>
 #include <vector>
 
@@ -20,6 +22,7 @@ private:
   SystemManager *sm;
   EntityManager *em;
   std::vector<EntitySystem *> systems;
+  std::map<std::string, Actor *> actors;
   bool isRunning = true;
 
 public:
@@ -69,6 +72,8 @@ public:
     std::vector<EntitySystem *> systems;
     Create<L>(systems);
   }
+  Game *AddActor(Actor *actor);
+  Actor *GetActor(std::string name);
   // Stop the game
   void Stop() { isRunning = false; }
 };
