@@ -9,6 +9,14 @@ namespace Kepler {
 
 class Vec4 {
 public:
+  union{
+    //General Notation
+    struct{ const float x, y, z, w; };
+    //RGBA Color Notation
+    struct{ const float r, g, b, a; };
+    //HSLA Color Notation
+    struct{ const float h, s, v, a; };
+  };
   const float x;
   const float y;
   const float z;

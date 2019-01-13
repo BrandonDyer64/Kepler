@@ -6,8 +6,12 @@ namespace Kepler {
 
 class Vec2 {
 public:
-  const float x;
-  const float y;
+  union{
+    //General Notation
+    struct{ const float x, y; };
+    //Vector Notation
+    struct{ const float i, j; };
+  };
 
 public:
   Vec2() : x(0), y(0){};

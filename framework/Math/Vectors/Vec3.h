@@ -8,9 +8,16 @@ namespace Kepler {
 
 class Vec3 {
 public:
-  const float x;
-  const float y;
-  const float z;
+  union{
+    //General Notation
+    struct{const float x, y, z; };
+    //Color Notation
+    struct{const float r, g, b; };
+    //HSL Color Notation
+    struct{const float h, s, v; };
+    //Vector Notation
+    struct{const float i, j, k; };
+  };
 
 public:
   Vec3() : x(0), y(0), z(0){};
