@@ -32,6 +32,7 @@ public:
   Vec3 operator-=(const Vec3 &other) const;
   bool operator==(const Vec3 &other) const;
   float Dot(const Vec3 &other) const;
+  float Cross(const Vec3 &other) const;
   float DistanceTo(const Vec3 &other) const;
   float Magnitude() const;
   Vec3 Normalize() const;
