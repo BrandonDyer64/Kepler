@@ -3,6 +3,16 @@
 
 namespace Kepler {
 
+Game::Game(World &world, Level *level, SystemManager *sm, EntityManager *em)
+    : world(world), // World
+      level(level), // Level
+      sm(sm),       // System Manager
+      em(em)        // Entity Manager
+{
+  std::cout << "Making window" << std::endl;
+  window = new Window(640, 480, "test");
+}
+
 void Game::Launch() {}
 
 Game *Game::AddActor(Actor *actor) {

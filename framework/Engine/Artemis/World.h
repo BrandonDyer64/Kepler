@@ -1,7 +1,6 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#include "../Game.h"
 #include "../World/Actor.h"
 #include "GroupManager.h"
 #include "ImmutableBag.h"
@@ -44,7 +43,6 @@ private:
   float delta;
   Bag<Entity *> refreshed;
   Bag<Entity *> deleted;
-  Game *game;
 };
 };     // namespace Kepler
 #endif // $(Guard token)

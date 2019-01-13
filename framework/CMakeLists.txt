@@ -68,31 +68,38 @@ add_library(kepler SHARED ${SOURCES})
 
 target_include_directories(
   kepler PUBLIC
+  ./                             # Engine
   ./Engine/Lua/Sources           # Lua
   ./ThirdParty/libRocket/Include # libRocket
 )
 
-# Freetype
-find_package(Freetype REQUIRED)
-include_directories(${FREETYPE_INCLUDE_DIRS})
-target_link_libraries(kepler ${FREETYPE_LIBRARIES})
-
-# Vulkan
-find_library(VULKAN_LIBRARY vulkan HINTS ${VULKAN_SDK_PATH}/lib)
-if (VULKAN_LIBRARY)
-  message(LOG "Vulkan: Yes")
-  include_directories(${VULKAN_SDK_PATH}/include)
-  target_link_libraries(kepler ${VULKAN_LIBRARY})
+# GLFW
+find_package(glfw3)
+if (glfw_FOUND)
+  set(WINDOW_MANAGER GLFW3)
+  include_directories(${GLFW_INCLUDE_DIRS})
+  target_link_libraries(kepler ${GLFW_LIBRARIES})
 else()
-  message(LOG "Vulkan: No")
+  find_package(PkgConfig)
+  if (PkgConfig_FOUND)
+    pkg_search_module(GLFW glfw3)
+    if (GLFW_FOUND)
+      set(WINDOW_MANAGER GLFW3)
+      include_directories(${GLFW_INCLUDE_DIRS})
+      target_link_libraries(kepler ${GLFW_LIBRARIES})
+      target_link_libraries(kepler ${GLFW_STATIC_LIBRARIES})
+    endif()
+  endif()
 endif()
 
-# GLFW
-find_package(PkgConfig REQUIRED)
-pkg_search_module(GLFW REQUIRED glfw3)
-include_directories(${GLFW_INCLUDE_DIRS})
-target_link_libraries(kepler ${GLFW_LIBRARIES})
-target_link_libraries(kepler ${GLFW_STATIC_LIBRARIES})
+if (GLFW_FOUND OR glfw_FOUND)
+  find_package(OpenGL REQUIRED)
+  target_link_libraries(kepler GL GLU)
+endif()
+
+add_compile_definitions(WINDOW_MANAGER="${WINDOW_MANAGER}")
+message(LOG "Window Manager: ${WINDOW_MANAGER}")
+add_compile_definitions(WINDOW_MANAGER_${WINDOW_MANAGER})
 
 # Use "sudo make install" to apply
 install(TARGETS kepler DESTINATION /usr/lib)
