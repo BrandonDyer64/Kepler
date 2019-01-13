@@ -2,6 +2,7 @@
 #define Game_h
 
 #include "Artemis.h"
+#include "Engine/Rendering/Window.h"
 #include "World/Actor.h"
 #include "World/Level.h"
 #include <map>
@@ -17,6 +18,7 @@ public:
   float currentTime = 0;
 
 private:
+  Window *window;
   World &world;
   Level *level;
   SystemManager *sm;
@@ -26,31 +28,28 @@ private:
   bool isRunning = true;
 
 public:
-  Game(World &world, Level *level, SystemManager *sm, EntityManager *em)
-      : world(world), // World
-        level(level), // Level
-        sm(sm),       // System Manager
-        em(em)        // Entity Manager
-        {};
+  Game(World &world, Level *level, SystemManager *sm, EntityManager *em);
   void Launch();
   void Run() {
     using namespace std::chrono_literals;
     using clock = std::chrono::high_resolution_clock;
     auto oldTime = clock::now();
-    while (true) {
+    while (!window->ShouldClose()) {
+      window->RenderBegin();
       auto newTime = clock::now();
       std::chrono::microseconds deltamicroseconds =
           std::chrono::duration_cast  //
           <std::chrono::microseconds> //
           (newTime - oldTime);
       float deltaTime = deltamicroseconds.count() / 1000000.0;
-      // std::cout << std::fixed << deltaTime << std::endl;
       oldTime = newTime;
       world.LoopStart();
       world.SetDelta(deltaTime);
       for (auto i : systems) {
         i->Process();
       }
+      window->RenderEnd();
+      window->PollEvents();
       std::this_thread::sleep_for(1ms);
     }
   }
