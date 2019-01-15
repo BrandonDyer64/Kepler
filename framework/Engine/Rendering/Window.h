@@ -24,6 +24,9 @@ public:
   bool ShouldClose();
   void Terminate();
   void SetupMesh(Mesh *mesh);
+
+private:
+  void SetupInput();
 };
 
 } // namespace Kepler

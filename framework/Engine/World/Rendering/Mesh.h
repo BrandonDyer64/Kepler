@@ -12,12 +12,13 @@ class Window;
 
 class Mesh {
 public:
+  Game *game;
   std::vector<Vertex> vertices;
   std::vector<unsigned int> indices;
   std::vector<Texture> textures;
   void *apiMesh;
 
-  Mesh(std::vector<Vertex> v, std::vector<unsigned int> i,
+  Mesh(Game *g, std::vector<Vertex> v, std::vector<unsigned int> i,
        std::vector<Texture> t);
 
 private:
