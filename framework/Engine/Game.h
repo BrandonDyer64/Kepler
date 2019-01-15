@@ -36,17 +36,19 @@ public:
     auto oldTime = clock::now();
     while (!window->ShouldClose()) {
       window->RenderBegin();
-      auto newTime = clock::now();
-      std::chrono::microseconds deltamicroseconds =
-          std::chrono::duration_cast  //
-          <std::chrono::microseconds> //
-          (newTime - oldTime);
-      float deltaTime = deltamicroseconds.count() / 1000000.0;
-      oldTime = newTime;
-      world.LoopStart();
-      world.SetDelta(deltaTime);
-      for (auto i : systems) {
-        i->Process();
+      {
+        auto newTime = clock::now();
+        std::chrono::microseconds deltamicroseconds =
+            std::chrono::duration_cast  //
+            <std::chrono::microseconds> //
+            (newTime - oldTime);
+        float deltaTime = deltamicroseconds.count() / 1000000.0;
+        oldTime = newTime;
+        world.LoopStart();
+        world.SetDelta(deltaTime);
+        for (auto i : systems) {
+          i->Process();
+        }
       }
       window->RenderEnd();
       window->PollEvents();
@@ -75,6 +77,7 @@ public:
   Actor *GetActor(std::string name);
   // Stop the game
   void Stop() { isRunning = false; }
+  Window *GetWindow() { return window; }
 };
 
 } // namespace Kepler

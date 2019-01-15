@@ -13,30 +13,37 @@ namespace Kepler {
 
 class Quaternion {
 public:
-  union{
-    //Number Notation
-    struct{ const float x, y, z, w; };
-    //Angle Notation
-    struct{ const float i, j, k, a; };
+  union {
+    // Number Notation
+    struct {
+      const float x, y, z, w;
+    };
+    // Angle Notation
+    struct {
+      const float i, j, k, a;
+    };
   };
 
 public:
-  //Quaternions can not be inialized with a 0 in w (a) because it is always a unit vector.
-  Quaternion(): x(0), y(0), z(0), w(1) {}
+  // Quaternions can not be inialized with a 0 in w (a) because it is always a
+  // unit vector.
+  Quaternion() : x(0), y(0), z(0), w(1) {}
 
-  Quaternion(float x, float y, float z, float w): x(x), y(y), z(z), w(w) {}
-  Quaternion(Vec3& axis, float angle);
+  Quaternion(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
+  Quaternion(Vec3 &axis, float angle);
 
-  Quaternion(Quaternion& other): x(other.x), y(other.y), z(other.z), w(other.w) {}
+  Quaternion(Quaternion &other)
+      : x(other.x), y(other.y), z(other.z), w(other.w) {}
 
 public:
   static Quaternion FromEuler(float yaw, float pitch, float roll);
-  Quaternion Invert(const Quaternion& quat);
+  Quaternion Invert(const Quaternion &quat);
 
-  Quaternion operator*(const Quaternion& other) const;
-  Quaternion operator==(const Quaternion& other) const;
+  Quaternion &operator*(const Quaternion &other) const;
+  bool operator==(const Quaternion &other) const;
+  bool operator!=(const Quaternion &other) const;
 };
 
-}
+} // namespace Kepler
 
 #endif

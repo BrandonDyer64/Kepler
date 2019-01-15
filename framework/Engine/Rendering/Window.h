@@ -1,21 +1,28 @@
 #ifndef Window_h
 #define Window_h
 
-#define WINDOW_INCLUDE
-
-#include "WindowBase.h"
+#include "../World/Rendering/Mesh.h"
+#include <iostream>
 #include <string>
 
-#ifdef WINDOW_MANAGER_GLFW3
-#include "GLFW3/Window.h"
-#endif
-
-#ifndef WINDOW_MANAGER
 namespace Kepler {
-typedef WindowBase Window;
-}
-#endif
 
-#undef WINDOW_INCLUDE
+class Mesh;
+
+class Window {
+private:
+  void *window;
+
+public:
+  Window(int w, int h, std::string t);
+  void RenderBegin();
+  void RenderEnd();
+  void PollEvents();
+  bool ShouldClose();
+  void Terminate();
+  void SetupMesh(Mesh *mesh);
+};
+
+} // namespace Kepler
 
 #endif
