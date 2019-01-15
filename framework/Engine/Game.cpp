@@ -10,7 +10,8 @@ Game::Game(World &world, Level *level, SystemManager *sm, EntityManager *em)
       em(em)        // Entity Manager
 {
   std::cout << "Making window" << std::endl;
-  window = new Window(1920, 1080, "test");
+  window = new Window(1280, 720, "test");
+  window->game = this;
 }
 
 void Game::Launch() {}
@@ -29,5 +30,12 @@ Actor *Game::GetActor(std::string name) {
     return nullptr;
   }
 }
+
+bool Game::GetKeyState(std::string key) {
+  auto search = keyStates.find(key);
+  return search != keyStates.end() ? search->second : false;
+}
+
+void Game::SetKeyState(std::string key, bool state) { keyStates[key] = state; }
 
 } // namespace Kepler

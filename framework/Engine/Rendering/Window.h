@@ -10,6 +10,9 @@ namespace Kepler {
 class Mesh;
 
 class Window {
+public:
+  Game *game;
+
 private:
   void *window;
 

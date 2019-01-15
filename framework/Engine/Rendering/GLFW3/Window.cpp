@@ -1,10 +1,13 @@
 #ifdef WINDOW_MANAGER_GLFW3
 
-#include "../Window.h"
 // OpenGL
 #include <glad/glad.h>
 // Window
 #include <GLFW/glfw3.h>
+
+#include "../Window.h"
+#include "Engine/Game.h"
+#include "Engine/Input/Keys.h"
 
 namespace Kepler {
 
@@ -18,10 +21,6 @@ public:
 void glfwError(int id, const char *description) {
   std::cout << description << std::endl;
 }
-void key_callback(GLFWwindow *window, int key, int scancode, int action,
-                  int mods) {
-  std::cout << scancode << std::endl;
-}
 
 Window::Window(int w, int h, std::string t) {
   GLFWwindow *window = (GLFWwindow *)this->window;
@@ -30,6 +29,7 @@ Window::Window(int w, int h, std::string t) {
 
   glfwSetErrorCallback(&glfwError);
 
+  // GLFW Hints
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -49,11 +49,25 @@ Window::Window(int w, int h, std::string t) {
     return;
   }
 
+  // Set context
   glfwMakeContextCurrent(window);
   int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
-  glfwSetKeyCallback(window, key_callback);
-  std::cout << "Window: " << window << std::endl;
+  // Set keyboard callback
+  glfwSetWindowUserPointer(window, this);
+  glfwSetKeyCallback(window, [](GLFWwindow *window, int key, int scancode,
+                                int action, int mods) {
+    Window *self = (Window *)glfwGetWindowUserPointer(window);
+    if (action == GLFW_PRESS) {
+      self->game->SetKeyState(getKeyName(scancode), true);
+    } else if (action == GLFW_RELEASE) {
+      self->game->SetKeyState(getKeyName(scancode), false);
+    }
+    std::cout << (self->game->GetKeyState(getKeyName(scancode)) ? "true"
+                                                                : "false")
+              << std::endl;
+  });
+
   this->window = (void *)window;
 }
 
