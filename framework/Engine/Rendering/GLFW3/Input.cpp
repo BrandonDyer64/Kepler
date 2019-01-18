@@ -18,7 +18,8 @@ void Window::SetupInput() {
         } else if (action == GLFW_RELEASE) {
           self->game->SetKeyState(getKeyName(scancode), false);
         }
-        std::cout << (self->game->GetKeyState(getKeyName(scancode)) ? "true"
+        std::cout << scancode << " " << getKeyName(scancode) << " "
+                  << (self->game->GetKeyState(getKeyName(scancode)) ? "true"
                                                                     : "false")
                   << std::endl;
       });

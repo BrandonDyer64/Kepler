@@ -106,4 +106,7 @@ ENDFOREACH()
 _message("")
 
 # Use "sudo make install" to apply
-install(TARGETS kepler DESTINATION /usr/lib)
+install(TARGETS kepler
+  LIBRARY DESTINATION /usr/lib
+  PUBLIC_HEADER DESTINATION /user/include
+)

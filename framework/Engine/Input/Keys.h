@@ -9,7 +9,9 @@ namespace Kepler {
 #include "KeyValues.h"
 #undef KEY_VALUES_INCLUDE
 
-std::string getKeyName(int scancode) { return keys[scancode]; }
+std::string getKeyName(int scancode) {
+  return scancode < 120 ? keys[scancode] : "";
+}
 
 } // namespace Kepler
 

@@ -10,7 +10,7 @@ Game::Game(World &world, Level *level, SystemManager *sm, EntityManager *em)
       em(em)        // Entity Manager
 {
   std::cout << "Making window" << std::endl;
-  window = new Window(1280, 720, "test");
+  window = new Window(1920 / 2, 1080 / 2, "test");
   window->game = this;
 }
 
