@@ -26,6 +26,7 @@ private:
   std::vector<EntitySystem *> systems;
   std::map<std::string, Actor *> actors;
   bool isRunning = true;
+  std::map<std::string, bool> keyStates;
 
 public:
   Game(World &world, Level *level, SystemManager *sm, EntityManager *em);
@@ -78,6 +79,8 @@ public:
   // Stop the game
   void Stop() { isRunning = false; }
   Window *GetWindow() { return window; }
+  bool GetKeyState(std::string key);
+  void SetKeyState(std::string key, bool state);
 };
 
 } // namespace Kepler

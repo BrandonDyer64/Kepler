@@ -10,6 +10,9 @@ namespace Kepler {
 class Mesh;
 
 class Window {
+public:
+  Game *game;
+
 private:
   void *window;
 
@@ -21,6 +24,9 @@ public:
   bool ShouldClose();
   void Terminate();
   void SetupMesh(Mesh *mesh);
+
+private:
+  void SetupInput();
 };
 
 } // namespace Kepler

@@ -3,9 +3,11 @@
 
 namespace Kepler {
 
-Mesh::Mesh(std::vector<Vertex> v, std::vector<unsigned int> i,
+Mesh::Mesh(Game *g, std::vector<Vertex> v, std::vector<unsigned int> i,
            std::vector<Texture> t)
-    : vertices(v), indices(i), textures(t) {}
+    : game(g), vertices(v), indices(i), textures(t) {
+  SetupMesh(game);
+}
 
 void Mesh::SetupMesh(Game *game) { game->GetWindow()->SetupMesh(this); }
 
