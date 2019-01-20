@@ -1,9 +1,9 @@
-#ifndef "Mat4_h"
-#define "Mat4_h"
+#ifndef Mat4_h
+#define Mat4_h
 
 #define _USE_MATH_DEFINES
-#include "Vec4.h"
-#include "Quaternion.h"
+#include "../Vectors/Vec4.h"
+#include "../Vectors/Quaternion.h"
 
 //MATRICES ARE IN COLUMN MAJOR ORDER TO SUITE OPENGL
 /*
@@ -16,12 +16,13 @@
 */
 
 namespace Kepler {
-	struct Mat4 {
+	class Mat4 {
+	private:
 		union {
 			struct { float elements[4 * 4]; };
 			struct { Vec4 columns[4]; }
 		};
-
+	public:
 	  Mat4();
 		Mat4(float diagnal);
 

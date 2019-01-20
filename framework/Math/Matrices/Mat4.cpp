@@ -18,9 +18,9 @@ namespace Math {
 		elements[2 + 3 * 4] = diagonal;
 	}
 
-	Mat4 Mat4::identity() { return Mat4(1.0f); }
+	Mat4 Mat4::Identity() { return Mat4(1.0f); }
 
-	Mat4 Mat4::orthographic(float left, float right, float bottom, float top, float near, float far) {
+	Mat4 Mat4::Orthographic(float left, float right, float bottom, float top, float near, float far) {
 		Mat4 result;
 
 		result.elements[0 + 0 * 4] =  2.0f / (right - left);
@@ -34,7 +34,7 @@ namespace Math {
 
 		return result;
 	}
-	Mat4 Mat4::perspective(float fov, float aspectRatio, float near, float far) {
+	Mat4 Mat4::Perspective(float fov, float aspectRatio, float near, float far) {
 		Mat4 result(1.0f);
 
 		float q = 1.0f / tan(toRadians(0.5f * fov));
@@ -52,7 +52,7 @@ namespace Math {
 		return result;
 	}
 
-	Mat4 Mat4::translation(const Vec3& translation) {
+	Mat4 Mat4::Translation(const Vec3& translation) {
 		Mat4 result(1.0f);
 
 		result.elements[0 + 3 * 4] = translation.x;
@@ -98,7 +98,7 @@ namespace Math {
 
 		return result;
 	}
-	Mat4 Mat4::scale(const Vec3& scaleRatio) {
+	Mat4 Mat4::Scale(const Vec3& scaleRatio) {
 		Mat4 result;
 
 		result.elements[0 + 0 * 4] = scaleRatio.x;
@@ -109,7 +109,7 @@ namespace Math {
 		return result;
 	}
 
-	Mat4& Mat4::multiply(const Mat4& other) {
+	Mat4& Mat4::Multiply(const Mat4& other) {
 
 		for (int y = 0; y < 4; y++) {
 			for (int x = 0; x < 4; x++) {
@@ -122,7 +122,7 @@ namespace Math {
 		}
 		return *this;
 	}
-	Mat4 operator*(Mat4 left, const Mat4& right) { return left.multiply(right); }
-	Mat4& Mat4::operator*=(const Mat4& other) { return multiply(other); }
+	Mat4 operator*(Mat4 left, const Mat4& right) { return left.Multiply(right); }
+	Mat4& Mat4::operator*=(const Mat4& other) { return Multiply(other); }
 
 }
