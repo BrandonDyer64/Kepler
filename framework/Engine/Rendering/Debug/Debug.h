@@ -1,14 +1,13 @@
+#ifndef Debug_h
+#define Debug_h
 
 //OpenGL
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#ifdef K_DEBUG
-
-#endif
 namespace Kepler {
 
-  void GenerateCallbacks(){
+  void GenerateDebugCallbacks(){
     cout << "Generating OpenGL debug callbacks" << endl;
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     glDebugMessageCallback(CallbackFunction, nullptr);
