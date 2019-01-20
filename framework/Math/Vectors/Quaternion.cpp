@@ -15,6 +15,11 @@ Quaternion::Quaternion(Vec3 &axis, float angle)
       w(cos(angle / 2))           // W
 {}
 
+static Quaternion FromAxis( Vec3& axis, float angle){
+  Vec3 normAxis = axis.Normalize();
+  return Quaternion(normAxis, angle);
+}
+
 static Quaternion FromEuler(float yaw, float pitch, float roll) {
   yaw /= 2;
   pitch /= 2;
@@ -23,8 +28,8 @@ static Quaternion FromEuler(float yaw, float pitch, float roll) {
       (cos(yaw) * cos(pitch) * cos(roll)) - (sin(yaw) * sin(pitch) * sin(roll)),
       (sin(yaw) * sin(pitch) * cos(roll)) + (cos(yaw) * cos(pitch) * sin(roll)),
       (sin(yaw) * cos(pitch) * cos(roll)) + (cos(yaw) * sin(pitch) * sin(roll)),
-      (cos(yaw) * sin(pitch) * cos(roll)) -
-          (sin(yaw) * cos(pitch) * sin(roll)));
+      (cos(yaw) * sin(pitch) * cos(roll)) - (sin(yaw) * cos(pitch) * sin(roll))
+    );
 }
 
 // Creates a new inverse Quaternion based on an existing one.

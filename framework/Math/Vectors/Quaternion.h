@@ -34,12 +34,13 @@ public:
   Quaternion() : x(0), y(0), z(0), w(1) {}
 
   Quaternion(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
-  Quaternion(Vec3 &axis, float angle);
 
   Quaternion(Quaternion &other)
       : x(other.x), y(other.y), z(other.z), w(other.w) {}
-
+private:
+  Quaternion(Vec3 &axis, float angle);
 public:
+  static Quaternion FromAxis( Vec3& axis, float angle);
   static Quaternion FromEuler(float yaw, float pitch, float roll);
   Quaternion Invert(const Quaternion &quat);
 
