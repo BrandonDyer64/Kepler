@@ -22,6 +22,10 @@ public:
     struct {
       const float i, j, k, a;
     };
+    // Vector Notation
+    struct {
+      const flaot i, j, k, r;
+    }
   };
 
 public:
