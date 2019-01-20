@@ -24,8 +24,8 @@ public:
     };
     // Vector Notation
     struct {
-      const flaot i, j, k, r;
-    }
+      const float d_i, d_j, d_k, r;
+    };
   };
 
 public:
@@ -43,6 +43,16 @@ public:
   static Quaternion FromAxis( Vec3& axis, float angle);
   static Quaternion FromEuler(float yaw, float pitch, float roll);
   Quaternion Invert(const Quaternion &quat);
+
+  Quaternion LocalYaw(float angle);
+  Quaternion LocalPitch(float angle);
+  Quaternion LocalRoll(float angle);
+  Quaternion LocalRotate(float yaw, float pitch, float roll);
+
+  Quaternion Yaw(Vec3 normal, float angle);
+  Quaternion Pitch(Vec3 normal, float angle);
+  Quaternion Roll(Vec3 normal, float angle);
+  Quaternion Rotate(Vec3 normal, float yaw, float pitch, float roll);
 
   Quaternion &operator*(const Quaternion &other) const;
   bool operator==(const Quaternion &other) const;

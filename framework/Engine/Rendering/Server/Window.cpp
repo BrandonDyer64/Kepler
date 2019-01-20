@@ -2,11 +2,12 @@
 
 #include "../Window.h"
 #include "Engine/Game.h"
+#include <iostream>
 
 namespace Kepler {
 
 Window::Window(int w, int h, std::string t) {
-
+  std::cout << "No Window Manager" << std::endl;
 }
 
 void Window::RenderBegin() {  }

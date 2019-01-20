@@ -15,12 +15,12 @@ Quaternion::Quaternion(Vec3 &axis, float angle)
       w(cos(angle / 2))           // W
 {}
 
-static Quaternion FromAxis( Vec3& axis, float angle){
+Quaternion Quaternion::FromAxis( Vec3& axis, float angle){
   Vec3 normAxis = axis.Normalize();
   return Quaternion(normAxis, angle);
 }
 
-static Quaternion FromEuler(float yaw, float pitch, float roll) {
+Quaternion Quaternion::FromEuler(float yaw, float pitch, float roll) {
   yaw /= 2;
   pitch /= 2;
   roll /= 2;
@@ -35,6 +35,44 @@ static Quaternion FromEuler(float yaw, float pitch, float roll) {
 // Creates a new inverse Quaternion based on an existing one.
 Quaternion Quaternion::Invert(const Quaternion &quat) {
   return Quaternion(-quat.x, -quat.y, -quat.z, quat.w);
+}
+
+// Local rotations
+
+Quaternion Quaternion::LocalYaw(float angle) {
+  return LocalRotate(angle, 0, 0);
+}
+
+Quaternion Quaternion::LocalPitch(float angle) {
+  return LocalRotate(0, angle, 0);
+}
+
+Quaternion Quaternion::LocalRoll(float angle) {
+  return LocalRotate(0, 0, angle);
+}
+
+Quaternion Quaternion::LocalRotate(float yaw, float pitch, float roll) {
+  // TODO: Quaternion Rotate
+  return Quaternion();
+}
+
+// Normal rotations
+
+Quaternion Quaternion::Yaw(Vec3 normal, float angle) {
+  return Rotate(normal, angle, 0, 0);
+}
+
+Quaternion Quaternion::Pitch(Vec3 normal, float angle) {
+  return Rotate(normal, 0, angle, 0);
+}
+
+Quaternion Quaternion::Roll(Vec3 normal, float angle) {
+  return Rotate(normal, 0, 0, angle);
+}
+
+Quaternion Quaternion::Rotate(Vec3 normal, float yaw, float pitch, float roll) {
+  // TODO: Quaternion Rotate
+  return Quaternion();
 }
 
 // Quaternion multiplication
