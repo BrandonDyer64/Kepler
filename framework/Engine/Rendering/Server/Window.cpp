@@ -3,6 +3,7 @@
 #include "../Window.h"
 #include "Engine/Game.h"
 #include <iostream>
+#include <chrono>
 
 namespace Kepler {
 
@@ -20,12 +21,15 @@ void Window::Terminate() {  }
 void Window::SetupMesh(Mesh *mesh) {}
 void Window::SetupInput() {}
 
-double time = 0;
+auto time = std::chrono::high_resolution_clock::now();
 
 double Window::GetTime() {
-  // TODO: Replace server timer with chrono
-  time += 0.01;
-  return time;
+  auto time = std::chrono::high_resolution_clock::now();
+  std::chrono::microseconds microseconds =
+    std::chrono::duration_cast
+    <std::chrono::microseconds>
+    (time);
+  return microseconds.count() / 1000000.0;
 }
 
 } // namespace Kepler
