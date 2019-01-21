@@ -9,6 +9,8 @@ set(KEPLER_CREDITS
 )
 # ------------------------------------------------------------------------------
 
+include(config.cmake)
+
 set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
 set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
 SET(CMAKE_CROSSCOMPILING 1)
@@ -52,20 +54,19 @@ add_library(kepler SHARED ${SOURCES})
 
 target_include_directories(
   kepler PUBLIC
-  ./                             # Engine
-  ./Engine/Lua/Sources           # Lua
-  ./ThirdParty/libRocket/Include # libRocket
+  ${CMAKE_SOURCE_DIR}                             # Engine
+  ${CMAKE_SOURCE_DIR}/Engine/Lua/Sources           # Lua
 )
 
 #libRocket
 find_package(libRocket QUIET)
 if (libRocket_FOUND)
-  message(LOG "libRocket: Yes")
+  message(LOG "User Interface: Yes")
   include_directories(${LIBROCKET_INCLUDE_DIRS})
   target_link_libraries(kepler ${LIBROCKET_LIBRARIES})
   target_link_libraries(kepler ${LIBROCKET_STATIC_LIBRARIES})
 else()
-  message(LOG "libRocket: No")
+  message(LOG "User Interface: No")
 endif()
 
 # GLFW
@@ -87,9 +88,22 @@ else()
   endif()
 endif()
 
-if (GLFW_FOUND OR glfw_FOUND)
-  target_link_libraries(kepler GL GLU GLEW)
-  target_include_directories(kepler PUBLIC ./Engine/Glad/include)
+if (GLFW_FOUND OR glfw_FOUND OR GLFW_LIB_PATH)
+  if (GLFW_FOUND OR glfw_FOUND)
+    target_link_libraries(kepler GL GLU GLEW)
+  else()
+    find_package(OpenGL REQUIRED)
+    message(LOG ${OPENGL_LIBRARIES})
+    target_link_libraries(kepler ${OPENGL_LIBRARIES})
+    target_include_directories(kepler PUBLIC ${OPENGL_INCLUDE_DIRS})
+  endif()
+  target_include_directories(kepler PUBLIC ${CMAKE_SOURCE_DIR}/Engine/Glad/include)
+endif()
+
+if (GLFW_LIB_PATH)
+  set(WINDOW_MANAGER GLFW3)
+  target_include_directories(kepler PUBLIC ${GLFW_INCLUDE_PATH})
+  target_link_libraries(kepler ${GLFW_LIB_PATH})
 endif()
 
 add_compile_definitions(WINDOW_MANAGER="${WINDOW_MANAGER}")

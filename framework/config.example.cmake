@@ -1,1 +1,3 @@
-set(VULKAN_SDK_PATH "~/vulkan/x.x.x.x/x86_64")
+# For Windows Users
+set(GLFW_LIB_PATH "C:/GLFW3/lib-mingw/libglfw3.a")
+set(GLFW_INCLUDE_PATH "C:/GLFW3/include")
