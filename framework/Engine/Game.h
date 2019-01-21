@@ -38,16 +38,12 @@ public:
   void Run() {
     using namespace std::chrono_literals;
     using clock = std::chrono::high_resolution_clock;
-    auto oldTime = clock::now();
+    double oldTime = window->GetTime();
     while (!window->ShouldClose()) {
       window->RenderBegin();
       {
-        auto newTime = clock::now();
-        std::chrono::microseconds deltamicroseconds =
-            std::chrono::duration_cast  //
-            <std::chrono::microseconds> //
-            (newTime - oldTime);
-        float deltaTime = deltamicroseconds.count() / 1000000.0;
+        double newTime = window->GetTime();
+        float deltaTime = (float)(newTime - oldTime);
         oldTime = newTime;
         world.LoopStart();
         world.SetDelta(deltaTime);

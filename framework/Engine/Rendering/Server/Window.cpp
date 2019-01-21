@@ -20,6 +20,14 @@ void Window::Terminate() {  }
 void Window::SetupMesh(Mesh *mesh) {}
 void Window::SetupInput() {}
 
+double time = 0;
+
+double Window::GetTime() {
+  // TODO: Replace server timer with chrono
+  time += 0.01;
+  return time;
+}
+
 } // namespace Kepler
 
 #endif

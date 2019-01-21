@@ -5,18 +5,19 @@
 #include "EntitySystem.h"
 #include "ImmutableBag.h"
 #include "World.h"
-#include <chrono>
+#include <iostream>
 
 namespace Kepler {
 
 class TickedEntityProcessingSystem : public EntityProcessingSystem {
 protected:
-  float time;
+  float time = 0;
   float ticksPerSecond;
 
 public:
   TickedEntityProcessingSystem(float ticksPerSecond)
-      : ticksPerSecond(ticksPerSecond){};
+      : ticksPerSecond(ticksPerSecond)
+        {};
   virtual void processEntities(ImmutableBag<Entity *> &bag);
 };
 

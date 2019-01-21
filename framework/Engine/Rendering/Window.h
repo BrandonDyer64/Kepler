@@ -24,6 +24,7 @@ public:
   bool ShouldClose();
   void Terminate();
   void SetupMesh(Mesh *mesh);
+  double GetTime();
 
 private:
   void SetupInput();

@@ -59,6 +59,7 @@ bool Window::ShouldClose() {
   return glfwWindowShouldClose((GLFWwindow *)window);
 }
 void Window::Terminate() { glfwTerminate(); }
+double Window::GetTime() { return glfwGetTime(); }
 
 } // namespace Kepler
 
