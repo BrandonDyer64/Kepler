@@ -12,7 +12,7 @@ float ToRadians(float degrees) {
   return ToRadians<float>(degrees);
 }
 
-template <typename T>
+template<typename T>
 T ToDegrees(T radians) {
   return radians * (180.0 / 3.141592653589793238463);
 }

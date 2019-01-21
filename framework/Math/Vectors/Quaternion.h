@@ -23,13 +23,10 @@ public:
     struct {
       const float i, j, k, a;
     };
-<<<<<<< HEAD
-=======
     // Vector Notation
     struct {
       const float d_i, d_j, d_k, r;
     };
->>>>>>> f264fa7edc54f46ff01191cc4d5a24ab480d5ba4
   };
 
 public:

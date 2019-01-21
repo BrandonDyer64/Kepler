@@ -1,20 +1,8 @@
 #include "Mat4.h"
-<<<<<<< HEAD
-#include <cmath>
-#include "../Conversions/Conversions.h"
-
-namespace Kepler {
-	Mat4::Mat4() {
-		for (int i = 0; i < 4 * 4; i++) {
-			elements[i] = 0.0f;
-		}
-	}
-=======
 #include "../Generic/Conversions.h"
 #include <cmath>
 
 namespace Kepler {
->>>>>>> f264fa7edc54f46ff01191cc4d5a24ab480d5ba4
 
 Mat4::Mat4() {
 	for (int i = 0; i < 4 * 4; i++) {
@@ -94,19 +82,6 @@ Mat4 Mat4::Rotation(const Quaternion& quat) {
 	   |  2s(qiqk - qjqr)	   2s(qjqk + qiqr)   1-2s(qi^2 + qj^2) |
    	 └		                                                     ┘
 
-<<<<<<< HEAD
-		result.elements[0 + 0 * 4] = 1 - 2*(std::pow(j,2) + std::pow(k,2));
-		result.elements[1 + 0 * 4] = 2*(i*j - k*r);
-		result.elements[2 + 0 * 4] = 2*(i*k + j*r);
-
-		result.elements[0 + 1 * 4] = 2*(i*j + k*r);
-		result.elements[1 + 1 * 4] = 1 - 2*(std::pow(i,2) + std::pow(k,2));
-		result.elements[2 + 1 * 4] = 2*(j*k - i*r);
-
-		result.elements[0 + 2 * 4] = 2*(i*k - j*r);
-		result.elements[1 + 2 * 4] = 2*(j*k + i*r);
-		result.elements[2 + 2 * 4] = 1 - 2*(std::pow(i,2) + std::pow(j,2));
-=======
 		 s = ||q||^(-2) but if q is a unit quaternion, then s = 1
 	*/
 
@@ -117,7 +92,6 @@ Mat4 Mat4::Rotation(const Quaternion& quat) {
 	result.elements[0 + 1 * 4] = 2 * (i*j + k*r);
 	result.elements[1 + 1 * 4] = 1 - 2*(std::pow(i,2) + std::pow(k,2));
 	result.elements[2 + 1 * 4] = 2 * (j*k - i*r);
->>>>>>> f264fa7edc54f46ff01191cc4d5a24ab480d5ba4
 
 	result.elements[0 + 2 * 4] = 2 * (i*k - j*r);
 	result.elements[1 + 2 * 4] = 2 * (j*k + i*r);
