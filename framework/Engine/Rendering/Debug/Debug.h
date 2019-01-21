@@ -1,5 +1,6 @@
 #ifndef Debug_h
 #define Debug_h
+#endif
 
 //OpenGL
 #include <glad/glad.h>

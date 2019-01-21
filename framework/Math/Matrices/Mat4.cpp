@@ -1,6 +1,8 @@
 #include "Mat4.h"
+#include <cmath>
+#include "../Conversions/Conversions.h"
 
-namespace Math {
+namespace Kepler {
 	Mat4::Mat4() {
 		for (int i = 0; i < 4 * 4; i++) {
 			elements[i] = 0.0f;
@@ -82,17 +84,17 @@ namespace Math {
 			 s = ||q||^(-2) but if q is a unit quaternion, then s = 1
 		*/
 
-		result.elements[0 + 0 * 4] = 1 - 2(j^2 + k^2)
-		result.elements[1 + 0 * 4] = 2(i*j - k*r)
-		result.elements[2 + 0 * 4] = 2(i*k + j*r)
+		result.elements[0 + 0 * 4] = 1 - 2*(std::pow(j,2) + std::pow(k,2));
+		result.elements[1 + 0 * 4] = 2*(i*j - k*r);
+		result.elements[2 + 0 * 4] = 2*(i*k + j*r);
 
-		result.elements[0 + 1 * 4] = 2(i*j + k*r)
-		result.elements[1 + 1 * 4] = 1 - 2(i^2 + k^2)
-		result.elements[2 + 1 * 4] = 2(j*k - i*r)
+		result.elements[0 + 1 * 4] = 2*(i*j + k*r);
+		result.elements[1 + 1 * 4] = 1 - 2*(std::pow(i,2) + std::pow(k,2));
+		result.elements[2 + 1 * 4] = 2*(j*k - i*r);
 
-		result.elements[0 + 2 * 4] = 2(i*k - j*r)
-		result.elements[1 + 2 * 4] = 2(j*k + i*r)
-		result.elements[2 + 2 * 4] = 1 - 2(q^2 + j^2)
+		result.elements[0 + 2 * 4] = 2*(i*k - j*r);
+		result.elements[1 + 2 * 4] = 2*(j*k + i*r);
+		result.elements[2 + 2 * 4] = 1 - 2*(std::pow(i,2) + std::pow(j,2));
 
 		result.elements[3 + 3 * 4] = 1;
 

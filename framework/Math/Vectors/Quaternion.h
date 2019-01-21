@@ -7,6 +7,7 @@
 #ifndef Quaternion_h
 #define Quaternion_h
 
+
 #include "Vec3.h"
 
 namespace Kepler {
@@ -22,10 +23,6 @@ public:
     struct {
       const float i, j, k, a;
     };
-    // Vector Notation
-    struct {
-      const flaot i, j, k, r;
-    }
   };
 
 public:
@@ -37,7 +34,7 @@ public:
 
   Quaternion(Quaternion &other)
       : x(other.x), y(other.y), z(other.z), w(other.w) {}
-private:
+protected:
   Quaternion(Vec3 &axis, float angle);
 public:
   static Quaternion FromAxis( Vec3& axis, float angle);

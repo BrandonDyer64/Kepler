@@ -20,7 +20,7 @@ namespace Kepler {
 	private:
 		union {
 			struct { float elements[4 * 4]; };
-			struct { Vec4 columns[4]; }
+			struct { Vec4 columns[4]; };
 		};
 	public:
 	  Mat4();
@@ -34,8 +34,10 @@ namespace Kepler {
 		static Mat4 Scale(const Vec3& scaleRatio);
 		static Mat4 Rotation(const Quaternion& quat);
 
-		Mat4& multiply(const Mat4& other);
+		Mat4& Multiply(const Mat4& other);
 		friend Mat4 operator*(Mat4 left, const Mat4& right);
 		Mat4& operator*=(const Mat4& other);
 	};
 }
+
+#endif
