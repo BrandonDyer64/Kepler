@@ -6,11 +6,18 @@
 namespace Kepler {
 
 #define KEY_VALUES_INCLUDE
-#include "KeyValues.h"
+#ifdef __unix__
+#include "KeyValuesUnix.h"
+#endif
+#ifdef _WIN32
+#include "KeyValuesWindows.h"
+#endif
 #undef KEY_VALUES_INCLUDE
 
 std::string getKeyName(int scancode) {
-  return scancode < 120 ? keys[scancode] : "";
+  if (scancode >= 284)
+    scancode -= 200;
+  return scancode <= 140 ? keys[scancode] : "";
 }
 
 } // namespace Kepler

@@ -56,12 +56,12 @@ public:
         }
       }
       window->RenderEnd();
-      window->PollEvents();
       #ifdef _WIN32
       Sleep(1);
       #else
       std::this_thread::sleep_for(1ms);
       #endif
+      window->PollEvents();
     }
   }
   template <class L> static void Create(std::vector<EntitySystem *> systems) {
