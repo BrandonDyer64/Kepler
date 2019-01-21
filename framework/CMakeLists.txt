@@ -22,7 +22,7 @@ message("┏━━━━━━━━━━━━━━━┓")
 message("┃ Kepler Engine ┃  v${KEPLER_VERSION}")
 message("┗━━━━━━━━━━━━━━━┛")
 
-include(config.cmake)
+#include(config.cmake)
 
 function(message)
   list(GET ARGV 0 MessageType)
@@ -58,7 +58,7 @@ target_include_directories(
 )
 
 #libRocket
-find_package(libRocket)
+find_package(libRocket QUIET)
 if (libRocket_FOUND)
   message(LOG "libRocket: Yes")
   include_directories(${LIBROCKET_INCLUDE_DIRS})
@@ -69,7 +69,7 @@ else()
 endif()
 
 # GLFW
-find_package(glfw3)
+find_package(glfw3 QUIET)
 if (glfw_FOUND)
   set(WINDOW_MANAGER GLFW3)
   include_directories(${GLFW_INCLUDE_DIRS})
@@ -107,6 +107,5 @@ _message("")
 
 # Use "sudo make install" to apply
 install(TARGETS kepler
-  LIBRARY DESTINATION /usr/lib
-  PUBLIC_HEADER DESTINATION /user/include
+  DESTINATION /usr/lib
 )
