@@ -45,8 +45,12 @@ void Game::KeyTyped(std::string key, bool shift, bool ctrl) {
   std::cout << key << std::endl;
 }
 
-void Game::AddJoystick(void *joystick) {
-  joysticks.push_back(joystick);
+void Game::AddGamepad(void *gamepad) {
+  gamepads.push_back(gamepad);
+}
+
+void Game::RemoveGamepad(void *gamepad) {
+  
 }
 
 } // namespace Kepler

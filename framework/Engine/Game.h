@@ -32,7 +32,7 @@ private:
   std::map<std::string, Actor *> actors;
   bool isRunning = true;
   std::map<std::string, bool> keyStates;
-  std::vector<void *> joysticks;
+  std::vector<void *> gamepads;
 
 public:
   Game(World &world, Level *level, SystemManager *sm, EntityManager *em);
@@ -88,7 +88,8 @@ public:
   bool GetKeyState(std::string key);
   void SetKeyState(std::string key, bool state);
   void KeyTyped(std::string key, bool shift, bool ctrl);
-  void AddJoystick(void *joystick);
+  void AddGamepad(void *gamepad);
+  void RemoveGamepad(void *gamepad);
 };
 
 } // namespace Kepler
