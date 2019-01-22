@@ -46,7 +46,7 @@ Quaternion Quaternion::FromEuler(float yaw, float pitch, float roll) {
 
 Quaternion FromLookAxis(Vec3 &up, Vec3 &forward)
 {
-  Vec3 normforward = forward.Normalize(); // Just in case.
+  Vec3 normforward = forward.Normalize();
   Vec3 normright = up.Cross(normforward).Normalize();
   Vec3 normup = normforward.Cross(normright);
 
