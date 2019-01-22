@@ -41,6 +41,7 @@ public:
   bool operator==(const Vec3 &other) const;
   float Dot(const Vec3 &other) const;
   Vec3 Cross(const Vec3 &other) const;
+  Vec3 ProjectOntoPlane(const Vec3& Normal, const Vec3& Vector)
   float DistanceTo(const Vec3 &other) const;
   float Magnitude() const;
   Vec3 Normalize() const;

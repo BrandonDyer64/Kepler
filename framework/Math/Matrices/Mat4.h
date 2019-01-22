@@ -30,9 +30,9 @@ namespace Kepler {
 		static Mat4 Orthographic(float left, float right, float bottom, float top, float near, float far);
 		static Mat4 Perspective(float fov, float aspectRatio, float near, float far);
 
-		static Mat4 Translation(const Vec3& translation);
+		static Mat4 Translate(const Vec3& translation);
 		static Mat4 Scale(const Vec3& scaleRatio);
-		static Mat4 Rotation(const Quaternion& quat);
+		static Mat4 Rotatate(const Quaternion& quat);
 
 		Mat4& Multiply(const Mat4& other);
 		friend Mat4 operator*(Mat4 left, const Mat4& right);

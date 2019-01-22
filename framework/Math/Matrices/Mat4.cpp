@@ -55,7 +55,7 @@ Mat4 Mat4::Perspective(float fov, float aspectRatio, float near, float far) {
 	return result;
 }
 
-Mat4 Mat4::Translation(const Vec3& translation) {
+Mat4 Mat4::Translate(const Vec3& translation) {
 	Mat4 result(1.0f);
 
 	result.elements[0 + 3 * 4] = translation.x;
@@ -64,7 +64,7 @@ Mat4 Mat4::Translation(const Vec3& translation) {
 
 	return result;
 }
-Mat4 Mat4::Rotation(const Quaternion& quat) {
+Mat4 Mat4::Rotatate(const Quaternion& quat) {
 	Mat4 result;
 
 	float i = quat.x;

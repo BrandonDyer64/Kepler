@@ -30,19 +30,23 @@ public:
   };
 
 public:
-  // Quaternions can not be inialized with a 0 in w (a) because it is always a
+  // Quaternions can not be inialized with a 0 in w because it is always a
   // unit vector.
   Quaternion() : x(0), y(0), z(0), w(1) {}
-
-  Quaternion(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
-
   Quaternion(Quaternion &other)
       : x(other.x), y(other.y), z(other.z), w(other.w) {}
 protected:
   Quaternion(Vec3 &axis, float angle);
+  Quaternion(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
 public:
+  static Quaternion FromVectors( Vec3& Normal, Vec3& Forward);
   static Quaternion FromAxis( Vec3& axis, float angle);
   static Quaternion FromEuler(float yaw, float pitch, float roll);
+
+  Vec3 GetUp(const Quaternion &quat);
+  Vec3 GetRight(const Quaternion &quat);
+  Vec3 GetForward(const Quaternion &quat);
+
   Quaternion Invert(const Quaternion &quat);
 
   Quaternion LocalYaw(float angle);
@@ -55,7 +59,7 @@ public:
   Quaternion Roll(Vec3 normal, float angle);
   Quaternion Rotate(Vec3 normal, float yaw, float pitch, float roll);
 
-  Quaternion &operator*(const Quaternion &other) const;
+  Quaternion operator*(const Quaternion &other) const;
   bool operator==(const Quaternion &other) const;
   bool operator!=(const Quaternion &other) const;
 };

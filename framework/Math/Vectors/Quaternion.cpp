@@ -15,7 +15,15 @@ Quaternion::Quaternion(Vec3 &axis, float angle)
       w(cos(angle / 2))           // W
 {}
 
-Quaternion Quaternion::FromAxis( Vec3& axis, float angle){
+Quaternion Quaternion::FromVectors(Vec3& Normal, Vec3& Forward){
+    Vec3 normy = Normal.Normalize();
+    Vec3 fory = Forward.Normalize();
+    float m = sqrt(2.0 + 2.0 * Dot(normy, fory));
+    Vec3 w = (1.0 / m) * Cross(normy, fory);
+    return Quaternion(0.5 * m, w.x, w.y, w.z);
+}
+
+Quaternion Quaternion::FromAxis(Vec3& axis, float angle){
   Vec3 normAxis = axis.Normalize();
   return Quaternion(normAxis, angle);
 }
@@ -25,11 +33,11 @@ Quaternion Quaternion::FromEuler(float yaw, float pitch, float roll) {
   pitch /= 2;
   roll /= 2;
   return Quaternion(
-      (cos(yaw) * cos(pitch) * cos(roll)) - (sin(yaw) * sin(pitch) * sin(roll)),
-      (sin(yaw) * sin(pitch) * cos(roll)) + (cos(yaw) * cos(pitch) * sin(roll)),
-      (sin(yaw) * cos(pitch) * cos(roll)) + (cos(yaw) * sin(pitch) * sin(roll)),
-      (cos(yaw) * sin(pitch) * cos(roll)) - (sin(yaw) * cos(pitch) * sin(roll))
-    );
+    cos(yaw) * cos(pitch) * cos(roll)) - (sin(yaw) * sin(pitch) * sin(roll)),
+    sin(yaw) * sin(pitch) * cos(roll)) + (cos(yaw) * cos(pitch) * sin(roll)),
+    sin(yaw) * cos(pitch) * cos(roll)) + (cos(yaw) * sin(pitch) * sin(roll)),
+    cos(yaw) * sin(pitch) * cos(roll)) - (sin(yaw) * cos(pitch) * sin(roll))
+  );
 }
 
 // Creates a new inverse Quaternion based on an existing one.
@@ -37,47 +45,10 @@ Quaternion Quaternion::Invert(const Quaternion &quat) {
   return Quaternion(-quat.x, -quat.y, -quat.z, quat.w);
 }
 
-// Local rotations
-
-Quaternion Quaternion::LocalYaw(float angle) {
-  return LocalRotate(angle, 0, 0);
-}
-
-Quaternion Quaternion::LocalPitch(float angle) {
-  return LocalRotate(0, angle, 0);
-}
-
-Quaternion Quaternion::LocalRoll(float angle) {
-  return LocalRotate(0, 0, angle);
-}
-
-Quaternion Quaternion::LocalRotate(float yaw, float pitch, float roll) {
-  // TODO: Quaternion Rotate
-  return Quaternion();
-}
-
-// Normal rotations
-
-Quaternion Quaternion::Yaw(Vec3 normal, float angle) {
-  return Rotate(normal, angle, 0, 0);
-}
-
-Quaternion Quaternion::Pitch(Vec3 normal, float angle) {
-  return Rotate(normal, 0, angle, 0);
-}
-
-Quaternion Quaternion::Roll(Vec3 normal, float angle) {
-  return Rotate(normal, 0, 0, angle);
-}
-
-Quaternion Quaternion::Rotate(Vec3 normal, float yaw, float pitch, float roll) {
-  // TODO: Quaternion Rotate
-  return Quaternion();
-}
-
 // Quaternion multiplication
-Quaternion &Quaternion::operator*(const Quaternion &other) const {
-  return *new Quaternion(
+// Note Quaternions are not commutative (quat x; quat y;  x*y != y*x)
+Quaternion Quaternion::operator*(const Quaternion &other) const {
+  return Quaternion(
       (x * other.x) - (y * other.y) - (z * other.z) - (w * other.w),
       (x * other.y) + (y * other.x) + (z * other.w) - (w * other.z),
       (x * other.z) + (y * other.w) - (z * other.x) + (w * other.y),
