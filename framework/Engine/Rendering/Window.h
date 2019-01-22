@@ -2,8 +2,10 @@
 #define Window_h
 
 #include "../World/Rendering/Mesh.h"
+#include "Shader.h"
 #include <iostream>
 #include <string>
+#include <map>
 
 namespace Kepler {
 
@@ -15,6 +17,7 @@ public:
 
 private:
   void *window;
+  std::map<std::string, Shader *> shaders;
 
 public:
   Window(int w, int h, std::string t);
@@ -25,9 +28,11 @@ public:
   void Terminate();
   void SetupMesh(Mesh *mesh);
   double GetTime();
+  Shader &GetShader(std::string &filename);
 
 private:
   void SetupInput();
+  void CompileShader(Shader *shader);
 };
 
 } // namespace Kepler

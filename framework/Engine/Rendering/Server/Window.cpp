@@ -32,6 +32,8 @@ double Window::GetTime() {
   return microseconds.count() / 1000000.0;
 }
 
+void CompileShader(Shader *shader) {}
+
 } // namespace Kepler
 
 #endif

@@ -15,14 +15,32 @@ void Window::SetupInput() {
         Window *self = (Window *)glfwGetWindowUserPointer(window);
         if (action == GLFW_PRESS) {
           self->game->SetKeyState(getKeyName(scancode), true);
+          /*
+          self->game->KeyTyped(
+            std::string(glfwGetKeyName(key, 0)),
+            mods & GLFW_MOD_SHIFT,
+            mods & GLFW_MOD_CONTROL
+          );
+          */
         } else if (action == GLFW_RELEASE) {
           self->game->SetKeyState(getKeyName(scancode), false);
         }
-        std::cout << scancode << " " << getKeyName(scancode) << " "
-                  << (self->game->GetKeyState(getKeyName(scancode)) ? "true"
-                                                                    : "false")
-                  << std::endl;
       });
+
+    // Gamepad
+    glfwSetJoystickCallback(
+      [](int joy, int event) {
+        switch (event) {
+        case GLFW_CONNECTED:
+          std::cout << "Joystick connected" << std::endl;
+          Game::game->AddJoystick((void *)&joy);
+          break;
+        case GLFW_DISCONNECTED:
+          std::cout << "Joystick disconnected" << std::endl;
+          break;
+        }
+      }
+    );
 }
 
 } // namespace Kepler

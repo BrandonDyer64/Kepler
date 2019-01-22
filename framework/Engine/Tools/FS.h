@@ -5,11 +5,9 @@
 #include <string>
 #include <vector>
 
-namespace Kepler {
+namespace Kepler::FS {
 
-std::vector<char> ReadFile(const std::string &filename);
-
-std::string ExecPath();
+std::string ReadFile(const std::string &filename);
 
 } // namespace Kepler
 

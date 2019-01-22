@@ -3,6 +3,8 @@
 
 namespace Kepler {
 
+Game *Game::game;
+
 Game::Game(World &world, Level *level, SystemManager *sm, EntityManager *em)
     : world(world), // World
       level(level), // Level
@@ -12,6 +14,7 @@ Game::Game(World &world, Level *level, SystemManager *sm, EntityManager *em)
   std::cout << "Making window" << std::endl;
   window = new Window(1920 / 2, 1080 / 2, "test");
   window->game = this;
+  Game::game = this;
 }
 
 void Game::Launch() {}
@@ -37,5 +40,13 @@ bool Game::GetKeyState(std::string key) {
 }
 
 void Game::SetKeyState(std::string key, bool state) { keyStates[key] = state; }
+
+void Game::KeyTyped(std::string key, bool shift, bool ctrl) {
+  std::cout << key << std::endl;
+}
+
+void Game::AddJoystick(void *joystick) {
+  joysticks.push_back(joystick);
+}
 
 } // namespace Kepler
