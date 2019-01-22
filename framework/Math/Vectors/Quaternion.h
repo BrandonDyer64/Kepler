@@ -15,6 +15,9 @@ namespace Kepler {
 class Quaternion {
 public:
   union {
+    // Note: Quaternions will always be stored in number notation for space and
+    // convenience of math.
+
     // Number Notation
     struct {
       const float x, y, z, w;
@@ -30,8 +33,8 @@ public:
   };
 
 public:
-  // Quaternions can not be inialized with a 0 in w because it is always a
-  // unit vector.
+  // Note: Quaternions can not be inialized with a 0 in w because it is always a
+  // unit vector. If no arguements are given an identity quaternion is created.
   Quaternion() : x(0), y(0), z(0), w(1) {}
   Quaternion(Quaternion &other)
       : x(other.x), y(other.y), z(other.z), w(other.w) {}
@@ -42,6 +45,7 @@ public:
   static Quaternion FromVectors( Vec3& Normal, Vec3& Forward);
   static Quaternion FromAxis( Vec3& axis, float angle);
   static Quaternion FromEuler(float yaw, float pitch, float roll);
+  static Quaternion FromLookAxis(Vec3& up, Vec3& forward);
 
   Vec3 GetUp(const Quaternion &quat);
   Vec3 GetRight(const Quaternion &quat);

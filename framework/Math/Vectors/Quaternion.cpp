@@ -15,19 +15,23 @@ Quaternion::Quaternion(Vec3 &axis, float angle)
       w(cos(angle / 2))           // W
 {}
 
-Quaternion Quaternion::FromVectors(Vec3& Normal, Vec3& Forward){
-    Vec3 normy = Normal.Normalize();
-    Vec3 fory = Forward.Normalize();
-    float m = sqrt(2.0 + 2.0 * Dot(normy, fory));
-    Vec3 w = (1.0 / m) * Cross(normy, fory);
+// Creates a Quaternion from two axis returning a quaternion mimic the rotatation from
+// the first axis to the second axis.
+Quaternion Quaternion::FromVectors(Vec3& u, Vec3& v){
+    Vec3 un = u.Normalize();
+    Vec3 vn = v.Normalize();
+    float m = sqrt(2.0 + 2.0 * Dot(un, vn));
+    Vec3 w = (1.0 / m) * Cross(un, vn);
     return Quaternion(0.5 * m, w.x, w.y, w.z);
 }
 
+// Creates a Quaternion given a rotational axis and an angle about that axis.
 Quaternion Quaternion::FromAxis(Vec3& axis, float angle){
   Vec3 normAxis = axis.Normalize();
   return Quaternion(normAxis, angle);
 }
 
+// Creates a Quaternion based on the given Euler Angles
 Quaternion Quaternion::FromEuler(float yaw, float pitch, float roll) {
   yaw /= 2;
   pitch /= 2;
@@ -38,6 +42,52 @@ Quaternion Quaternion::FromEuler(float yaw, float pitch, float roll) {
     sin(yaw) * cos(pitch) * cos(roll)) + (cos(yaw) * sin(pitch) * sin(roll)),
     cos(yaw) * sin(pitch) * cos(roll)) - (sin(yaw) * cos(pitch) * sin(roll))
   );
+}
+
+Quaternion FromLookAxis(Vec3 &up, Vec3 &forward)
+{
+  Vec3 normforward = forward.Normalize(); // Just in case.
+  Vec3 normright = up.Cross(normforward).Normalize();
+  Vec3 normup = normforward.Cross(normright);
+
+  float r = normright.x + normup.y + normforward.z;
+  Quaternion result();
+  if(r > 0.0){
+    float w = std::sqrt(r + 1.0);
+    result.w = w * 0.5;
+    r1 = 0.5 / w
+    result.x = (normup.z - normforward.y) * r1;
+    result.y = (normforward.x - normright.z) * r1;
+    result.z = (normright.y - normup.x) * r1;
+    return result
+  }
+  if(normright.x >= normup.y && normright.x >= normforward.z){
+    float r1 = std::sqrt(1.0 + normright.x - normup.y - normforward.z);
+    float r2 = 0.5 / r1;
+    result.x = 0.5 * r1;
+    result.y = (normright.y + normup.x) * r2;
+    result.z = (normright.z + normforward.x) * r2;
+    result.w = (normup.z + normforward.y) * r2;
+    return result;
+  }
+  if(normup.y > normforward.z){
+    float r1 = std::sqrt(1.0 + normup.y - normright.x - normforward.z);
+    float r2 = 0.5 / r1;
+    result.x = (normup.x + normright.y) * r2;
+    result.y = 0.5 * r1;
+    result.z = (normforward.y + normup.z) * r2;
+    result.w = (normforward.x + normright.z) * r2;
+    return result;
+  }
+  {
+    float r1 = std::sqrt(1.0 + normforward.z - normright.x - normup.y);
+    float r2 = 0.5 / r1;
+    result.x = (normforward.x + normright.z) * r2;
+    result.y = (normforward.y + normup.z) * r2;
+    result.z = 0.5 * r1;
+    result.w = (normright.y + normup.x) * r2;
+    return result;
+  }
 }
 
 // Creates a new inverse Quaternion based on an existing one.
