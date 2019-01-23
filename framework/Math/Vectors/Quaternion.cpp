@@ -56,7 +56,7 @@ Quaternion Quaternion::FromFloats(float x, float y, float z, float w){
     std::cout << ("Quaternion Function FromPoints Has normalized a quaternion. Check usage.") << std::endl;
     float mag = sqrt(std::pow(x,2) + std::pow(y,2) + std::pow(z,2)
                       + std::pow(w,2));
-    Quaternion(x / mag, y / mag, z / mag, w / mag);
+    return Quaternion(x / mag, y / mag, z / mag, w / mag);
   }
 }
 
