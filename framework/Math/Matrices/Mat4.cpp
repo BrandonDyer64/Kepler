@@ -64,7 +64,7 @@ Mat4 Mat4::Translate(const Vec3& translation) {
 
 	return result;
 }
-Mat4 Mat4::Rotatate(const Quaternion& quat) {
+Mat4 Mat4::Rotate(const Quaternion& quat) {
 	Mat4 result;
 
 	float i = quat.x;

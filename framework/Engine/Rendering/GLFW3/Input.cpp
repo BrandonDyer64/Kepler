@@ -33,7 +33,7 @@ void Window::SetupInput() {
         switch (event) {
         case GLFW_CONNECTED:
           std::cout << "Joystick connected" << std::endl;
-          Game::game->AddJoystick((void *)&joy);
+          Game::game->AddGamepad((void *)&joy);
           break;
         case GLFW_DISCONNECTED:
           std::cout << "Joystick disconnected" << std::endl;

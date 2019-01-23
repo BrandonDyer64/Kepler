@@ -6,7 +6,10 @@
 #include <iostream>
 #include <vector>
 
+void TestPromise();
+
 int main() {
+  TestPromise();
   std::vector<Kepler::EntitySystem *> systems;
   systems.push_back(new Kepler::DebugSystem());
   Kepler::Game::Create<MyLevel>(systems);

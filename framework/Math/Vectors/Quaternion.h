@@ -45,7 +45,7 @@ public:
   static Quaternion FromVectors( Vec3& Normal, Vec3& Forward);
   static Quaternion FromAxis( Vec3& axis, float angle);
   static Quaternion FromEuler(float yaw, float pitch, float roll);
-  static Quaternion FromLookAxis(Vec3& up, Vec3& forward);
+  //static Quaternion FromLookAxis(Vec3& up, Vec3& forward);
 
   Vec3 GetUp(const Quaternion &quat);
   Vec3 GetRight(const Quaternion &quat);
@@ -58,7 +58,7 @@ public:
   Quaternion LocalRoll(float angle);
   Quaternion LocalRotate(float yaw, float pitch, float roll);
 
-  Quaternion Yaw(Vec3 normal, float angle);
+  Quaternion Yaw(Vec3 &normal, float angle);
   Quaternion Pitch(Vec3 normal, float angle);
   Quaternion Roll(Vec3 normal, float angle);
   Quaternion Rotate(Vec3 normal, float yaw, float pitch, float roll);

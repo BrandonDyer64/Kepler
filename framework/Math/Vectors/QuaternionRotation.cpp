@@ -1,23 +1,23 @@
 
-#include "Quaternion"
+#include "Quaternion.h"
 #include "../Matrices/Mat4.h"
 
 // Local rotations (Rotataion using a local up)
 namespace Kepler{
 
-Vec3 GetUp(const Quaternion &quat){
-  Vec3 up(0,0,1)
-  Mat4 rot = Rotate(quat);
+Vec3 Quaternion::GetUp(const Quaternion &quat){
+  Vec3 up(0,0,1);
+  Mat4 rot = Mat4::Rotate(quat);
   return up * rot;
 }
-Vec3 GetForward(const Quaternion &quat){
-  Vec3 forward(0,1,0)
-  Mat4 rot = Rotate(quat);
+Vec3 Quaternion::GetForward(const Quaternion &quat){
+  Vec3 forward(0,1,0);
+  Mat4 rot = Mat4::Rotate(quat);
   return forward * rot;
 }
-Vec3 GetRight(const Quaternion &quat){
-  Vec3 right(1,0,0)
-  Mat4 rot = Rotate(quat);
+Vec3 Quaternion::GetRight(const Quaternion &quat){
+  Vec3 right(1,0,0);
+  Mat4 rot = Mat4::Rotate(quat);
   return right * rot;
 }
 

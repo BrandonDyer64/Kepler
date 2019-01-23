@@ -20,8 +20,8 @@ Quaternion::Quaternion(Vec3 &axis, float angle)
 Quaternion Quaternion::FromVectors(Vec3& u, Vec3& v){
     Vec3 un = u.Normalize();
     Vec3 vn = v.Normalize();
-    float m = sqrt(2.0 + 2.0 * Dot(un, vn));
-    Vec3 w = (1.0 / m) * Cross(un, vn);
+    float m = sqrt(un.Dot(vn) * 2.0 + 2.0);
+    Vec3 w = un.Cross(vn) * (1.0 / m);
     return Quaternion(0.5 * m, w.x, w.y, w.z);
 }
 
@@ -37,13 +37,14 @@ Quaternion Quaternion::FromEuler(float yaw, float pitch, float roll) {
   pitch /= 2;
   roll /= 2;
   return Quaternion(
-    cos(yaw) * cos(pitch) * cos(roll)) - (sin(yaw) * sin(pitch) * sin(roll)),
-    sin(yaw) * sin(pitch) * cos(roll)) + (cos(yaw) * cos(pitch) * sin(roll)),
-    sin(yaw) * cos(pitch) * cos(roll)) + (cos(yaw) * sin(pitch) * sin(roll)),
-    cos(yaw) * sin(pitch) * cos(roll)) - (sin(yaw) * cos(pitch) * sin(roll))
+    cos(yaw) * cos(pitch) * cos(roll) - (sin(yaw) * sin(pitch) * sin(roll)),
+    sin(yaw) * sin(pitch) * cos(roll) + (cos(yaw) * cos(pitch) * sin(roll)),
+    sin(yaw) * cos(pitch) * cos(roll) + (cos(yaw) * sin(pitch) * sin(roll)),
+    cos(yaw) * sin(pitch) * cos(roll) - (sin(yaw) * cos(pitch) * sin(roll))
   );
 }
 
+/*
 Quaternion FromLookAxis(Vec3 &up, Vec3 &forward)
 {
   Vec3 normforward = forward.Normalize();
@@ -89,6 +90,7 @@ Quaternion FromLookAxis(Vec3 &up, Vec3 &forward)
     return result;
   }
 }
+*/
 
 // Creates a new inverse Quaternion based on an existing one.
 Quaternion Quaternion::Invert(const Quaternion &quat) {

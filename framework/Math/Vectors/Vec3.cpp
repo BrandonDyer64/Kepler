@@ -19,6 +19,10 @@ Vec3 Vec3::operator*(const float &other) const {
   return Vec3(x * other, y * other, z * other);
 }
 
+Vec3 Vec3::operator*(const Mat4 &other) const {
+  return *this;
+}
+
 Vec3 Vec3::operator/(const Vec3 &other) const {
   return Vec3(x / other.x, y / other.y, z / other.z);
 }

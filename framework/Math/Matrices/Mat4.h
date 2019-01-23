@@ -2,6 +2,7 @@
 #define Mat4_h
 
 #define _USE_MATH_DEFINES
+#include "../Vectors/Vec3.h"
 #include "../Vectors/Vec4.h"
 #include "../Vectors/Quaternion.h"
 
@@ -16,28 +17,30 @@
 */
 
 namespace Kepler {
-	class Mat4 {
-	private:
-		union {
-			struct { float elements[4 * 4]; };
-			struct { Vec4 columns[4]; };
-		};
-	public:
-	  Mat4();
-		Mat4(float diagnal);
 
-		static Mat4 Identity();
-		static Mat4 Orthographic(float left, float right, float bottom, float top, float near, float far);
-		static Mat4 Perspective(float fov, float aspectRatio, float near, float far);
-
-		static Mat4 Translate(const Vec3& translation);
-		static Mat4 Scale(const Vec3& scaleRatio);
-		static Mat4 Rotatate(const Quaternion& quat);
-
-		Mat4& Multiply(const Mat4& other);
-		friend Mat4 operator*(Mat4 left, const Mat4& right);
-		Mat4& operator*=(const Mat4& other);
+class Mat4 {
+private:
+	union {
+		struct { float elements[4 * 4]; };
+		struct { Vec4 columns[4]; };
 	};
-}
+public:
+  Mat4();
+	Mat4(float diagnal);
+
+	static Mat4 Identity();
+	static Mat4 Orthographic(float left, float right, float bottom, float top, float near, float far);
+	static Mat4 Perspective(float fov, float aspectRatio, float near, float far);
+
+	static Mat4 Translate(const Vec3& translation);
+	static Mat4 Scale(const Vec3& scaleRatio);
+	static Mat4 Rotate(const Quaternion& quat);
+
+	Mat4& Multiply(const Mat4& other);
+	friend Mat4 operator*(Mat4 left, const Mat4& right);
+	Mat4& operator*=(const Mat4& other);
+};
+
+} // Namespace Kepler
 
 #endif
