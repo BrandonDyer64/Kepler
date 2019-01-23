@@ -7,7 +7,7 @@
 #ifndef Quaternion_h
 #define Quaternion_h
 
-
+#include <iostream>
 #include "Vec3.h"
 
 namespace Kepler {
@@ -48,11 +48,13 @@ public:
   static Quaternion FromLookAxis(Vec3& up, Vec3& forward);
   static Quaternion FromFloats(float x, float y, float z, float w);
 
+  float Magnitude();
+  Quaternion Invert();
+
   Vec3 GetUp(const Quaternion &quat);
   Vec3 GetRight(const Quaternion &quat);
   Vec3 GetForward(const Quaternion &quat);
 
-  Quaternion Invert(const Quaternion &quat);
 
   Quaternion LocalYaw(float angle);
   Quaternion LocalPitch(float angle);
@@ -60,13 +62,11 @@ public:
   Quaternion LocalRotate(float yaw, float pitch, float roll);
 
   Quaternion Yaw(Vec3 &normal, float angle);
-  Quaternion Pitch(Vec3 normal, float angle);
-  Quaternion Roll(Vec3 normal, float angle);
-  Quaternion Rotate(Vec3 normal, float yaw, float pitch, float roll);
 
   Quaternion operator*(const Quaternion &other) const;
   bool operator==(const Quaternion &other) const;
   bool operator!=(const Quaternion &other) const;
+  friend std::ostream &operator<<(std::ostream &out, const Quaternion &quat);
 };
 
 } // namespace Kepler

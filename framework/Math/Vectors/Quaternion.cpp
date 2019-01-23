@@ -1,4 +1,5 @@
 #include "Quaternion.h"
+#include "../Generic/Conversions.h"
 #include <math.h>
 #include <cmath>
 #include <iostream>
@@ -9,12 +10,14 @@ namespace Kepler {
 Takes a unit vector and an angle and produces a Quaternion in number notation.
 The Angle is halved due to the fact that in any rotation the point will be
 multiplied twice so that the angel given will result in the angle of rotation.
+Also note that all internal storage for angles is in radians and input is in
+degrees. This is because, by default, the trig functions work off radians.
 */
 Quaternion::Quaternion(Vec3 &axis, float angle)
-    : x(axis.x * sin(angle / 2)), // X
-      y(axis.y * sin(angle / 2)), // Y
-      z(axis.z * sin(angle / 2)), // Z
-      w(cos(angle / 2))           // W
+    : x(axis.x * sin(ToRadians(angle / 2))), // X
+      y(axis.y * sin(ToRadians(angle / 2))), // Y
+      z(axis.z * sin(ToRadians(angle / 2))), // Z
+      w(cos(ToRadians(angle / 2)))           // W
 {}
 
 // Creates a Quaternion from two axis returning a quaternion mimic the rotatation from
@@ -35,9 +38,9 @@ Quaternion Quaternion::FromAxis(Vec3& axis, float angle){
 
 // Creates a Quaternion based on the given Euler Angles
 Quaternion Quaternion::FromEuler(float yaw, float pitch, float roll) {
-  yaw /= 2;
-  pitch /= 2;
-  roll /= 2;
+  yaw = ToRadians(yaw / 2);
+  pitch = ToRadians(pitch / 2);
+  roll = ToRadians(roll / 2);
   return Quaternion(
     cos(yaw) * cos(pitch) * cos(roll) - (sin(yaw) * sin(pitch) * sin(roll)),
     sin(yaw) * sin(pitch) * cos(roll) + (cos(yaw) * cos(pitch) * sin(roll)),
@@ -54,8 +57,7 @@ Quaternion Quaternion::FromFloats(float x, float y, float z, float w){
   {
     //TODO: SetDebug Flag for printing
     std::cout << ("Quaternion Function FromPoints Has normalized a quaternion. Check usage.") << std::endl;
-    float mag = sqrt(std::pow(x,2) + std::pow(y,2) + std::pow(z,2)
-                      + std::pow(w,2));
+    float mag = Quaternion(x, y, z, w).Magnitude();
     return Quaternion(x / mag, y / mag, z / mag, w / mag);
   }
 }
@@ -105,11 +107,13 @@ Quaternion Quaternion::FromLookAxis(Vec3 &up, Vec3 &forward)
   }
 }
 
-
+float Quaternion::Magnitude(){
+  return sqrt(std::pow(this->x,2) + std::pow(this->y,2) + std::pow(this->z,2) + std::pow(this->w,2));
+}
 
 // Creates a new inverse Quaternion based on an existing one.
-Quaternion Quaternion::Invert(const Quaternion &quat) {
-  return Quaternion(-quat.x, -quat.y, -quat.z, quat.w);
+Quaternion Quaternion::Invert() {
+  return Quaternion(-this->x, -this->y, -this->z, this->w);
 }
 
 // Quaternion multiplication
@@ -120,6 +124,12 @@ Quaternion Quaternion::operator*(const Quaternion &other) const {
       (x * other.y) + (y * other.x) + (z * other.w) - (w * other.z),
       (x * other.z) + (y * other.w) - (z * other.x) + (w * other.y),
       (x * other.w) - (y * other.z) + (z * other.y) + (w * other.x));
+}
+
+std::ostream &operator<<(std::ostream &out, const Quaternion &quat) {
+  out << "Quaternion(" << quat.x << ", " << quat.y << ", " << quat.z << ", " <<
+    quat.w << ")" << std::endl;
+  return out;
 }
 
 // Equivalency
