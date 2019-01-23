@@ -42,10 +42,11 @@ protected:
   Quaternion(Vec3 &axis, float angle);
   Quaternion(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
 public:
-  static Quaternion FromVectors( Vec3& Normal, Vec3& Forward);
+  static Quaternion FromVectors( Vec3& u, Vec3& v);
   static Quaternion FromAxis( Vec3& axis, float angle);
   static Quaternion FromEuler(float yaw, float pitch, float roll);
-  //static Quaternion FromLookAxis(Vec3& up, Vec3& forward);
+  static Quaternion FromLookAxis(Vec3& up, Vec3& forward);
+  static Quaternion FromFloats(float x, float y, float z, float w);
 
   Vec3 GetUp(const Quaternion &quat);
   Vec3 GetRight(const Quaternion &quat);

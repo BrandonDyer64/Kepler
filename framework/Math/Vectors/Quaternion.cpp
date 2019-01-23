@@ -1,5 +1,7 @@
 #include "Quaternion.h"
 #include <math.h>
+#include <cmath>
+#include <iostream>
 
 namespace Kepler {
 
@@ -44,53 +46,66 @@ Quaternion Quaternion::FromEuler(float yaw, float pitch, float roll) {
   );
 }
 
-/*
-Quaternion FromLookAxis(Vec3 &up, Vec3 &forward)
+// Note: Do not use this function unless you are sure the points given will be
+// a proper quaternion in number notation.
+Quaternion Quaternion::FromFloats(float x, float y, float z, float w){
+  if(1 == std::pow(x,2) + std::pow(y,2) + std::pow(z,2), std::pow(w,2))
+  return  Quaternion(x, y, z, w);
+  {
+    //TODO: SetDebug Flag for printing
+    std::cout << ("Quaternion Function FromPoints Has normalized a quaternion. Check usage.") << std::endl;
+    float mag = sqrt(std::pow(x,2) + std::pow(y,2) + std::pow(z,2)
+                      + std::pow(w,2));
+    Quaternion(x / mag, y / mag, z / mag, w / mag);
+  }
+}
+
+Quaternion Quaternion::FromLookAxis(Vec3 &up, Vec3 &forward)
 {
   Vec3 normforward = forward.Normalize();
   Vec3 normright = up.Cross(normforward).Normalize();
   Vec3 normup = normforward.Cross(normright);
 
   float r = normright.x + normup.y + normforward.z;
-  Quaternion result();
   if(r > 0.0){
-    float w = std::sqrt(r + 1.0);
-    result.w = w * 0.5;
-    r1 = 0.5 / w
-    result.x = (normup.z - normforward.y) * r1;
-    result.y = (normforward.x - normright.z) * r1;
-    result.z = (normright.y - normup.x) * r1;
-    return result
+    float w = sqrt(r + 1.0);
+    float qw = w * 0.5;
+    float r1 = 0.5 / w;
+    float qx = (normup.z - normforward.y) * r1;
+    float qy = (normforward.x - normright.z) * r1;
+    float qz = (normright.y - normup.x) * r1;
+    return FromFloats(qx, qy, qz, qw);
   }
   if(normright.x >= normup.y && normright.x >= normforward.z){
-    float r1 = std::sqrt(1.0 + normright.x - normup.y - normforward.z);
+    float r1 = sqrt(1.0 + normright.x - normup.y - normforward.z);
     float r2 = 0.5 / r1;
-    result.x = 0.5 * r1;
-    result.y = (normright.y + normup.x) * r2;
-    result.z = (normright.z + normforward.x) * r2;
-    result.w = (normup.z + normforward.y) * r2;
-    return result;
+    float qx = 0.5 * r1;
+    float qy = (normright.y + normup.x) * r2;
+    float qz = (normright.z + normforward.x) * r2;
+    float qw = (normup.z + normforward.y) * r2;
+    return FromFloats(qx, qy, qz, qw);
   }
   if(normup.y > normforward.z){
-    float r1 = std::sqrt(1.0 + normup.y - normright.x - normforward.z);
+    float r1 = sqrt(1.0 + normup.y - normright.x - normforward.z);
     float r2 = 0.5 / r1;
-    result.x = (normup.x + normright.y) * r2;
-    result.y = 0.5 * r1;
-    result.z = (normforward.y + normup.z) * r2;
-    result.w = (normforward.x + normright.z) * r2;
-    return result;
+    float qx = (normup.x + normright.y) * r2;
+    float qy = 0.5 * r1;
+    float qz = (normforward.y + normup.z) * r2;
+    float qw = (normforward.x + normright.z) * r2;
+    return FromFloats(qx, qy, qz, qw);
   }
   {
-    float r1 = std::sqrt(1.0 + normforward.z - normright.x - normup.y);
+    float r1 = sqrt(1.0 + normforward.z - normright.x - normup.y);
     float r2 = 0.5 / r1;
-    result.x = (normforward.x + normright.z) * r2;
-    result.y = (normforward.y + normup.z) * r2;
-    result.z = 0.5 * r1;
-    result.w = (normright.y + normup.x) * r2;
-    return result;
+    float qx = (normforward.x + normright.z) * r2;
+    float qy = (normforward.y + normup.z) * r2;
+    float qz = 0.5 * r1;
+    float qw = (normright.y + normup.x) * r2;
+    return FromFloats(qx, qy, qz, qw);
   }
 }
-*/
+
+
 
 // Creates a new inverse Quaternion based on an existing one.
 Quaternion Quaternion::Invert(const Quaternion &quat) {
