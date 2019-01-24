@@ -10,6 +10,9 @@
 
 namespace Kepler {
 
+const std::string Window::windowAPI = "GLFW3";
+const std::string Window::renderAPI = "OpenGL";
+
 void glfwError(int id, const char *description) {
   std::cout << description << std::endl;
 }

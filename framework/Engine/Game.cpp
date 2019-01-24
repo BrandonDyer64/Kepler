@@ -5,14 +5,13 @@ namespace Kepler {
 
 Game *Game::game;
 
-Game::Game(World &world, Level *level, SystemManager *sm, EntityManager *em)
+Game::Game(std::string name, World &world, SystemManager *sm, EntityManager *em)
     : world(world), // World
-      level(level), // Level
       sm(sm),       // System Manager
       em(em)        // Entity Manager
 {
   std::cout << "Making window" << std::endl;
-  window = new Window(1920 / 2, 1080 / 2, "test");
+  window = new Window(1920 / 2, 1080 / 2, name + " - " + Window::renderAPI);
   window->game = this;
   Game::game = this;
 }
@@ -50,7 +49,7 @@ void Game::AddGamepad(void *gamepad) {
 }
 
 void Game::RemoveGamepad(void *gamepad) {
-  
+
 }
 
 } // namespace Kepler

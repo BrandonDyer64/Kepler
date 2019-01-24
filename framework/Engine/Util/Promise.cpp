@@ -2,13 +2,18 @@
 #include <iostream>
 namespace Kepler::Util {
 
+Promise::Promise() {}
+
 Promise::Promise(std::function<void(Promise &)> function) {
   function(*this);
 }
 
+Promise::Promise(const Promise& other) {
+  std::cout << "PROMISE COPY CONSTRUCTOR" << std::endl;
+}
+
 Promise &Promise::Then(std::function<void *(void *)> function) {
   functions.push(function);
-  std::cout << status << std::endl;
   if (status == PROMISE_FULFILLED) {
     Resolve(currentValue);
   }
@@ -23,6 +28,7 @@ Promise &Promise::Catch(std::function<void()> function) {
 void Promise::Resolve(void *value) {
   currentValue = value;
   while (functions.size() > 0) {
+    status = PROMISE_PENDING;
     std::function<void *(void *)> next = functions.front();
     try {
       currentValue = next(currentValue);
@@ -36,6 +42,7 @@ void Promise::Resolve(void *value) {
 }
 
 void Promise::Reject() {
+  status = PROMISE_REJECTED;
   /*
   while (functions.size() > 0) {
     std::function<void *(void *)> next = functions.front();
@@ -44,6 +51,16 @@ void Promise::Reject() {
   */
   if (catchFunction) {
     catchFunction();
+  }
+}
+
+int Promise::GetStatus() {
+  return status;
+}
+
+void Promise::All(Promise *output, Promise *promises[], int num) {
+  for (int i = 0; i < num; i++) {
+    Promise *promise = promises[i];
   }
 }
 
