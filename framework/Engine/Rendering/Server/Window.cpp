@@ -7,6 +7,9 @@
 
 namespace Kepler {
 
+const std::string Window::windowAPI = "None";
+const std::string Window::renderAPI = "None";
+
 Window::Window(int w, int h, std::string t) {
   std::cout << "No Window Manager" << std::endl;
 }

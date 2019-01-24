@@ -14,6 +14,8 @@ class Mesh;
 class Window {
 public:
   Game *game;
+  static const std::string windowAPI;
+  static const std::string renderAPI;
 
 private:
   void *window;

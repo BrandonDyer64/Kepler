@@ -35,7 +35,7 @@ private:
   std::vector<void *> gamepads;
 
 public:
-  Game(World &world, Level *level, SystemManager *sm, EntityManager *em);
+  Game(std::string name, World &world, SystemManager *sm, EntityManager *em);
   void Launch();
   void Run() {
     using namespace std::chrono_literals;
@@ -62,12 +62,11 @@ public:
       window->PollEvents();
     }
   }
-  template <class L> static void Create(std::vector<EntitySystem *> systems) {
+  static void Create(std::string name, std::vector<EntitySystem *> &systems) {
     World world;
     SystemManager *sm = world.GetSystemManager();
     EntityManager *em = world.GetEntityManager();
-    Level *level = new L(em);
-    Game game(world, level, sm, em);
+    Game game(name, world, sm, em);
     // Add systems
     game.systems = systems;
     for (auto i : systems) {
@@ -76,9 +75,9 @@ public:
     game.Launch();
     game.Run();
   }
-  template <class L> static void Create() {
+  static void Create(std::string name) {
     std::vector<EntitySystem *> systems;
-    Create<L>(systems);
+    Create(name, systems);
   }
   Game *AddActor(Actor *actor);
   Actor *GetActor(std::string name);
