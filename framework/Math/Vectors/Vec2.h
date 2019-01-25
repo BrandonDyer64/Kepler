@@ -2,6 +2,8 @@
 #ifndef Vec2_h
 #define Vec2_h
 
+#include <iostream>
+
 namespace Kepler {
 
 class Vec2 {
@@ -21,6 +23,7 @@ public:
   Vec2 operator*(const Vec2 &other) const;
   Vec2 operator/(const Vec2 &other) const;
   bool operator==(const Vec2 &other) const;
+  friend std::ostream &operator<<(std::ostream &out, const Vec2 &other);
   float Dot(const Vec2 &other) const;
   float DistanceTo(const Vec2 &other) const;
 };

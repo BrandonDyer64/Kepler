@@ -27,6 +27,12 @@ Vec4 Vec4::operator/(const float& other) const {
   return Vec4(x / other, y / other, z / other, w / other);
 }
 
+std::ostream &operator<<(std::ostream &out, const Vec4 &other){
+  out << "Vec2( " << other.x << ", " << other.y << ", "<< other.z << ", "
+    << other.w <<")" << std::endl;
+  return out;
+}
+
 float Vec4::Dot(const Vec4& other) const {
   return (x * other.x) + (y * other.y) + (z * other.z) + (w * other.w);
 }

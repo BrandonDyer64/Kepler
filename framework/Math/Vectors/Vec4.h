@@ -4,6 +4,7 @@
 
 #include "Vec2.h"
 #include "Vec3.h"
+#include <iostream>
 
 namespace Kepler {
 
@@ -37,6 +38,7 @@ public:
   Vec4 operator*(const float &other) const;
   Vec4 operator/(const Vec4 &other) const;
   Vec4 operator/(const float &other) const;
+  friend std::ostream &operator<<(std::ostream &out, const Vec4 &other);
   float Dot(const Vec4 &other) const;
   float DistanceTo(const Vec4 &other) const;
   float Magnitude() const;

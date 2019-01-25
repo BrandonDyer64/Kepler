@@ -39,6 +39,12 @@ bool Vec3::operator==(const Vec3 &other) const {
   return x == other.x && y == other.y && z == other.z;
 }
 
+std::ostream &operator<<(std::ostream &out, const Vec3 &other){
+  out << "Vec2( " << other.x << ", " << other.y << ", "<< other.z << ")"
+    << std::endl;
+  return out;
+}
+
 float Vec3::Dot(const Vec3 &other) const {
   return (x * other.x) + (y * other.y) + (z * other.z);
 }

@@ -23,6 +23,11 @@ bool Vec2::operator==(const Vec2& other) const {
   return x == other.x && y == other.y;
 }
 
+std::ostream &operator<<(std::ostream &out, const Vec2 &other){
+  out << "Vec2( " << other.x << ", " << other.y << ")" << std::endl;
+  return out;
+}
+
 float Vec2::Dot(const Vec2& other) const {
   return x * other.x + y * other.y;
 }
