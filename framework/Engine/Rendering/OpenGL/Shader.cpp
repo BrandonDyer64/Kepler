@@ -1,4 +1,4 @@
-#ifdef WINDOW_MANAGER_GLFW3
+#ifdef RENDER_API_OPENGL
 
 // OpenGL
 #include <glad/glad.h>

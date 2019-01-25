@@ -63,10 +63,6 @@ Window::Window(int w, int h, std::string t) {
   SetupInput();
 }
 
-void Window::RenderBegin() {
-  glClear(GL_COLOR_BUFFER_BIT);
-  glDrawArrays(GL_TRIANGLES, 0, 3);
-}
 void Window::RenderEnd() { glfwSwapBuffers((GLFWwindow *)window); }
 void Window::PollEvents() { glfwPollEvents(); }
 bool Window::ShouldClose() {

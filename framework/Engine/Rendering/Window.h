@@ -35,6 +35,7 @@ public:
 
 private:
   void SetupInput();
+  void SetupApi();
   void CompileShader(Shader *shader);
 };
 
