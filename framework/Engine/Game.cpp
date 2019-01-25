@@ -10,7 +10,12 @@ Game::Game(std::string name, World &world, SystemManager *sm, EntityManager *em)
       sm(sm),       // System Manager
       em(em)        // Entity Manager
 {
-  std::cout << "Making window" << std::endl;
+  std::cout
+    << "Opening Window: "
+    << Window::windowAPI
+    << " - "
+    << Window::renderAPI
+    << std::endl;
   window = new Window(1920 / 2, 1080 / 2, name + " - " + Window::renderAPI);
   window->game = this;
   Game::game = this;
