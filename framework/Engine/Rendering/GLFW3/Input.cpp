@@ -3,7 +3,7 @@
 #include "../Window.h"
 #include "Engine/Game.h"
 #include "Engine/Input/Keys.h"
-#include <GLFW/glfw3.h>
+#include "glfw3.h"
 
 namespace Kepler {
 

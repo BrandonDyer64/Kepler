@@ -1,17 +1,16 @@
-#ifndef Debug_h
-#define Debug_h
-#endif
-
-//OpenGL
+#ifdef RENDER_API_OPENGL
+#if false
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include "Debug.h"
+#include <iostream>
 
 namespace Kepler {
 
   void GenerateDebugCallbacks(){
+    using namespace std;
     cout << "Generating OpenGL debug callbacks" << endl;
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-    glDebugMessageCallback(CallbackFunction, nullptr);
+    glDebugMessageCallback(&CallbackFunction, nullptr);
     GLuint unusedIds = 0;
     glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0,
       &unusedIds, true);
@@ -21,6 +20,7 @@ namespace Kepler {
   void APIENTRY CallbackFunction(GLenum source, GLenum type, GLuint id,
                                 GLenum severity, GLsizei length,
                                 const GLchar* message, const void* userParam){
+    using namespace std;
     cout << "OpenGL Encountered an Error" << endl;
     cout << "Severity: ";
     switch (severity){
@@ -60,3 +60,6 @@ namespace Kepler {
     cout << "ID: " << id << endl;
   }
 }
+
+#endif
+#endif

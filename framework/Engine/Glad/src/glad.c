@@ -19,7 +19,7 @@
         https://glad.dav1d.de/#profile=compatibility&language=c&specification=gl&loader=on&api=gl%3D4.6
 */
 
-#ifdef WINDOW_MANAGER_GLFW3
+#ifdef RENDER_API_OPENGL
 
 #include <stdio.h>
 #include <stdlib.h>
