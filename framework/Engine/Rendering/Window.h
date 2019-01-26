@@ -14,6 +14,7 @@ class Mesh;
 class Window {
 public:
   Game *game;
+  unsigned int buffer = 0;
   static const std::string windowAPI;
   static const std::string renderAPI;
 
@@ -34,6 +35,7 @@ public:
 
 private:
   void SetupInput();
+  void SetupApi();
   void CompileShader(Shader *shader);
 };
 

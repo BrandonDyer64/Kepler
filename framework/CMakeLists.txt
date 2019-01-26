@@ -95,6 +95,11 @@ if (GLFW_LIB_PATH)
 endif()
 
 if (GLFW_FOUND OR glfw_FOUND OR GLFW_LIB_PATH)
+  if (vulkan_FOUND)
+    set(RENDER_API VULKAN)
+  else()
+    set(RENDER_API OPENGL)
+  endif()
   if (GLFW_FOUND OR glfw_FOUND)
     target_link_libraries(kepler GL GLU GLEW)
   else()
@@ -106,9 +111,19 @@ if (GLFW_FOUND OR glfw_FOUND OR GLFW_LIB_PATH)
   target_include_directories(kepler PUBLIC ${CMAKE_SOURCE_DIR}/Engine/Glad/include)
 endif()
 
+# * * * * * * * * *
+# * Compile Defs  *
+# * * * * * * * * *
+
+# Window Manager
 add_compile_definitions(WINDOW_MANAGER="${WINDOW_MANAGER}")
 message(LOG "Window Manager: ${WINDOW_MANAGER}")
 add_compile_definitions(WINDOW_MANAGER_${WINDOW_MANAGER})
+
+# Render API
+add_compile_definitions(RENDER_API="${RENDER_API}")
+message(LOG "Render API: ${RENDER_API}")
+add_compile_definitions(RENDER_API_${RENDER_API})
 
 #_message("┡━━━━━━━━━━━━━━━━━━━━━━━━━━╸")
 _message("")
