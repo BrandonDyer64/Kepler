@@ -1,6 +1,8 @@
 #ifdef WINDOW_MANAGER_GLFW3
 
 #include "../Window.h"
+#include "../OpenGL/Debug.h"
+#include "../../Util/Debug.h"
 #include "Engine/Game.h"
 #include "glfw3.h"
 
@@ -42,6 +44,11 @@ Window::Window(int w, int h, std::string t) {
   glfwSetWindowUserPointer(window, this);
 
   this->window = (void *)window;
+
+  //Setting Debug Messages
+  #if KEPLERDEBUG
+  GenerateDebugCallbacks();
+  #endif
 
   SetupApi();
   SetupInput();

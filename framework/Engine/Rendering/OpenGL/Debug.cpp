@@ -1,37 +1,30 @@
 #ifdef RENDER_API_OPENGL
-#if false
 #include <glad/glad.h>
 #include "Debug.h"
 #include <iostream>
 
 namespace Kepler {
 
-  void GenerateDebugCallbacks(){
-    using namespace std;
-    cout << "Generating OpenGL debug callbacks" << endl;
-    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-    glDebugMessageCallback(&CallbackFunction, nullptr);
-    GLuint unusedIds = 0;
-    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0,
-      &unusedIds, true);
-  }
 
-
-  void APIENTRY CallbackFunction(GLenum source, GLenum type, GLuint id,
-                                GLenum severity, GLsizei length,
-                                const GLchar* message, const void* userParam){
+  void APIENTRY CallbackFunction( GLenum source,
+                                  GLenum type,
+                                  GLuint id,
+                                  GLenum severity,
+                                  GLsizei length,
+                                  const GLchar* message,
+                                  const void* userParam){
     using namespace std;
     cout << "OpenGL Encountered an Error" << endl;
     cout << "Severity: ";
     switch (severity){
-    case GL_DEBUG_SEVERITY_LOW:
-        cout << "[LOW]";
+      case GL_DEBUG_SEVERITY_LOW:
+        cout << "[LOW]" << endl;
         break;
       case GL_DEBUG_SEVERITY_MEDIUM:
-        cout << "[MEDIUM]";
+        cout << "[MEDIUM]" << endl;
         break;
       case GL_DEBUG_SEVERITY_HIGH:
-        cout << "[HIGH]";
+        cout << "[HIGH]" << endl;
         break;
     }
     cout << " Type: ";
@@ -59,7 +52,20 @@ namespace Kepler {
     cout << "Message: "<< message << endl;
     cout << "ID: " << id << endl;
   }
-}
 
-#endif
+  void GenerateDebugCallbacks(){
+    using namespace std;
+    if(glDebugMessageCallback){
+      cout << "Generating OpenGL debug callbacks" << endl;
+      glEnable(GL_DEBUG_OUTPUT);
+      glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+      glDebugMessageCallback(&CallbackFunction, nullptr);
+      GLuint unusedIds = 0;
+      glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0,
+        &unusedIds, true);
+      }
+    }
+
+}//namespace Kepler
+
 #endif
