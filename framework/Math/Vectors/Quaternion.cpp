@@ -14,14 +14,15 @@ Also note that all internal storage for angles is in radians and input is in
 degrees. This is because, by default, the trig functions work off radians.
 */
 Quaternion::Quaternion(Vec3 &axis, float angle)
-    : x(axis.x * sin(ToRadians(angle / 2))), // X
-      y(axis.y * sin(ToRadians(angle / 2))), // Y
-      z(axis.z * sin(ToRadians(angle / 2))), // Z
+    : x(axis.i * sin(ToRadians(angle / 2))), // X
+      y(axis.j * sin(ToRadians(angle / 2))), // Y
+      z(axis.k * sin(ToRadians(angle / 2))), // Z
       w(cos(ToRadians(angle / 2)))           // W
 {}
 
 // Creates a Quaternion from two axis returning a quaternion mimic the rotatation from
-// the first axis to the second axis.
+// the first axis to the second axis, and the second to the first.
+// Given j and k, it will not return i.
 Quaternion Quaternion::FromVectors(Vec3& u, Vec3& v){
     Vec3 un = u.Normalize();
     Vec3 vn = v.Normalize();
@@ -127,8 +128,8 @@ Quaternion Quaternion::operator*(const Quaternion &other) const {
 }
 
 std::ostream &operator<<(std::ostream &out, const Quaternion &quat) {
-  out << "Quaternion(" << quat.x << ", " << quat.y << ", " << quat.z << ", " <<
-    quat.w << ")" << std::endl;
+  out << "Quaternion(W: " << quat.w << ", X:" << quat.x << ", Y:" << quat.y << ", Z:" <<
+    quat.z << ")" << std::endl;
   return out;
 }
 
