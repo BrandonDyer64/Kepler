@@ -75,6 +75,17 @@
   font-weight: bold;
 }
 
+@font-face {
+  font-family: 'fantasque';
+  src: url('fantasque/fantasquesansmono-regular.otf');
+}
+
+@font-face {
+  font-family: 'fantasque';
+  src: url('fantasque/fantasquesansmono-bold.otf');
+  font-weight: bold;
+}
+
 * {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;

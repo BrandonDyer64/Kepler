@@ -31,31 +31,69 @@
     var builtins = wordRE(['_G', '_VERSION'])
     var keywords = wordRE([
       'and',
-      'break',
-      'class',
-      'elseif',
-      'false',
-      'nil',
-      'not',
-      'or',
-      'return',
-      'true',
-      'new',
-      'if',
-      'then',
-      'else',
-      'do',
-      'while',
-      'repeat',
-      'until',
-      'for',
-      'in'
-    ])
-    var types = wordRE(['void', 'int', 'long', 'float'])
+      'kaj',
 
-    var indentTokens = wordRE(['function', 'if', 'repeat', 'do', '\\(', '{'])
+      'break',
+      'saltu',
+
+      'class',
+      'klaso',
+
+      'elseif',
+
+      'false',
+      'malvera',
+
+      'nil',
+      'nulo',
+
+      'not',
+      'ne',
+
+      'or',
+      'aux',
+
+      'return',
+      'revenu',
+
+      'true',
+      'vera',
+
+      'new',
+      'nova',
+
+      'if',
+      'se',
+
+      'else',
+      'alie',
+
+      'do',
+
+      'while',
+      'gxis',
+
+      'for',
+      'dum',
+
+      'in',
+      'en'
+    ])
+    var types = wordRE([
+      'void',
+      'vako',
+      'int',
+      'entjero',
+      'long',
+      'float',
+      'glito',
+      'string',
+      'cxeno'
+    ])
+
+    var indentTokens = wordRE(['function', 'repeat', 'do', '\\(', '{'])
     var dedentTokens = wordRE(['\\)', '}'])
-    var dedentPartial = prefixRE(['\\)', '}', 'else'])
+    var dedentPartial = prefixRE(['\\)', '}', 'else', 'alie'])
 
     function readBracket(stream) {
       var level = 0

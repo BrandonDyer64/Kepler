@@ -1,0 +1,26 @@
+//* eo
+
+#inkluzivu "testo.as"
+
+klaso TestaActoro : Actoro {
+  
+  vako Verku(Ento @ento, Agordo agordoj) {
+    //* K_COMPONENT(mesh)
+    ento.AldonuIngrediencon(nova MasxoIngredienco());
+    cxeno nomo;
+    se (agordoj.nomo) {
+      nomo = agordoj.nomo;
+    } alie {
+      nomo = "Testa Actoro";
+    }
+    ento.AldonuIngrediencon(nova NomoIngredienco(nomo));
+  }
+  
+  vako Takto(Ento @ento) {
+    // Rigardu la fotilon
+    Quaternion turno = ento.AkiruIngrediencon("Rotation").quat;
+    Fotilo fotilo = ento.mondo.fotilo;
+    turno.Rigardu(fotilo.pozicio);
+  }
+  
+}

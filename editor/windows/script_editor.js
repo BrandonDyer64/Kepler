@@ -5,15 +5,18 @@ const currentWindow = remote.getCurrentWindow()
 const path = require('path')
 const prettier = require('prettier')
 const LuaPlugin = require('@prettier/plugin-lua')
+const convert = require('../js/ScriptEditor/Convert')
 
 const config = require(currentWindow.custom.path)
 console.log(config.type)
-const filepath = currentWindow.custom.path.split('.')[0] + '.' + config.type
-const filename = path.basename(currentWindow.custom.path.split('.')[0])
+const sourcepath = currentWindow.custom.path.split('.')[0] + '.source'
+const outpath = currentWindow.custom.path.split('.')[0] + '.' + config.type
+const filename =
+  path.basename(currentWindow.custom.path.split('.')[0]) + '.' + config.type
 document.getElementById('editor-name').innerHTML = filename
 let content
-if (fs.existsSync(filepath)) {
-  content = fs.readFileSync(filepath, 'utf8')
+if (fs.existsSync(sourcepath)) {
+  content = fs.readFileSync(sourcepath, 'utf8')
 } else {
   content = 'function Create()\nend\n\nfunction Tick(delta)\nend'
 }
@@ -25,12 +28,19 @@ var editor = CodeMirror.fromTextArea(document.getElementById('code'), {
   keyMap: 'sublime',
   theme: 'material'
 })
+if (config.type != 'as') {
+  document.getElementsByClassName('CodeMirror')[0].style.fontWeight = 'bold'
+}
+if (config.type != 'cpp') {
+  document.getElementsByClassName('CodeMirror')[0].style.fontFamily =
+    'fantasque'
+}
 editor.setValue(content)
 editor.focus()
 function save() {
   const unformatted = editor.getValue()
   const formatted =
-    config.type != 'lua'
+    config.type != 'lua' || !unformatted.startsWith('--* eo')
       ? unformatted
       : prettier.format(unformatted, {
           singleQuote: false,
@@ -47,7 +57,14 @@ function save() {
     editor.setValue(formatted)
     editor.setCursor(cursor)
   }
-  fs.writeFile(filepath, formatted, 'utf8', err => {
+  fs.writeFile(sourcepath, formatted, 'utf8', err => {
+    if (err) {
+      console.error(err)
+      return
+    }
+  })
+  const converted = convert(config.type, formatted)
+  fs.writeFile(outpath, converted, 'utf8', err => {
     if (err) {
       console.error(err)
       return

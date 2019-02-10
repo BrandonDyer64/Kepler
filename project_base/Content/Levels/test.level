@@ -1,0 +1,7 @@
+g:as:TestaActoro
+ Position(0,0,0)Rotation(1,0,0,0)Mesh(test)
+ Position(1,0,0)Rotation(1,0,0,0)Mesh(test2)
+g:c:TestCActor
+ Position(2,0,0)Rotation(1,0,0,0)Mesh(test3)
+g:lua:TestLuaActor
+ Position(3,0,0)Rotation(1,0,0,0)Mesh(test4)

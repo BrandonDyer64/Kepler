@@ -40,7 +40,7 @@ let editorWindow
 function createEditorWindow(callback) {
   // Create the browser window.
   editorWindow = new BrowserWindow({
-    width: 1920,
+    width: 1280,
     height: 720,
     autoHideMenuBar: true,
     icon: path.join(__dirname, 'logo.png')
@@ -139,8 +139,8 @@ exports.openAssetEditor = (type, path) => {
 
   // Create the browser window.
   assetEditorWindow = new BrowserWindow({
-    width: 1920,
-    height: 720,
+    width: 1000,
+    height: 800,
     autoHideMenuBar: true
   })
 
@@ -153,8 +153,6 @@ exports.openAssetEditor = (type, path) => {
 
   // and load the index.html of the app.
   assetEditorWindow.loadFile(`windows/${type}_editor.html`)
-
-  assetEditorWindow.maximize()
 
   //assetEditorWindow.setMenu(null)
 

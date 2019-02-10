@@ -164,7 +164,8 @@
               }
               const asset = require(projectDirectory + assetFileRaw)
               console.log(asset)
-              assetName = asset.name
+              assetName = assetSplit[0]
+              console.log(assetName)
               assetFile = assetSplit[0]
             }
           }
