@@ -35,7 +35,7 @@
 #include <map>
 #include <set>
 #include <vector>
-#include <string.h> // _strcmpi
+#include <cstring> // _strcmpi
 
 BEGIN_AS_NAMESPACE
 
@@ -200,7 +200,7 @@ protected:
 	{
 		bool operator()(const std::string &a, const std::string &b) const
 		{
-			return _strcmpi(a.c_str(), b.c_str()) < 0;
+			return std::strcmp(a.c_str(), b.c_str()) < 0;
 		}
 	};
 	std::set<std::string, ci_less> includedScripts;

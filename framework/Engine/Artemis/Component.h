@@ -12,7 +12,7 @@ namespace Kepler {
     virtual ~Component() = 0;
   protected:
     Component() {};
-    Component(string params[], int count) {};
+    Component(std::string params[], int count) {};
   };
 
 };
