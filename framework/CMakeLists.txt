@@ -55,7 +55,9 @@ add_library(kepler SHARED ${SOURCES})
 target_include_directories(
   kepler PUBLIC
   ${CMAKE_SOURCE_DIR}                             # Engine
-  ${CMAKE_SOURCE_DIR}/Engine/Lua/Sources           # Lua
+  ${CMAKE_SOURCE_DIR}/Engine/Lua/Sources          # Lua
+  ${CMAKE_SOURCE_DIR}/Engine/AngelScript/include  # AngelScript
+  ${CMAKE_SOURCE_DIR}/Engine/AngelScript/add_on   # AngilScript plugins
 )
 
 #libRocket

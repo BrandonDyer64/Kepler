@@ -23,22 +23,7 @@ function esperanto(s) {
     ['loka', 'local'],
     ['nova', 'new'],
     ['se', 'if'],
-    ['vako', 'void'],
-
-    // API
-    ['Actoro', 'Actor'],
-    ['AkiruIngrediencon', 'GetComponent'],
-    ['AldonuIngrediencon', 'AddComponent'],
-    ['Ento', 'Entity'],
-    ['ento', 'entity'],
-    ['Fotilo', 'Camera'],
-    ['fotilo', 'camera'],
-    ['mondo', 'world'],
-    ['nomo', 'name'],
-    ['pozicio', 'position'],
-    ['Rigardu', 'LookAt'],
-    ['Takto', 'Tick'],
-    ['Verku', 'Create']
+    ['vako', 'void']
   ]
 
   for (let i in replacements) {
