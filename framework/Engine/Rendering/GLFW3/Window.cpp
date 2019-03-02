@@ -54,7 +54,10 @@ Window::Window(int w, int h, std::string t) {
   SetupInput();
 }
 
-void Window::RenderEnd() { glfwSwapBuffers((GLFWwindow *)window); }
+void Window::RenderEnd() {
+  glfwSwapInterval(1);
+  glfwSwapBuffers((GLFWwindow *)window);
+}
 void Window::PollEvents() { glfwPollEvents(); }
 bool Window::ShouldClose() {
   return glfwWindowShouldClose((GLFWwindow *)window);
