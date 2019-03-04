@@ -21,6 +21,7 @@ class Game {
 public:
   static Game *game;
   float currentTime = 0;
+  void *angelScriptEngine;
 
 private:
   Window *window;

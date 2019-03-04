@@ -28,6 +28,10 @@ Window::Window(int w, int h, std::string t) {
 
   // GLFW Hints
   glfwWindowHint(GLFW_SAMPLES, 4);
+  glfwWindowHint(GLFW_ACCUM_RED_BITS, 4);
+  glfwWindowHint(GLFW_ACCUM_GREEN_BITS, 4);
+  glfwWindowHint(GLFW_ACCUM_BLUE_BITS, 4);
+  glfwWindowHint(GLFW_ACCUM_ALPHA_BITS, 4);
 
   // Create window
   window = glfwCreateWindow(w, h, t.c_str(), NULL, NULL);
@@ -42,6 +46,8 @@ Window::Window(int w, int h, std::string t) {
   int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
   glfwSetWindowUserPointer(window, this);
+
+  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
   this->window = (void *)window;
 
