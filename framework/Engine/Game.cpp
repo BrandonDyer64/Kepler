@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "World/Components/ActorComponent.h"
 #include <iostream>
 
 namespace Kepler {
@@ -36,6 +37,19 @@ Actor *Game::GetActor(std::string name) {
     std::cout << "Can't find Actor: " << name << std::endl;
     return nullptr;
   }
+}
+
+Entity &Game::SpawnActor(Actor *actor) {
+  Entity &entity = em->Create();
+  entity.AddComponent(new ActorComponent(actor));
+  entity.refresh();
+  actor.Create(entity);
+  return entity;
+}
+
+Entity &Game::SpawnActor(std::string actor) {
+  // ...
+  return SpawnActor(actor);
 }
 
 bool Game::GetKeyState(std::string key) {

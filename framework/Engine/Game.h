@@ -63,25 +63,26 @@ public:
       window->PollEvents();
     }
   }
-  static void Create(std::string name, std::vector<EntitySystem *> &systems) {
+  static Game &Create(std::string name, std::vector<EntitySystem *> &systems) {
     World world;
     SystemManager *sm = world.GetSystemManager();
     EntityManager *em = world.GetEntityManager();
-    Game game(name, world, sm, em);
+    Game game = *new Game(name, world, sm, em);
     // Add systems
     game.systems = systems;
     for (auto i : systems) {
       sm->SetSystem(i);
     }
-    game.Launch();
-    game.Run();
+    return game;
   }
-  static void Create(std::string name) {
+  static Game &Create(std::string name) {
     std::vector<EntitySystem *> systems;
-    Create(name, systems);
+    return Create(name, systems);
   }
   Game *AddActor(Actor *actor);
   Actor *GetActor(std::string name);
+  Entity &SpawnActor(Actor *actor);
+  Entity &SpawnActor(std::string actor);
   // Stop the game
   void Stop() { isRunning = false; }
   Window *GetWindow() { return window; }

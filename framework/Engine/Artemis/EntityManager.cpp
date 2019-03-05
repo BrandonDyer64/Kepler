@@ -44,7 +44,7 @@ void EntityManager::AddComponent(Entity &e, Component *c) {
   components = NULL;
 };
 
-Entity &EntityManager::create() {
+Entity &EntityManager::Create() {
 
   Entity *e = this->removedAndAvailable.removeLast();
 

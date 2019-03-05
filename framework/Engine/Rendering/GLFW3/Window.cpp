@@ -28,10 +28,6 @@ Window::Window(int w, int h, std::string t) {
 
   // GLFW Hints
   glfwWindowHint(GLFW_SAMPLES, 4);
-  glfwWindowHint(GLFW_ACCUM_RED_BITS, 4);
-  glfwWindowHint(GLFW_ACCUM_GREEN_BITS, 4);
-  glfwWindowHint(GLFW_ACCUM_BLUE_BITS, 4);
-  glfwWindowHint(GLFW_ACCUM_ALPHA_BITS, 4);
 
   // Create window
   window = glfwCreateWindow(w, h, t.c_str(), NULL, NULL);

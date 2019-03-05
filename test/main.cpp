@@ -14,6 +14,9 @@ int main() {
   TestQuaternion();
   std::vector<Kepler::EntitySystem *> systems;
   systems.push_back(new Kepler::DebugSystem());
-  Kepler::Game::Create("Kepler Test", systems);
+  Kepler::Game game = Kepler::Game::Create("Kepler Test", systems);
+  game.AddActor(new TestActor());
+  game.Launch();
+  game.Run();
   return 0;
 }
