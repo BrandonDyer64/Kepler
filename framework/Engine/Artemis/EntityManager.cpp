@@ -110,7 +110,6 @@ bool EntityManager::isActive(int entityId) {
 void EntityManager::Refresh(Entity &e) {
   SystemManager *systemManager = world->GetSystemManager();
   Bag<EntitySystem *> &systems = systemManager->GetSystems();
-
   for (int i = 0; i < systems.getCount(); i++) {
     systems.get(i)->change(e);
   }

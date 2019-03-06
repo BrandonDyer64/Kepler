@@ -38,43 +38,8 @@ private:
 public:
   Game(std::string name, World &world, SystemManager *sm, EntityManager *em);
   void Launch();
-  void Run() {
-    using namespace std::chrono_literals;
-    using clock = std::chrono::high_resolution_clock;
-    double oldTime = window->GetTime();
-    while (!window->ShouldClose()) {
-      window->RenderBegin();
-      {
-        double newTime = window->GetTime();
-        float deltaTime = (float)(newTime - oldTime);
-        oldTime = newTime;
-        world.LoopStart();
-        world.SetDelta(deltaTime);
-        for (auto i : systems) {
-          i->Process();
-        }
-      }
-      window->RenderEnd();
-      #ifdef _WIN32
-      Sleep(1);
-      #else
-      std::this_thread::sleep_for(1ms);
-      #endif
-      window->PollEvents();
-    }
-  }
-  static Game &Create(std::string name, std::vector<EntitySystem *> &systems) {
-    World world;
-    SystemManager *sm = world.GetSystemManager();
-    EntityManager *em = world.GetEntityManager();
-    Game game = *new Game(name, world, sm, em);
-    // Add systems
-    game.systems = systems;
-    for (auto i : systems) {
-      sm->SetSystem(i);
-    }
-    return game;
-  }
+  void Run();
+  static Game &Create(std::string name, std::vector<EntitySystem *> &systems);
   static Game &Create(std::string name) {
     std::vector<EntitySystem *> systems;
     return Create(name, systems);

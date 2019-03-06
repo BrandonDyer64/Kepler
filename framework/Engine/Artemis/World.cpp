@@ -52,7 +52,6 @@ namespace Kepler {
 			refreshed.clear();
 
 		}
-
 		if(!deleted.isEmpty()) {
 			for(int i=0; i<deleted.getCount(); i++) {
 				Entity & e = *deleted.get(i);

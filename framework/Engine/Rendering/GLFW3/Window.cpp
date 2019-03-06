@@ -24,6 +24,8 @@ Window::Window(int w, int h, std::string t) {
   if (!glfwInit()) {
     std::cout << "Failed to init GLFW" << std::endl;
     return;
+  } else {
+    std::cout << "GLFW init." << std::endl;
   }
 
   // GLFW Hints
@@ -35,6 +37,8 @@ Window::Window(int w, int h, std::string t) {
     glfwTerminate();
     std::cout << "Failed to create GLFW window" << std::endl;
     return;
+  } else {
+    std::cout << "Created Window" << std::endl;
   }
 
   // Set context
@@ -57,6 +61,7 @@ Window::Window(int w, int h, std::string t) {
 }
 
 void Window::RenderEnd() {
+  std::cout << "RENDER END" << std::endl;
   glfwSwapInterval(1);
   glfwSwapBuffers((GLFWwindow *)window);
 }

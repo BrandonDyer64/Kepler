@@ -64,6 +64,7 @@ namespace Kepler {
       glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0,
         &unusedIds, true);
       }
+      cout << "Finished OpenGL debug callbacks" << endl;
     }
 
 }//namespace Kepler

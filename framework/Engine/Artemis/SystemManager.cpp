@@ -4,26 +4,26 @@
 #include "SystemBitManager.h"
 
 namespace Kepler {
-	
+
   SystemManager::SystemManager(World& world) {
     this->world = &world;
   }
-  
+
   Bag<EntitySystem*> & SystemManager::GetSystems() {
     return bagged;
   }
-  
+
   void SystemManager::InitializeAll() {
     for(int i=0; i< bagged.getCount(); i++) {
       bagged.get(i)->initialize();
     }
-    
+
   }
-  
+
   EntitySystem* SystemManager::SetSystem(EntitySystem* stm) {
     bool bitFlag = false;
     int index = 0;
-    
+
     //Check if system is known.
     for(int i=0; i< bagged.getCount(); i++)
     {
@@ -32,7 +32,7 @@ namespace Kepler {
         index = i;
       }
     }
-    
+
     //Check if stm pointer doesn't point to an existing system
     //Else add system to manager
     if(bagged.get(index) != stm){
@@ -51,10 +51,10 @@ namespace Kepler {
         stm->SetSystemBit(SystemBitManager::getBitFor(typeid(*stm)));
       }
     }
-    
+
     return stm;
   }
-  
+
   SystemManager::~SystemManager(){
     systems.clear();
     bagged.deleteData();
