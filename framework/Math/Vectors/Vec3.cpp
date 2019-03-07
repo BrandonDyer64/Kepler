@@ -46,7 +46,8 @@ bool Vec3::operator==(const Vec3 &other) const {
 }
 
 std::ostream &operator<<(std::ostream &out, const Vec3 &other){
-  out << "Vec3("
+  out << std::fixed << std::cout.precision(2)
+    << "Vec3("
     << other.x << ", "
     << other.y << ", "
     << other.z << ")"
