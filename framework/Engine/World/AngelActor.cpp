@@ -34,7 +34,7 @@ AngelActor::AngelActor(std::string name): Actor(name + "_angel") {
   this->tickFun = (void *) tickFun;
 }
 
-void AngelActor::Create(Entity &entity) {
+void AngelActor::Create(Entity &entity, void *settings) {
   asIScriptContext *ctx = ((asIScriptEngine *)Game::game->angelScriptEngine)->CreateContext();
   asIScriptFunction *fun = (asIScriptFunction *) createFun;
   ctx->Prepare(fun);

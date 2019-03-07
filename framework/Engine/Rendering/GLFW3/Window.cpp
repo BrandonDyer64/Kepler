@@ -61,7 +61,6 @@ Window::Window(int w, int h, std::string t) {
 }
 
 void Window::RenderEnd() {
-  std::cout << "RENDER END" << std::endl;
   glfwSwapInterval(1);
   glfwSwapBuffers((GLFWwindow *)window);
 }

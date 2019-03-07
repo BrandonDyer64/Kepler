@@ -12,7 +12,7 @@ private:
   void *tickFun;
 public:
   AngelActor(std::string name);
-  virtual void Create(Entity &entity);
+  virtual void Create(Entity &entity, void *settings);
   virtual void Tick(Entity &entity, float delta);
 };
 

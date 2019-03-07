@@ -35,7 +35,7 @@ namespace Kepler {
      */
     c * get(Entity & e) {
       //ATTN perhaps pointing to the component bag is faster.
-      return (c*)em->getComponent<c>(e);
+      return (c*)em->GetComponent<c>(e);
     }
     
   };

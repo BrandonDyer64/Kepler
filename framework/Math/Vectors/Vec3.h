@@ -14,19 +14,19 @@ public:
   union {
     // General Notation
     struct {
-      const float x, y, z;
+      float x, y, z;
     };
     // Color Notation
     struct {
-      const float r, g, b;
+      float r, g, b;
     };
     // HSL Color Notation
     struct {
-      const float h, s, v;
+      float h, s, v;
     };
     // Vector Notation
     struct {
-      const float i, j, k;
+      float i, j, k;
     };
   };
 
@@ -40,8 +40,8 @@ public:
   Vec3 operator*(const Mat4 &other) const;
   Vec3 operator/(const Vec3 &other) const;
   Vec3 operator/(const float &other) const;
-  Vec3 operator+=(const Vec3 &other) const;
-  Vec3 operator-=(const Vec3 &other) const;
+  Vec3 operator+=(const Vec3 &other);
+  Vec3 operator-=(const Vec3 &other);
   bool operator==(const Vec3 &other) const;
   friend std::ostream &operator<<(std::ostream &out, const Vec3 &other);
   float Dot(const Vec3 &other) const;

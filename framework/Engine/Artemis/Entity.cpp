@@ -23,12 +23,12 @@ void Entity::addSystemBit(bitset<BITSIZE> bit) { systemBits |= bit; }
 
 void Entity::addTypeBit(bitset<BITSIZE> bit) { typeBits |= bit; }
 
-Component *Entity::getComponent(ComponentType &type) {
-  return entityManager->getComponent(*this, type);
+Component *Entity::GetComponent(ComponentType &type) {
+  return entityManager->GetComponent(*this, type);
 }
 
-ImmutableBag<Component *> &Entity::getComponents() {
-  return entityManager->getComponents(*this);
+ImmutableBag<Component *> &Entity::GetComponents() {
+  return entityManager->GetComponents(*this);
 }
 
 int Entity::GetId() { return id; }

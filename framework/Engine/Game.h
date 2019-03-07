@@ -37,20 +37,27 @@ private:
 
 public:
   Game(std::string name, World &world, SystemManager *sm, EntityManager *em);
+
   void Launch();
   void Run();
+
+  // Create Game
   static Game &Create(std::string name, std::vector<EntitySystem *> &systems);
   static Game &Create(std::string name) {
     std::vector<EntitySystem *> systems;
     return Create(name, systems);
   }
+
+  // Actors
   Game *AddActor(Actor *actor);
   Actor *GetActor(std::string name);
-  Entity &SpawnActor(Actor *actor);
-  Entity &SpawnActor(std::string actor);
-  // Stop the game
+  Entity &SpawnActor(Actor *actor, void *settings);
+  Entity &SpawnActor(std::string actor, void *settings);
+
   void Stop() { isRunning = false; }
   Window *GetWindow() { return window; }
+
+  // Input
   bool GetKeyState(std::string key);
   void SetKeyState(std::string key, bool state);
   void KeyTyped(std::string key, bool shift, bool ctrl);

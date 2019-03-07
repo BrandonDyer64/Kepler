@@ -67,14 +67,14 @@ public:
 
   void RemoveComponent(ComponentType &type);
 
-  Component *getComponent(ComponentType &type);
+  Component *GetComponent(ComponentType &type);
 
-  template <typename c> Component *getComponent() {
-    return (c *)entityManager->getComponent(
+  template <typename c> Component *GetComponent() {
+    return (c *)entityManager->GetComponent(
         *this, ComponentTypeManager::getTypeFor<c>());
   }
 
-  ImmutableBag<Component *> &getComponents();
+  ImmutableBag<Component *> &GetComponents();
 
   bool isActive();
   void Refresh();

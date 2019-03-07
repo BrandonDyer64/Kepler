@@ -24,7 +24,7 @@ bool Vec2::operator==(const Vec2& other) const {
 }
 
 std::ostream &operator<<(std::ostream &out, const Vec2 &other){
-  out << "Vec2( " << other.x << ", " << other.y << ")" << std::endl;
+  out << "Vec2(" << other.x << ", " << other.y << ")" << std::endl;
   return out;
 }
 

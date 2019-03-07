@@ -32,12 +32,12 @@ namespace Kepler {
       RemoveComponent(e,ComponentTypeManager::getTypeFor<c>());
     }
 
-    Component * getComponent(Entity & e, ComponentType & type);
+    Component * GetComponent(Entity & e, ComponentType & type);
 
     template<typename c>
-    Component * getComponent(Entity & e) {
+    Component * GetComponent(Entity & e) {
       ComponentType type = ComponentTypeManager::getTypeFor<c>();
-      return getComponent(e,type);
+      return GetComponent(e,type);
     }
 
     Entity& getEntity(int entityId);
@@ -45,7 +45,7 @@ namespace Kepler {
     long getTotalCreated();
     long getTotalRemoved();
 
-    Bag<Component*>& getComponents(Entity & e);
+    Bag<Component*>& GetComponents(Entity & e);
 
 
   private:

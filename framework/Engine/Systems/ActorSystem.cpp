@@ -2,7 +2,7 @@
 
 namespace Kepler {
 
-void ActorSystem::initialize() { actorMapper.init(*world); }
+void ActorSystem::initialize() { std::cout << "Actor init" << std::endl;actorMapper.init(*world); }
 
 void ActorSystem::processEntity(Entity &e) {
   Actor *actor = actorMapper.get(e)->actor;

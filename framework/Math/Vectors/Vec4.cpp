@@ -28,7 +28,7 @@ Vec4 Vec4::operator/(const float& other) const {
 }
 
 std::ostream &operator<<(std::ostream &out, const Vec4 &other){
-  out << "Vec2( " << other.x << ", " << other.y << ", "<< other.z << ", "
+  out << "Vec4(" << other.x << ", " << other.y << ", "<< other.z << ", "
     << other.w <<")" << std::endl;
   return out;
 }

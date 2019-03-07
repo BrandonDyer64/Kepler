@@ -31,16 +31,25 @@ Vec3 Vec3::operator/(const float &other) const {
   return Vec3(x / other, y / other, z / other);
 }
 
-Vec3 Vec3::operator+=(const Vec3 &other) const { return *this + other; }
+Vec3 Vec3::operator+=(const Vec3 &other) {
+  *this = *this + other;
+  return *this;
+}
 
-Vec3 Vec3::operator-=(const Vec3 &other) const { return *this - other; }
+Vec3 Vec3::operator-=(const Vec3 &other) {
+  *this = *this - other;
+  return *this;
+}
 
 bool Vec3::operator==(const Vec3 &other) const {
   return x == other.x && y == other.y && z == other.z;
 }
 
 std::ostream &operator<<(std::ostream &out, const Vec3 &other){
-  out << "Vec2( " << other.x << ", " << other.y << ", "<< other.z << ")"
+  out << "Vec3("
+    << other.x << ", "
+    << other.y << ", "
+    << other.z << ")"
     << std::endl;
   return out;
 }

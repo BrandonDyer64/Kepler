@@ -71,7 +71,7 @@ long EntityManager::getTotalCreated() { return totalCreated; };
 
 long EntityManager::getTotalRemoved() { return totalRemoved; };
 
-Component *EntityManager::getComponent(Entity &e, ComponentType &type) {
+Component *EntityManager::GetComponent(Entity &e, ComponentType &type) {
 
   Bag<Component *> *bag = componentsByType.get(type.GetId());
 
@@ -84,7 +84,7 @@ Component *EntityManager::getComponent(Entity &e, ComponentType &type) {
 /**
  * Retrieves all components for one entity.
  */
-Bag<Component *> &EntityManager::getComponents(Entity &e) {
+Bag<Component *> &EntityManager::GetComponents(Entity &e) {
 
   entityComponents.clear();
 

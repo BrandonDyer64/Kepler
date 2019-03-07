@@ -50,16 +50,18 @@ void Game::Run() {
 }
 
 Game &Game::Create(std::string name, std::vector<EntitySystem *> &systems) {
-  World world;
+  World &world = *new World();
   SystemManager *sm = world.GetSystemManager();
   EntityManager *em = world.GetEntityManager();
   Game &game = *new Game(name, world, sm, em);
+  Game::game = &game;
   // Add systems
   game.systems = systems;
   for (auto i : systems) {
+    std::cout << "Set system: " << i << std::endl;
     sm->SetSystem(i);
   }
-  Game::game = &game;
+  sm->InitializeAll();
   return game;
 }
 
@@ -78,17 +80,18 @@ Actor *Game::GetActor(std::string name) {
   }
 }
 
-Entity &Game::SpawnActor(Actor *actor) {
+Entity &Game::SpawnActor(Actor *actor, void *settings) {
   Entity &entity = em->Create();
   entity.AddComponent(new ActorComponent(actor));
   entity.Refresh();
-  actor->Create(entity);
+  actor->Create(entity, settings);
+  entity.Refresh();
   return entity;
 }
 
-Entity &Game::SpawnActor(std::string actor) {
+Entity &Game::SpawnActor(std::string actor, void *settings) {
   // ...
-  return SpawnActor(actor);
+  return SpawnActor(actor, settings);
 }
 
 bool Game::GetKeyState(std::string key) {
