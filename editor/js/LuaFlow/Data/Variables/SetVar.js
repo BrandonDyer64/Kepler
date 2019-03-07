@@ -1,14 +1,15 @@
-module.exports = new class MakeVarComponent extends Rete.Component {
+module.exports = new class SetVarComponent extends Rete.Component {
   constructor() {
-    super("Variable");
-    this.contextMenuName = "New Variable";
-    this.path = ["Data"];
+    super("Set");
+    this.contextMenuName = "Set";
+    this.path = ["Data", "Variables"];
     this.task = {
       outputs: { text: "output" }
     };
   }
 
   builder(node) {
+    node.altName = " ";
     const { execIn, execOut } = createExecs();
     let valIn = new Rete.Input("value", "", anySocket);
 
@@ -25,7 +26,7 @@ module.exports = new class MakeVarComponent extends Rete.Component {
       add,
       inputs,
       outputs,
-      `local ${node.data.varname} = ${inputs.value[0] || "0"}`
+      `${node.data.varname} = ${inputs.value}`
     );
   }
 }();

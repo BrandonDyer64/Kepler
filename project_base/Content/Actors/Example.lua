@@ -1,7 +1,5 @@
 
 function Create ()
-  for ku_Repeat = 1, 100, 1 do
-    print("Hello, World!")
-  end
-  
+  X = X + 4
+  print("aoeu")
 end

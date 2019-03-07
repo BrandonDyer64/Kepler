@@ -24,7 +24,7 @@ int main() {
   // Add Custom Actors
   Kepler::Actor *testActor = new TestActor();
   game.AddActor(testActor);
-  float pos[] = {0, 0, 0};
+  float pos[] = { 0, 0, 0 };
   game.SpawnActor(testActor, pos);
 
   // Run Simulation

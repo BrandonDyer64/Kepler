@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>New Asset</title>
+    <link href="../css/main.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"
+      integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="../css/themify/themify-icons.css" />
+  </head>
+  <body style="background: var(--editor-background)">
+    <div class="window">
+      <div
+        id="AssetType"
+        class="flex flex-down-full"
+        style="padding: 20px 40px;"
+      >
+        <h1
+          style="margin: 0px; padding-top: 20px; width: 100%;"
+          class="text-center"
+        >
+          New Asset
+        </h1>
+        <div
+          style="flex-grow: 1; justify-content: center; width: 100%"
+          class="flex flex-down-full"
+          id="SelectorRadios"
+        ></div>
+        <div class="flex full-width" style="justify-content: flex-end;">
+          <a href="Javascript:nextForm();" class="btn btn-primary"> Next </a>
+        </div>
+      </div>
+      <div id="AssetForm" style="display:none"></div>
+    </div>
+    <script>
+      if (typeof module === "object") {
+        window.module = module;
+        module = undefined;
+      }
+    </script>
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      if (window.module) module = window.module;
+    </script>
+    <script src="new_editor.js"></script>
+  </body>
+</html>

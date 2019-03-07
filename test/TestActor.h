@@ -20,7 +20,7 @@ public:
     using namespace Kepler;
     PositionComponent *pos = (PositionComponent *)entity.GetComponent<PositionComponent>();
     pos->position += Vec3(delta, 0, 0);
-    std::cout << "POS-X: " << pos->position << std::endl;
+    std::cout << "POS: " << pos->position << std::endl;
   }
 };
 

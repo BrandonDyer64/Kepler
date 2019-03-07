@@ -1,5 +1,6 @@
 #include "Vec3.h"
 #include <cmath>
+#include <iomanip>
 
 namespace Kepler {
 
@@ -46,12 +47,13 @@ bool Vec3::operator==(const Vec3 &other) const {
 }
 
 std::ostream &operator<<(std::ostream &out, const Vec3 &other){
-  out << std::fixed << std::cout.precision(2)
+  out << std::fixed;
+  out.precision(2);
+  out << std::setfill(' ')
     << "Vec3("
-    << other.x << ", "
-    << other.y << ", "
-    << other.z << ")"
-    << std::endl;
+    << std::setw(6) << other.x << ","
+    << std::setw(6) << other.y << ","
+    << std::setw(6) << other.z << ")";
   return out;
 }
 

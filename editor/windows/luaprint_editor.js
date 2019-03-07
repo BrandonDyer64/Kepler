@@ -206,12 +206,20 @@ class PrintComponent extends Rete.Component {
 }
 
 class OperatorComponent extends Rete.Component {
-  constructor(menu, socketType, name, operator, inputSocketType = anySocket) {
+  constructor(
+    menu,
+    socketType,
+    name,
+    operator,
+    inputSocketType = anySocket,
+    execable
+  ) {
     super(name);
     this.name = name;
     this.operator = operator;
     this.socketType = socketType;
     this.inputSocketType = inputSocketType;
+    this.execable = execable;
     this.path = [...["Operators"], ...menu];
     this.task = {
       outputs: { text: "output" }
@@ -222,19 +230,36 @@ class OperatorComponent extends Rete.Component {
     node.type = "operator";
     node.hideTitle = true;
     node.showCenterTitle = true;
-    node.altName = this.operator;
+    if (this.execable) node.altName = this.operator + " ";
+    else node.altName = this.operator;
+
     let inA = new Rete.Input("inA", "", this.inputSocketType);
     let inB = new Rete.Input("inB", "", this.inputSocketType);
     let out = new Rete.Output("value", "", this.socketType);
 
-    return node
-      .addInput(inA)
-      .addInput(inB)
-      .addOutput(out);
+    if (this.execable) {
+      const { execIn, execOut } = createExecs();
+      node.addInput(execIn);
+      node.addOutput(execOut);
+    } else {
+      node.addOutput(out);
+    }
+
+    return node.addInput(inA).addInput(inB);
   }
 
   code(node, inputs, add, outputs) {
-    outputs.value = `(${inputs.inA} ${this.operator} ${inputs.inB})`;
+    if (this.execable) {
+      statement(
+        node,
+        add,
+        inputs,
+        outputs,
+        `${inputs.inA} = ${inputs.inA} ${this.operator[0]} ${inputs.inB}`
+      );
+    } else {
+      outputs.value = `(${inputs.inA} ${this.operator} ${inputs.inB})`;
+    }
   }
 }
 
@@ -326,24 +351,34 @@ class PluginComponent extends Rete.Component {
   }
 }
 
+const bS = boolSocket,
+  fS = floatSocket,
+  aS = anySocket;
+
 var components = [
   new PrintComponent(),
   new EventComponent("Tick", [{ name: "delta", socket: floatSocket }]),
   new EventComponent("Collide", [{ name: "other", socket: entitySocket }]),
   new EventComponent("Create", []),
-  new OperatorComponent(["Compare"], boolSocket, "Equals", "=="),
-  new OperatorComponent(["Compare"], boolSocket, "Not Equal", "~="),
-  new OperatorComponent(["Compare"], boolSocket, "Greater Than", ">"),
-  new OperatorComponent(["Compare"], boolSocket, "Less Than", "<"),
-  new OperatorComponent(["Compare"], boolSocket, "Greater or Equal", ">="),
-  new OperatorComponent(["Compare"], boolSocket, "Less or Equal", "<="),
-  new OperatorComponent(["Math"], floatSocket, "Add", "+", floatSocket),
-  new OperatorComponent(["Math"], floatSocket, "Subtract", "-", floatSocket),
-  new OperatorComponent(["Math"], floatSocket, "Multiply", "*", floatSocket),
-  new OperatorComponent(["Math"], floatSocket, "Divide", "/", floatSocket),
-  new OperatorComponent(["Math"], floatSocket, "Modulo", "%", floatSocket),
-  new OperatorComponent(["Logical"], boolSocket, "And", "and", boolSocket),
-  new OperatorComponent(["Logical"], boolSocket, "Or", "or", boolSocket)
+  new OperatorComponent(["Compare"], bS, "Equals", "=="),
+  new OperatorComponent(["Compare"], bS, "Not Equal", "~="),
+  new OperatorComponent(["Compare"], bS, "Greater Than", ">"),
+  new OperatorComponent(["Compare"], bS, "Less Than", "<"),
+  new OperatorComponent(["Compare"], bS, "Greater or Equal", ">="),
+  new OperatorComponent(["Compare"], bS, "Less or Equal", "<="),
+  new OperatorComponent(["Math"], fS, "Add", "+", fS),
+  new OperatorComponent(["Math"], fS, "Subtract", "-", fS),
+  new OperatorComponent(["Math"], fS, "Multiply", "*", fS),
+  new OperatorComponent(["Math"], fS, "Divide", "/", fS),
+  new OperatorComponent(["Math"], fS, "Modulo", "%", fS),
+  new OperatorComponent(["Logical"], bS, "And", "and", bS),
+  new OperatorComponent(["Logical"], bS, "Or", "or", bS),
+  new OperatorComponent(["Assignment"], bS, "Equal", "=", aS, true),
+  new OperatorComponent(["Assignment"], bS, "PlusEquals", "+=", aS, true),
+  new OperatorComponent(["Assignment"], bS, "MinusEquals", "-=", aS, true),
+  new OperatorComponent(["Assignment"], bS, "TimesEquals", "*=", aS, true),
+  new OperatorComponent(["Assignment"], bS, "DivideEquals", "/=", aS, true),
+  new OperatorComponent(["Assignment"], bS, "ModEquals", "%=", aS, true)
 ];
 
 components = components.concat(extraComponents);
@@ -456,11 +491,14 @@ editor
         const editorJSON = editor.toJSON();
         materialConfig.props.nodes = editorJSON.nodes;
         materialConfig.props.groups = editorJSON.groups;
+        console.log(
+          currentWindow.custom.path.replace(".luaprint.json", ".lua")
+        );
         CodePlugin.generate(engine, editor.toJSON()).then(
           ({ file: sourceCode, imports }) => {
             //sourceCode = formatCode(sourceCode);
             fs.writeFileSync(
-              currentWindow.custom.path.split(".")[0] + ".lua",
+              currentWindow.custom.path.replace(".luaprint.json", ".lua"),
               sourceCode,
               "utf8"
             );

@@ -1,5 +1,5 @@
 :root {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   --background: #263238;
   --text-color: #fff;
   --primary: #82b1ff;
@@ -65,24 +65,24 @@
 }
 
 @font-face {
-  font-family: 'poppins';
-  src: url('poppins/Poppins-Regular.ttf');
+  font-family: "poppins";
+  src: url("poppins/Poppins-Regular.ttf");
 }
 
 @font-face {
-  font-family: 'poppins';
-  src: url('poppins/Poppins-Bold.ttf');
+  font-family: "poppins";
+  src: url("poppins/Poppins-Bold.ttf");
   font-weight: bold;
 }
 
 @font-face {
-  font-family: 'fantasque';
-  src: url('fantasque/fantasquesansmono-regular.otf');
+  font-family: "fantasque";
+  src: url("fantasque/fantasquesansmono-regular.otf");
 }
 
 @font-face {
-  font-family: 'fantasque';
-  src: url('fantasque/fantasquesansmono-bold.otf');
+  font-family: "fantasque";
+  src: url("fantasque/fantasquesansmono-bold.otf");
   font-weight: bold;
 }
 
