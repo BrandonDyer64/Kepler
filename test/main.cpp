@@ -2,6 +2,8 @@
 #include "Engine/Game.h"
 #include "Engine/Systems/DebugSystem.h"
 #include "Engine/Systems/ActorSystem.h"
+#include "Engine/World/Particles/ParticleSystem.h"
+#include "Engine/World/Particles/Particle.h"
 #include "Math/Vectors/Vec2.h"
 #include "TestActor.h"
 #include <iostream>
@@ -10,10 +12,25 @@
 void TestPromise();
 void TestQuaternion();
 
+using namespace Kepler;
+
 int main() {
   // Unit Tests
   TestPromise();
   TestQuaternion();
+
+  ParticleSystem particleSystem(10);
+
+  std::cout << "Particle system done." << std::endl;
+
+  for (int i = 0; i < 5; i++) {
+    Particle *particle = new(particleSystem) Particle();
+    Particle *particle2 = new(particleSystem) Particle();
+    std::cout << particle << " " << particle2 << std::endl;
+    particleSystem.Delete(particle);
+  }
+
+  return 0;
 
   // Create Simulation
   std::vector<Kepler::EntitySystem *> systems;
