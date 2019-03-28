@@ -1,9 +1,0 @@
-{
-  "name": "Directory",
-  "fields": [
-    {
-      "name": "Name",
-      "type": "text"
-    }
-  ]
-}
