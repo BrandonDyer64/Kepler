@@ -1,0 +1,1 @@
+#include <entityx/quick.h>
