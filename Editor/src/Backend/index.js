@@ -15,6 +15,7 @@ function createWindow(page) {
     webPreferences: {
       nodeIntegration: true
     },
+    frame: false,
     titleBarStyle: 'hidden',
     autoHideMenuBar: true
   })

@@ -13,6 +13,10 @@ code {
     monospace;
 }
 
+#root {
+  height: 100vh;
+}
+
 .mdl-snackbar {
   background-color: #37474f;
 }
