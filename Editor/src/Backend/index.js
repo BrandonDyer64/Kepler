@@ -7,7 +7,7 @@ const path = require('path')
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
-function createWindow(name) {
+function createWindow(page) {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 800,
@@ -19,13 +19,13 @@ function createWindow(name) {
 
   // and load the index.html of the app.
   const startUrl =
-    process.env.ELECTRON_START_URL ||
+    process.env.ELECTRON_START_URL.trim() ||
     url.format({
       pathname: path.join(__dirname, '/../build/index.html'),
       protocol: 'file:',
       slashes: true
     })
-  mainWindow.loadURL(startUrl)
+  mainWindow.loadURL(`${startUrl}/${page}`)
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
@@ -42,7 +42,7 @@ function createWindow(name) {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+app.on('ready', () => createWindow('init'))
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function() {
