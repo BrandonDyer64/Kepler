@@ -14,7 +14,9 @@ function createWindow(page) {
     height: 600,
     webPreferences: {
       nodeIntegration: true
-    }
+    },
+    titleBarStyle: 'hidden',
+    autoHideMenuBar: true
   })
 
   // and load the index.html of the app.
@@ -54,7 +56,7 @@ app.on('window-all-closed', function() {
 app.on('activate', function() {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) createWindow()
+  if (mainWindow === null) createWindow('init')
 })
 
 // In this file you can include the rest of your app's specific main process
