@@ -1,6 +1,7 @@
 .App {
   text-align: center;
   transition: background-color 0.3s ease-out;
+  height: 100vh;
 }
 
 .App.dark-theme {

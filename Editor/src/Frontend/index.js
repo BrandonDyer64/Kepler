@@ -29,9 +29,13 @@ class App extends Component {
   }
   render() {
     return (
-      <div className='App dark-theme'>
+      <div className='App light-theme'>
         <Router>
-          <p className='title-bar'>test</p>
+          <p className='title-bar'>
+            <span class='mdi mdi-window-minimize' />
+            <span class='mdi mdi-window-maximize' />
+            <span class='mdi mdi-window-close' />
+          </p>
           <Route path='/init' component={Init} />
         </Router>
       </div>
