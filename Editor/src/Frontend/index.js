@@ -29,12 +29,12 @@ class App extends Component {
   }
   render() {
     return (
-      <Router>
-        <>
-          <p>test</p>
+      <div className='App dark-theme'>
+        <Router>
+          <p className='title-bar'>test</p>
           <Route path='/init' component={Init} />
-        </>
-      </Router>
+        </Router>
+      </div>
     )
   }
 }

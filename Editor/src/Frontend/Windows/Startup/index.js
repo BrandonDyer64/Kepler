@@ -1,5 +1,5 @@
 import React from 'react'
 
 export default function Startup(props) {
-  return <p>something else</p>
+  return <p className='title-bar'>something else</p>
 }
