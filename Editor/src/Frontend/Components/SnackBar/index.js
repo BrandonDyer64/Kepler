@@ -23,20 +23,19 @@ export default class SnackBar extends React.Component {
   }
   message(data) {
     var snackbarContainer = document.querySelector('#snackbar')
-    var showSnackbarButton = document.querySelector('#dark-mode-button')
-    var data = {
+    var finalData = {
       message: data.message || '---',
       timeout: data.timeout || 2000,
       actionHandler: data.onClick || null,
       actionText: data.actionText || null
     }
-    snackbarContainer.MaterialSnackbar.showSnackbar(data)
+    snackbarContainer.MaterialSnackbar.showSnackbar(finalData)
   }
   render() {
     return (
-      <div id='snackbar' class='mdl-js-snackbar mdl-snackbar'>
-        <div class='mdl-snackbar__text' />
-        <button class='mdl-snackbar__action' type='button' />
+      <div id='snackbar' className='mdl-js-snackbar mdl-snackbar'>
+        <div className='mdl-snackbar__text' />
+        <button className='mdl-snackbar__action' type='button' />
       </div>
     )
   }

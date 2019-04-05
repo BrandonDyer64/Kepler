@@ -2,7 +2,6 @@ import React from 'react'
 import './index.css'
 
 const electron = window.require('electron')
-const fs = electron.remote.require('fs')
 const currentWindow = electron.remote.getCurrentWindow()
 
 export default class TitleBar extends React.Component {
