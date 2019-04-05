@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
-import logo from './logo.svg'
 import './App.css'
 import { Button } from './Material'
+import TitleBar from './Components/TitleBar'
 
 import Init from './Windows/Startup'
 
@@ -29,13 +29,9 @@ class App extends Component {
   }
   render() {
     return (
-      <div className='App light-theme'>
+      <div className='App dark-theme'>
         <Router>
-          <p className='title-bar'>
-            <span class='mdi mdi-window-minimize' />
-            <span class='mdi mdi-window-maximize' />
-            <span class='mdi mdi-window-close' />
-          </p>
+          <TitleBar>Kepler Engine</TitleBar>
           <Route path='/init' component={Init} />
         </Router>
       </div>
