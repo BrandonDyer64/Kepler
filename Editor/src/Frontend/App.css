@@ -2,6 +2,8 @@
   text-align: center;
   transition: background-color 0.3s ease-out;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .App.dark-theme {

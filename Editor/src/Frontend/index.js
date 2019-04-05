@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
 import './App.css'
-import { Button } from './Material'
 import TitleBar from './Components/TitleBar'
 import SnackBar, { snackBarChannel } from './Components/SnackBar'
 
 import Init from './Windows/Startup'
+import Main from './Windows/Main'
 
 const localStorage = window.localStorage
 
@@ -31,6 +31,7 @@ class App extends Component {
             Kepler Engine
           </TitleBar>
           <Route path='/init' component={Init} />
+          <Route path='/main' component={Main} />
           <SnackBar />
         </Router>
       </div>
