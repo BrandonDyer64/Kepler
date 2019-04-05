@@ -36,11 +36,6 @@
   color: #61dafb;
 }
 
-.title-bar {
-  -webkit-app-region: drag;
-  -webkit-user-select: none;
-}
-
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

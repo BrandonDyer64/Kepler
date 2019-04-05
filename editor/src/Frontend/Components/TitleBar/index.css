@@ -1,0 +1,26 @@
+.TitleBar {
+  display: flex;
+  flex-direction: row;
+  text-align: left;
+  padding-top: 5px;
+}
+
+.TitleBar > .content {
+  -webkit-app-region: drag;
+  -webkit-user-select: none;
+  flex-grow: 1;
+  padding-left: 10px;
+}
+
+.TitleBar > .buttons > span {
+  padding: 5px 10px;
+}
+
+.TitleBar > .buttons > span:hover {
+  background-color: #8884;
+  cursor: pointer;
+}
+
+.TitleBar > .buttons > span:last-child:hover {
+  background-color: #f444;
+}
