@@ -7,15 +7,29 @@
 .App.dark-theme {
   background-color: #263238;
   color: white;
+  --text-color: white;
 }
 
 .App.dark-theme .mdl-button {
   color: white;
 }
 
+.App.dark-theme .mdl-snackbar {
+  background-color: #37474f;
+}
+
 .App.light-theme {
   background-color: #fafafa;
   color: #767777;
+  --text-color: #767777;
+}
+
+.App.light-theme .mdl-snackbar {
+  background-color: #e0e0e0;
+}
+
+.App .mdl-snackbar > .mdl-snackbar__text {
+  color: var(--text-color);
 }
 
 .App-logo {
