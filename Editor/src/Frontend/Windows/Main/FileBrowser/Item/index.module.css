@@ -1,0 +1,38 @@
+.Item {
+  list-style-type: none;
+  text-align: left;
+  margin-left: 15px;
+  height: 28px;
+  display: flex;
+  flex-direction: column;
+}
+
+.Item > ol {
+  margin: 0px;
+  padding-left: 15px;
+}
+
+.Item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 28px;
+}
+
+.Item.active::before {
+  background-color: #8883;
+}
+
+.Item:hover::before {
+  background-color: #8882;
+}
+
+.Item .title {
+  height: 28px;
+  line-height: 28px;
+}
+
+.Item .title .name {
+  margin-left: 15px;
+}
