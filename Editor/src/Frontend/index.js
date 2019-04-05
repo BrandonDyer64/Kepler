@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
 import './App.css'
 import { Button } from './Material'
 import TitleBar from './Components/TitleBar'
+import SnackBar, { snackBarChannel } from './Components/SnackBar'
 
 import Init from './Windows/Startup'
 
@@ -17,22 +18,20 @@ class App extends Component {
   toggleDarkTheme() {
     localStorage.setItem('isDarkTheme', !this.state.isDarkTheme)
     this.setState(state => ({ isDarkTheme: !state.isDarkTheme }))
-    var snackbarContainer = document.querySelector('#snackbar')
-    var showSnackbarButton = document.querySelector('#dark-mode-button')
     var data = {
-      message: 'Button color changed.',
-      timeout: 2000,
-      actionHandler: () => {},
-      actionText: 'Undo'
+      message: 'Dark theme toggled'
     }
-    snackbarContainer.MaterialSnackbar.showSnackbar(data)
+    snackBarChannel.open(data)
   }
   render() {
     return (
-      <div className='App dark-theme'>
+      <div className={`App ${this.state.isDarkTheme ? 'dark' : 'light'}-theme`}>
         <Router>
-          <TitleBar>Kepler Engine</TitleBar>
+          <TitleBar onLightToggle={() => this.toggleDarkTheme()}>
+            Kepler Engine
+          </TitleBar>
           <Route path='/init' component={Init} />
+          <SnackBar />
         </Router>
       </div>
     )
