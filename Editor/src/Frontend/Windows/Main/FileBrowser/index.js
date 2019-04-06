@@ -8,7 +8,7 @@ export default class FileBrowser extends React.Component {
       <div className={styles.FileBrowser}>
         <div className={styles.fileList}>
           <Item title='title' icon='folder'>
-            <Item title='test' icon='language-javascript' active />
+            <Item title='test' icon='language-javascript' />
             <Item title='test' icon='language-javascript' />
             <Item title='test' icon='language-javascript' />
             <Item title='test' icon='folder'>
@@ -16,6 +16,20 @@ export default class FileBrowser extends React.Component {
               <Item title='test' icon='language-javascript' />
               <Item title='test' icon='language-javascript' />
             </Item>
+            <Item title='test' icon='language-javascript' />
+            <Item title='test' icon='language-javascript' />
+            <Item title='test' icon='language-javascript' />
+            <Item title='test' icon='language-javascript' />
+            <Item title='test' icon='language-javascript' />
+            <Item title='test' icon='language-javascript' />
+            <Item title='test' icon='language-javascript' />
+            <Item title='test' icon='language-javascript' />
+            <Item title='test' icon='language-javascript' />
+            <Item title='test' icon='language-javascript' />
+            <Item title='test' icon='language-javascript' />
+            <Item title='test' icon='language-javascript' />
+            <Item title='test' icon='language-javascript' />
+            <Item title='test' icon='language-javascript' />
             <Item title='test' icon='language-javascript' />
           </Item>
         </div>

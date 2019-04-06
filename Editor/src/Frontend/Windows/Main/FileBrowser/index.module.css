@@ -5,6 +5,8 @@
   overflow: auto;
   position: relative;
   contain: size;
+  -webkit-user-select: none;
+  white-space: nowrap;
 }
 
 .fileList {
@@ -31,4 +33,8 @@
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
+}
+
+::-webkit-scrollbar-corner {
+  background: #0000;
 }
