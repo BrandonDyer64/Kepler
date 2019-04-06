@@ -1,0 +1,7 @@
+.ToolBar {
+  display: flex;
+}
+
+.ToolBar > span {
+  font-size: 8em;
+}
