@@ -2,7 +2,6 @@
   list-style-type: none;
   text-align: left;
   margin-left: 15px;
-  height: 28px;
   display: flex;
   flex-direction: column;
 }
