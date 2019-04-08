@@ -5,16 +5,11 @@ import FileBrowser from './FileBrowser'
 import ToolBar from './ToolBar'
 
 export default class Main extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {}
-  }
-
   render() {
     return (
       <div className='Main'>
         <div className='content'>
-          <FileBrowser />
+          <FileBrowser path='C:/' />
           <div className='subcontent'>
             <ToolBar />
           </div>

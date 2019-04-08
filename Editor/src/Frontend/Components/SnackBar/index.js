@@ -14,6 +14,8 @@ class SnackBarChannel {
 
 const snackBarChannel = new SnackBarChannel()
 
+window.snackBarChannel = snackBarChannel
+
 export { snackBarChannel }
 
 export default class SnackBar extends React.Component {
