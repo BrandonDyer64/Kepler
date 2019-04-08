@@ -9,7 +9,7 @@ export default class Main extends React.Component {
     return (
       <div className='Main'>
         <div className='content'>
-          <FileBrowser path='C:/' />
+          <FileBrowser path='.' />
           <div className='subcontent'>
             <ToolBar />
           </div>

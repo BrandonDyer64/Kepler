@@ -12,6 +12,10 @@
   color: rgba(238, 255, 255, 0.65);
 }
 
+:global(.App.dark-theme) .Item.active {
+  color: white;
+}
+
 .Item > ol {
   margin: 0px;
   padding-left: var(--indent);
@@ -48,4 +52,8 @@
 
 .Item .title span:first-child {
   margin-left: 0px;
+}
+
+.Item .hidden {
+  color: #0000;
 }
