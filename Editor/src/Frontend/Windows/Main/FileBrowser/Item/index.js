@@ -27,20 +27,25 @@ export default class Item extends React.Component {
       const subDirs = files
         .filter(file => {
           const ext = path.extname(`${this.props.path}/${file}`)
-          return ext === `json` || ext === ''
+          return ext === '.json' || ext === ''
         })
         .map(file => (
           <Item
             key={`FE_${this.props.path}-/-${file}`}
             title={file}
             path={`${this.props.path}/${file}`}
+            onPathLoad={this.props.onPathLoad}
           />
         ))
       this.setState({ subDirs })
     })
   }
   onClick = () => {
-    this.setState(s => ({ isOpen: !s.isOpen }))
+    if (this.state.isDir) {
+      this.setState(s => ({ isOpen: !s.isOpen }))
+    } else {
+      this.props.onPathLoad(this.props.path)
+    }
   }
   render() {
     const { title } = this.props
@@ -48,11 +53,11 @@ export default class Item extends React.Component {
     return (
       <li className={cx(styles.Item)}>
         <span className={styles.title} onClick={this.onClick}>
-          {isDir && (
+          {(isDir && (
             <span
               className={`mdi mdi-${isOpen ? 'chevron-down' : 'chevron-right'}`}
             />
-          )}
+          )) || <span className={`mdi mdi-minus ${styles.hidden}`} />}
           <span className={`mdi mdi-${isDir ? 'folder' : icon}`} />
           <span className={styles.name}>{title}</span>
         </span>
