@@ -12,6 +12,7 @@ export default class Item extends React.Component {
     this.state = {
       subDirs: [],
       isOpen: !!props.open,
+      everOpened: !!props.open,
       isDir: false,
       icon: 'circle-outline'
     }
@@ -24,44 +25,54 @@ export default class Item extends React.Component {
       } else {
         this.setState({ isDir: true })
       }
+      // Find my files
       const subDirs = files
         .filter(file => {
-          const ext = path.extname(`${this.props.path}/${file}`)
+          // Filter out everything that isn't a directory or json
+          const ext = path.extname(this.getSubFileName(file))
           return ext === '.json' || ext === ''
         })
         .map(file => (
+          // Create item list
           <Item
             key={`FE_${this.props.path}-/-${file}`}
             title={file}
-            path={`${this.props.path}/${file}`}
+            path={this.getSubFileName(file)}
             onPathLoad={this.props.onPathLoad}
           />
         ))
       this.setState({ subDirs })
     })
   }
+  getSubFileName(file) {
+    return `${this.props.path}${path.sep}${file}`
+  }
   onClick = () => {
     if (this.state.isDir) {
-      this.setState(s => ({ isOpen: !s.isOpen }))
+      this.setState(s => ({ isOpen: !s.isOpen, everOpened: true }))
     } else {
       this.props.onPathLoad(this.props.path)
     }
   }
   render() {
     const { title } = this.props
-    const { subDirs, isOpen, isDir, icon } = this.state
+    const { subDirs, isOpen, isDir, icon, everOpened } = this.state
     return (
       <li className={cx(styles.Item)}>
         <span className={styles.title} onClick={this.onClick}>
-          {(isDir && (
-            <span
-              className={`mdi mdi-${isOpen ? 'chevron-down' : 'chevron-right'}`}
-            />
-          )) || <span className={`mdi mdi-minus ${styles.hidden}`} />}
+          <span
+            className={cx(
+              'mdi',
+              `mdi-${isOpen ? 'chevron-down' : 'chevron-right'}`,
+              { [styles.hidden]: !isDir }
+            )}
+          />
           <span className={`mdi mdi-${isDir ? 'folder' : icon}`} />
           <span className={styles.name}>{title}</span>
         </span>
-        {isDir && isOpen && <ol>{subDirs}</ol>}
+        {isDir && everOpened && (
+          <ol style={{ display: isOpen ? 'block' : 'none' }}>{subDirs}</ol>
+        )}
       </li>
     )
   }

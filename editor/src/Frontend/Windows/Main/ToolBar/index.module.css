@@ -1,7 +1,19 @@
 .ToolBar {
   display: flex;
+  overflow-y: hidden;
+  overflow-x: scroll;
+  flex-wrap: nowrap;
+  contain: size;
+  height: 4em;
 }
 
-.ToolBar > span {
-  font-size: 3em;
+.ToolBar span {
+  font-size: 1.5em;
+  line-height: 1em;
+}
+
+.ToolBar > button {
+  width: 2em;
+  height: 2em;
+  margin-right: 15px;
 }
