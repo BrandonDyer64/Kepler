@@ -7,13 +7,17 @@
   height: 4em;
 }
 
+.ToolBar::-webkit-scrollbar {
+  display: none;
+}
+
 .ToolBar span {
   font-size: 1.5em;
   line-height: 1em;
 }
 
 .ToolBar > button {
-  width: 2em;
+  min-width: 2em;
   height: 2em;
   margin-right: 15px;
 }
