@@ -1,10 +1,17 @@
-export default () => {
-  let text = ''
-  const possible =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+import _ from 'lodash'
 
-  for (var i = 0; i < 8; i++)
-    text += possible.charAt(Math.floor(Math.random() * possible.length))
-
+// Returns a function for creating unique IDs in components
+export default name => {
+  if (typeof name !== 'string') {
+    name = name.constructor.name
+  }
+  const text = _.uniqueId(`${name}_`)
   return id => `${text}_${id}`
 }
+
+/*
+Example:
+idmk = require('Id.js')
+id = ldmk(this)
+<div id={id('my_div')} />
+*/
