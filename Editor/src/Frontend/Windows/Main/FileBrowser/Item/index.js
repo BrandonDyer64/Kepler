@@ -59,7 +59,11 @@ export default class Item extends React.Component {
     const { subDirs, isOpen, isDir, icon, everOpened } = this.state
     return (
       <li className={cx(styles.Item)}>
-        <span className={styles.title} onClick={this.onClick}>
+        <span
+          className={styles.title}
+          onClick={this.onClick}
+          onContextMenu={() => console.log('context')}
+        >
           <span
             className={cx(
               'mdi',
