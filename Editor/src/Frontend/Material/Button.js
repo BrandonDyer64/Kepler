@@ -1,18 +1,19 @@
 import React from 'react'
+import cx from 'classnames'
 
 export function Button(props) {
   return (
     <button
       onClick={props.onClick}
       id={props.id}
-      className={
-        'mdl-button mdl-js-button mdl-js-ripple-effect ' +
-        props.props
-          .map(value => {
-            return 'mdl-button--' + value
-          })
-          .join(' ')
-      }
+      className={cx(
+        'mdl-button',
+        'mdl-js-button',
+        'mdl-js-ripple-effect',
+        props.props.map(value => {
+          return 'mdl-button--' + value
+        })
+      )}
     >
       {props.title || props.children}
     </button>

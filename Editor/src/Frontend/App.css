@@ -12,10 +12,6 @@
   --text-color: white;
 }
 
-.App.dark-theme .mdl-button {
-  color: white;
-}
-
 .App.dark-theme .mdl-snackbar {
   background-color: #37474f;
 }
