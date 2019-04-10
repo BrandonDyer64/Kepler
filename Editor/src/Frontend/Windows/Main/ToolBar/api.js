@@ -4,6 +4,7 @@ class Api {
       {
         name: 'save',
         icon: 'content-save-outline',
+        tooltip: 'Save',
         menu: [
           {
             name: 'test',
@@ -15,7 +16,8 @@ class Api {
       },
       {
         name: 'notsave',
-        icon: 'content-save-outline',
+        icon: 'cast',
+        tooltip: 'Cast to device',
         onClick: () => {
           console.log('save 2')
         }

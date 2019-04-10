@@ -16,6 +16,10 @@
   background-color: #37474f;
 }
 
+.App.dark-theme .mdl-tooltip {
+  background: #37474f;
+}
+
 .App.light-theme {
   background-color: #fafafa;
   color: #767777;
