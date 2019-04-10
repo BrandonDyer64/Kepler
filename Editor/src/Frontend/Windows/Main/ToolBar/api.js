@@ -31,12 +31,9 @@ class Api {
   addButtons(buttons, sort) {
     this.buttons = [...buttons, ...this.buttons]
     buttons.forEach(b => (b.sort = sort))
-    this.buttons
+    this.buttons = this.buttons
       .map(i => this.buttons[i])
       .sort((a, b) => (a.sort || 1) - (b.sort || 1))
-      .forEach((button, i, buttons) => {
-        button.sort = i / buttons.length
-      })
     this.update()
   }
   removeButton(name) {

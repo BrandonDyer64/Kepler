@@ -1,0 +1,15 @@
+.mdl-tabs__tab-bar {
+  justify-content: flex-start;
+}
+.App.dark-theme .mdl-tabs__tab-bar {
+  border-bottom-color: transparent;
+}
+.mdl-tabs__tab {
+  text-transform: none;
+}
+.App.dark-theme .mdl-tabs__tab {
+  color: var(--text-color);
+}
+.App.dark-theme .mdl-tabs__tab.is-active {
+  color: var(--text-color-full);
+}
