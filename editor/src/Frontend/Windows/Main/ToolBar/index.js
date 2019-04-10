@@ -22,24 +22,24 @@ export default class ToolBar extends React.Component {
   render() {
     const id = idmk(this)
     const buttons = this.state.buttons.map(button => {
+      const menu = (button.menu || []).map(item => (
+        <li class='mdl-menu__item' onClick={item.onClick}>
+          item.name
+        </li>
+      ))
       return (
         <>
-          <Button props={['flat', 'icon']} id={id('save')}>
+          <Button props={['flat', 'icon']} id={id(button.name)}>
             <span className='mdi mdi-content-save-outline' />
           </Button>
-          <ul
-            class='mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect'
-            for={id('save')}
-          >
-            <li class='mdl-menu__item'>Some Action</li>
-            <li class='mdl-menu__item mdl-menu__item--full-bleed-divider'>
-              Another Action
-            </li>
-            <li disabled class='mdl-menu__item'>
-              Disabled Action
-            </li>
-            <li class='mdl-menu__item'>Yet Another Action</li>
-          </ul>
+          {!!button.menu && (
+            <ul
+              class='mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect'
+              for={id(button.name)}
+            >
+              {menu}
+            </ul>
+          )}
         </>
       )
     })

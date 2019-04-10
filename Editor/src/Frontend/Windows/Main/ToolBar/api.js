@@ -1,11 +1,20 @@
 class Api {
   constructor() {
-    this.buttons = [{ a: 'a' }, { b: 'b' }]
+    this.buttons = [{ name: 'save' }, { name: 'notsave' }]
     this.subscriber = null
   }
-  addButton(name, button) {
-    button.name = name
-    this.buttons[name] = button
+  addButton(button, sort) {
+    this.addButtons([button], sort)
+  }
+  addButtons(buttons, sort) {
+    this.buttons = [...this.buttons, ...buttons]
+    buttons.forEach(b => (b.sort = sort))
+    this.buttons
+      .map(i => this.buttons[i])
+      .sort((a, b) => (a.sort || 1) - (b.sort || 1))
+      .forEach((button, i, buttons) => {
+        button.sort = i / buttons.length
+      })
     this.update()
   }
   removeButton(name) {
@@ -17,12 +26,8 @@ class Api {
   }
   update() {
     if (!this.subscriber) return
-    // Make buttons into a sorted array
-    const buttons = Object.keys(this.buttons)
-      .map(i => this.buttons[i])
-      .sort((a, b) => (a.sort || 1) - (b.sort || 1))
     // Notify the toolbar
-    this.subscriber.updateButtons(buttons)
+    this.subscriber.updateButtons(this.buttons)
   }
 }
 
