@@ -28,7 +28,7 @@ export default class ToolBar extends React.Component {
           <Button
             props={['flat', 'icon']}
             id={id(button.name)}
-            key={`${id(button.name)}-${i}`}
+            key={`ToolBar-Button-${i}`}
             onClick={button.onClick || (() => {})}
           >
             <span className={'mdi mdi-' + button.icon} />
@@ -37,12 +37,13 @@ export default class ToolBar extends React.Component {
             <ul
               className='mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect'
               htmlFor={id(button.name)}
+              key={`ToolBar-Menu-${i}`}
             >
-              {button.menu.map(item => (
+              {button.menu.map((item, j) => (
                 <li
                   className='mdl-menu__item'
                   onClick={item.onClick}
-                  key={itemKey(item.name)}
+                  key={`ToolBar-Menu-${i}-${j}`}
                 >
                   {item.name}
                 </li>
