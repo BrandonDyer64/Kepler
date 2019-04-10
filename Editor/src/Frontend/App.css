@@ -4,12 +4,15 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeSpeed;
 }
 
 .App.dark-theme {
   background-color: #263238;
-  color: white;
-  --text-color: white;
+  color: rgba(238, 255, 255, 1);
+  --text-color: rgba(238, 255, 255, 0.8);
+  --text-color-full: rgba(238, 255, 255, 1);
 }
 
 .App.dark-theme .mdl-snackbar {
@@ -24,6 +27,7 @@
   background-color: #fafafa;
   color: #767777;
   --text-color: #767777;
+  --text-color-full: black;
 }
 
 .App.light-theme .mdl-snackbar {

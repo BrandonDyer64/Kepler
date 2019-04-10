@@ -4,7 +4,7 @@
   overflow-x: scroll;
   flex-wrap: nowrap;
   contain: size;
-  height: 4em;
+  height: 3.5em;
 }
 
 .ToolBar::-webkit-scrollbar {

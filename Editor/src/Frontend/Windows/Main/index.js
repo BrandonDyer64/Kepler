@@ -3,6 +3,7 @@ import './index.css'
 import BottomBar from './BottomBar'
 import FileBrowser from './FileBrowser'
 import ToolBar from './ToolBar'
+import Editor from './Editor'
 
 export default class Main extends React.Component {
   render() {
@@ -12,6 +13,7 @@ export default class Main extends React.Component {
           <FileBrowser path='.' />
           <div className='subcontent'>
             <ToolBar />
+            <Editor />
           </div>
         </div>
         <BottomBar />
