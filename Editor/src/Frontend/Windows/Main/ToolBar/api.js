@@ -1,13 +1,33 @@
 class Api {
   constructor() {
-    this.buttons = [{ name: 'save' }, { name: 'notsave' }]
+    this.buttons = [
+      {
+        name: 'save',
+        icon: 'content-save-outline',
+        menu: [
+          {
+            name: 'test',
+            onClick: () => {
+              console.log('save passed')
+            }
+          }
+        ]
+      },
+      {
+        name: 'notsave',
+        icon: 'content-save-outline',
+        onClick: () => {
+          console.log('save 2')
+        }
+      }
+    ]
     this.subscriber = null
   }
   addButton(button, sort) {
     this.addButtons([button], sort)
   }
   addButtons(buttons, sort) {
-    this.buttons = [...this.buttons, ...buttons]
+    this.buttons = [...buttons, ...this.buttons]
     buttons.forEach(b => (b.sort = sort))
     this.buttons
       .map(i => this.buttons[i])
