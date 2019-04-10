@@ -33,6 +33,11 @@ export default class ToolBar extends React.Component {
           >
             <span className={'mdi mdi-' + button.icon} />
           </Button>
+          {!!button.tooltip && (
+            <div className='mdl-tooltip' htmlFor={id(button.name)}>
+              {button.tooltip}
+            </div>
+          )}
           {!!button.menu && (
             <ul
               className='mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect'
