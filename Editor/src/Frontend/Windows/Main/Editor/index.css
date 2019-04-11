@@ -18,6 +18,11 @@
 }
 .mdl-tabs__tab {
   text-transform: none;
+  flex-grow: 1;
+  max-width: 200px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 .App.dark-theme .mdl-tabs__tab {
   color: var(--text-color);
