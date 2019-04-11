@@ -25,3 +25,6 @@
 .cm-s-material .cm-def {
   color: var(--text-color);
 }
+.cm-s-material .CodeMirror-linenumber {
+  color: #8888;
+}
