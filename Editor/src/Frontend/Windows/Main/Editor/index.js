@@ -1,6 +1,7 @@
 import React from 'react'
 import './index.css'
 import styles from './index.module.css'
+import Script from '../Editors/Script'
 
 export default class Editor extends React.Component {
   render() {
@@ -21,15 +22,7 @@ export default class Editor extends React.Component {
           </a>
         </div>
         <div className='mdl-tabs__panel is-active' id='starks-panel'>
-          <ul>
-            <li>Eddard</li>
-            <li>Catelyn</li>
-            <li>Robb</li>
-            <li>Sansa</li>
-            <li>Brandon</li>
-            <li>Arya</li>
-            <li>Rickon</li>
-          </ul>
+          <Script />
         </div>
         <div className='mdl-tabs__panel' id='lannisters-panel'>
           <ul>
