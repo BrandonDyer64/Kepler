@@ -1,3 +1,15 @@
+.mdl-tabs {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  contain: size;
+}
+.mdl-tabs__panel.is-active {
+  flex-grow: 1;
+  display: flex !important;
+  contain: size;
+}
+
 .mdl-tabs__tab-bar {
   justify-content: flex-start;
 }

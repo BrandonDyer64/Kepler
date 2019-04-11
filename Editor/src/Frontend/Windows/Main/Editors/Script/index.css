@@ -1,0 +1,27 @@
+.ReactCodeMirror {
+  height: 100%;
+}
+.CodeMirror {
+  height: 100%;
+}
+.App.light-theme .cm-s-material div.CodeMirror-selected {
+  background: rgba(0, 0, 0, 0.15);
+}
+.cm-s-material .CodeMirror-cursor {
+  border-left: 1px solid var(--text-color);
+}
+.cm-s-material.CodeMirror {
+  background-color: #26323800;
+  color: var(--text-color-full);
+}
+.cm-s-material .CodeMirror-gutters {
+  background: #26323800;
+  color: var(--text-color-full);
+  border: none;
+}
+.cm-s-material .cm-operator {
+  color: var(--text-color);
+}
+.cm-s-material .cm-def {
+  color: var(--text-color);
+}
