@@ -5,7 +5,12 @@ import Script from '../Editors/Script'
 class API {
   constructor() {
     this.editors = {
-      test: { icon: 'nodejs', component: <Script /> }
+      test: { title: 'Test.cpp', icon: 'language-cpp', component: <Script /> },
+      test1: { title: 'Test.cpp', icon: 'language-cpp', component: <Script /> },
+      test2: { title: 'Test.cpp', icon: 'language-cpp', component: <Script /> },
+      test3: { title: 'Test.cpp', icon: 'language-cpp', component: <Script /> },
+      test4: { title: 'Test.cpp', icon: 'language-cpp', component: <Script /> },
+      test5: { title: 'Test.cpp', icon: 'language-cpp', component: <Script /> }
     }
     this.subscriber = null
   }
