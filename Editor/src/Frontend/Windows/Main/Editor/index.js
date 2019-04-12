@@ -9,20 +9,29 @@ import idmk from '../../../Utils/Id'
 export default class Editor extends React.Component {
   constructor() {
     super()
-    this.state = { editors: api.subscribe(this), id: idmk(this) }
+    this.state = {
+      editors: api.subscribe(this),
+      id: idmk(this),
+      activeTab: null
+    }
   }
   render() {
-    const { editors, id } = this.state
+    const { editors, id, activeTab } = this.state
     return (
       <div className='mdl-tabs mdl-js-tabs'>
         <div className='mdl-tabs__tab-bar'>
           {Object.keys(editors).map((tabName, i) => (
             <a
               href={'#' + id(tabName)}
-              className='mdl-tabs__tab'
+              className={cx('mdl-tabs__tab', {
+                'is-active': tabName == activeTab
+              })}
               key={'#' + id(tabName)}
             >
-              <span className={styles.tabNameContainer}>
+              <span
+                className={styles.tabNameContainer}
+                onClick={() => this.setState({ activeTab: tabName })}
+              >
                 <span className={'mdi mdi-' + editors[tabName].icon} />
                 {editors[tabName].title}
               </span>
@@ -34,7 +43,13 @@ export default class Editor extends React.Component {
           ))}
         </div>
         {Object.keys(editors).map((name, i) => (
-          <div className='mdl-tabs__panel' id={id(name)} key={id(name)}>
+          <div
+            className={cx('mdl-tabs__panel', {
+              'is-active': name == activeTab
+            })}
+            id={id(name)}
+            key={id(name)}
+          >
             {editors[name].component}
           </div>
         ))}

@@ -4,24 +4,13 @@ import Script from '../Editors/Script'
 
 class API {
   constructor() {
-    this.editors = {
-      test: { title: 'Test.cpp', icon: 'language-cpp', component: <Script /> },
-      test1: {
-        title: 'Test.kt',
-        icon: 'alpha-k',
-        component: <Script />
-      },
-      test2: { title: 'Test.cpp', icon: 'language-cpp', component: <Script /> },
-      test3: { title: 'Test.cpp', icon: 'language-cpp', component: <Script /> },
-      test4: { title: 'Test.cpp', icon: 'language-cpp', component: <Script /> },
-      test5: { title: 'Test.cpp', icon: 'language-cpp', component: <Script /> }
-    }
+    this.editors = {}
     this.subscriber = null
   }
   addEditor(name, editor) {
     if (name in this.editors) return // We already have this editor
     this.editors[name] = editor
-    this.update()
+    this.update(name)
   }
   removeEditor(name) {
     delete this.editors[name]
@@ -30,9 +19,11 @@ class API {
   has(name) {
     return !!this.editors[name]
   }
-  update() {
+  update(name) {
     if (this.subscriber) {
-      this.subscriber.setState({ editors: this.editors })
+      if (name)
+        this.subscriber.setState({ editors: this.editors, activeTab: name })
+      else this.subscriber.setState({ editors: this.editors })
     }
   }
   subscribe(subscriber) {

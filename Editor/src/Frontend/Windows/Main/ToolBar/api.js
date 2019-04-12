@@ -1,28 +1,7 @@
+import defaults from './defaults'
 class Api {
   constructor() {
-    this.buttons = [
-      {
-        name: 'save',
-        icon: 'content-save-outline',
-        tooltip: 'Save',
-        menu: [
-          {
-            name: 'test',
-            onClick: () => {
-              console.log('save passed')
-            }
-          }
-        ]
-      },
-      {
-        name: 'notsave',
-        icon: 'cast',
-        tooltip: 'Cast to device',
-        onClick: () => {
-          console.log('save 2')
-        }
-      }
-    ]
+    this.buttons = defaults
     this.subscriber = null
   }
   addButton(button, sort) {
