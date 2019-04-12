@@ -18,10 +18,6 @@ class API {
     }
   }
   addCommand(name, callback) {
-    if (name in this.commands) {
-      console.warn('Console Editor Warning: duplicate command ' + name)
-      return
-    }
     this.commands[name] = callback
   }
   call(string, lineback, done) {
