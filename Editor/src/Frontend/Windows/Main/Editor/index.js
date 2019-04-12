@@ -1,43 +1,43 @@
 import React from 'react'
+import cx from 'classnames'
+import api from './api'
 import './index.css'
 import styles from './index.module.css'
 import Script from '../Editors/Script'
+import idmk from '../../../Utils/Id'
 
 export default class Editor extends React.Component {
+  constructor() {
+    super()
+    this.state = { editors: api.subscribe(this), id: idmk(this) }
+  }
   render() {
+    const { editors, id } = this.state
     return (
       <div className='mdl-tabs mdl-js-tabs'>
         <div className='mdl-tabs__tab-bar'>
-          <a href='#starks-panel' className='mdl-tabs__tab is-active'>
-            <span className='mdi mdi-nodejs' />
-            &nbsp;Test.js
-          </a>
-          <a href='#lannisters-panel' className='mdl-tabs__tab'>
-            <span className='mdi mdi-language-typescript' />
-            &nbsp;Test2.ts
-          </a>
-          <a href='#targaryens-panel' className='mdl-tabs__tab'>
-            <span className='mdi mdi-alpha-k-box-outline' />
-            &nbsp;Test3.kt
-          </a>
+          {Object.keys(editors).map((tabName, i) => (
+            <a
+              href={'#' + id(tabName)}
+              className='mdl-tabs__tab'
+              key={'#' + id(tabName)}
+            >
+              <span>
+                <span className={'mdi mdi-' + editors[tabName].icon} />
+                &nbsp;{tabName}
+              </span>
+              <span
+                className='mdi mdi-close'
+                onClick={() => api.removeEditor(tabName)}
+              />
+            </a>
+          ))}
         </div>
-        <div className='mdl-tabs__panel is-active' id='starks-panel'>
-          <Script />
-        </div>
-        <div className='mdl-tabs__panel' id='lannisters-panel'>
-          <ul>
-            <li>Tywin</li>
-            <li>Cersei</li>
-            <li>Jamie</li>
-            <li>Tyrion</li>
-          </ul>
-        </div>
-        <div className='mdl-tabs__panel' id='targaryens-panel'>
-          <ul>
-            <li>Viserys</li>
-            <li>Daenerys</li>
-          </ul>
-        </div>
+        {Object.keys(editors).map((name, i) => (
+          <div className='mdl-tabs__panel' id={id(name)} key={id(name)}>
+            {editors[name].component}
+          </div>
+        ))}
       </div>
     )
   }
