@@ -1,0 +1,8 @@
+.tabNameContainer {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.tabNameContainer > span {
+  margin-right: 20px;
+}

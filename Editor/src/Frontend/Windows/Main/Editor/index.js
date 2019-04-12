@@ -22,9 +22,9 @@ export default class Editor extends React.Component {
               className='mdl-tabs__tab'
               key={'#' + id(tabName)}
             >
-              <span>
+              <span className={styles.tabNameContainer}>
                 <span className={'mdi mdi-' + editors[tabName].icon} />
-                &nbsp;{tabName}
+                {editors[tabName].title}
               </span>
               <span
                 className='mdi mdi-close'
