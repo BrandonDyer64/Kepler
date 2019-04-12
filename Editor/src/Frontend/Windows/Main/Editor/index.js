@@ -27,17 +27,18 @@ export default class Editor extends React.Component {
                 'is-active': tabName == activeTab
               })}
               key={'#' + id(tabName)}
+              onClick={() => this.setState({ activeTab: tabName })}
             >
-              <span
-                className={styles.tabNameContainer}
-                onClick={() => this.setState({ activeTab: tabName })}
-              >
+              <span className={styles.tabNameContainer}>
                 <span className={'mdi mdi-' + editors[tabName].icon} />
                 {editors[tabName].title}
               </span>
               <span
                 className='mdi mdi-close close-button'
-                onClick={() => api.removeEditor(tabName)}
+                onClick={e => {
+                  e.stopPropagation()
+                  api.removeEditor(tabName)
+                }}
               />
             </a>
           ))}
