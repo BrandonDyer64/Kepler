@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route } from 'react-router-dom'
 import './App.css'
 import TitleBar from './Components/TitleBar'
 import SnackBar, { snackBarChannel } from './Components/SnackBar'
+import consoleAPI from './Windows/Main/Editors/Console/api'
 
 import Init from './Windows/Startup'
 import Main from './Windows/Main'
@@ -13,7 +14,13 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = { isDarkTheme: localStorage.getItem('isDarkTheme') === 'true' }
-    console.log(this.state)
+  }
+  componentDidMount() {
+    consoleAPI.addCommand('toggleDarkTheme', (args, print, done) => {
+      this.toggleDarkTheme()
+      print('toggled')
+      done()
+    })
   }
   toggleDarkTheme() {
     localStorage.setItem('isDarkTheme', !this.state.isDarkTheme)
