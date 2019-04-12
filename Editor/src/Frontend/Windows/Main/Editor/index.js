@@ -27,7 +27,7 @@ export default class Editor extends React.Component {
                 {editors[tabName].title}
               </span>
               <span
-                className='mdi mdi-close'
+                className='mdi mdi-close close-button'
                 onClick={() => api.removeEditor(tabName)}
               />
             </a>

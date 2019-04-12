@@ -24,6 +24,13 @@
   flex-direction: row;
   justify-content: space-between;
 }
+.mdl-tabs__tab .close-button {
+  opacity: 0;
+  transition: opacity 0.1s linear;
+}
+.mdl-tabs__tab:hover .close-button {
+  opacity: 1;
+}
 .App.dark-theme .mdl-tabs__tab {
   color: var(--text-color);
 }

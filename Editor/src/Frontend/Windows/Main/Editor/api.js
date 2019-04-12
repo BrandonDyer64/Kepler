@@ -6,7 +6,11 @@ class API {
   constructor() {
     this.editors = {
       test: { title: 'Test.cpp', icon: 'language-cpp', component: <Script /> },
-      test1: { title: 'Test.cpp', icon: 'language-cpp', component: <Script /> },
+      test1: {
+        title: 'Test.kt',
+        icon: 'alpha-k',
+        component: <Script />
+      },
       test2: { title: 'Test.cpp', icon: 'language-cpp', component: <Script /> },
       test3: { title: 'Test.cpp', icon: 'language-cpp', component: <Script /> },
       test4: { title: 'Test.cpp', icon: 'language-cpp', component: <Script /> },
@@ -22,6 +26,9 @@ class API {
   removeEditor(name) {
     delete this.editors[name]
     this.update()
+  }
+  has(name) {
+    return !!this.editors[name]
   }
   update() {
     if (this.subscriber) {
