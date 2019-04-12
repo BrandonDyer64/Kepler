@@ -9,6 +9,7 @@ class API {
             lineback(its++)
             if (its > 20 || !running) {
               clearInterval(id)
+              done()
               resolve()
             }
           }, 50)

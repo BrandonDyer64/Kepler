@@ -9,6 +9,9 @@ export default class Console extends React.Component {
     super()
     this.state = { lines: [''], lineValue: '', id: idmk(this) }
   }
+  componentDidMount() {
+    this.input.focus()
+  }
   handleChange(e) {
     this.setState({ lineValue: e.target.value })
   }
@@ -16,6 +19,16 @@ export default class Console extends React.Component {
     console.log(e.key)
     if (e.key === 'Enter') {
       this.input.value = ''
+      this.setState(s => ({
+        isCommandRunning: true,
+        lines: [
+          ...s.lines,
+          <>
+            <span style={{ fontWeight: 'bold' }}>Kepler:~$ </span>
+            {this.state.lineValue}
+          </>
+        ]
+      }))
       api.call(
         this.state.lineValue,
         line => {
@@ -23,12 +36,15 @@ export default class Console extends React.Component {
             lines: [...s.lines, line]
           }))
         },
-        () => {}
+        () => {
+          this.setState({ isCommandRunning: false })
+          this.input.focus()
+        }
       )
     }
   }
   render() {
-    const { lines, id } = this.state
+    const { lines, id, isCommandRunning } = this.state
     return (
       <div className={styles.console}>
         <div className={styles.lines}>
@@ -38,17 +54,19 @@ export default class Console extends React.Component {
               <br />
             </div>
           ))}
-        </div>
-        <div className='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>
-          $&nbsp;&gt;&nbsp;
-          <input
-            ref={el => (this.input = el)}
-            className='mdl-textfield__input'
-            type='text'
-            onChange={e => this.handleChange(e)}
-            onKeyDown={e => this.handleKeyDown(e)}
-            id='console-input'
-          />
+          {!isCommandRunning && (
+            <div className='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>
+              <span style={{ fontWeight: 'bold' }}>Kepler:~$&nbsp;</span>
+              <input
+                ref={el => (this.input = el)}
+                className='mdl-textfield__input'
+                type='text'
+                onChange={e => this.handleChange(e)}
+                onKeyDown={e => this.handleKeyDown(e)}
+                id='console-input'
+              />
+            </div>
+          )}
         </div>
       </div>
     )
