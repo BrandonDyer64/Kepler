@@ -7,6 +7,15 @@
 .App.light-theme .cm-s-material div.CodeMirror-selected {
   background: rgba(0, 0, 0, 0.15);
 }
+.App.light-theme .cm-s-material .cm-keyword {
+  color: #ba68c8;
+}
+.App.light-theme .cm-s-material .cm-type {
+  color: #ffa726;
+}
+.App.light-theme .cm-s-material .cm-variable {
+  color: #4fc3f7;
+}
 .cm-s-material .CodeMirror-cursor {
   border-left: 1px solid var(--text-color);
 }
