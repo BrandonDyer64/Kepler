@@ -1,5 +1,6 @@
 import React from 'react'
 import editorAPI from '../Editor/api'
+import _ from 'lodash'
 
 import Console from '../Editors/Console'
 
@@ -22,7 +23,7 @@ export default [
     icon: 'console',
     tooltip: 'Console',
     onClick: () => {
-      editorAPI.addEditor('console', {
+      editorAPI.addEditor('console-' + _.uniqueId(), {
         title: 'Console',
         icon: 'console-line',
         component: <Console />
