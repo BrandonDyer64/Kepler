@@ -24,7 +24,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron": "electron .",
-    "electron-dev": "set ELECTRON_START_URL=http://localhost:3000 && electron .",
+    "electron-dev-win": "set ELECTRON_START_URL=http://localhost:3000 && electron .",
+    "electron-dev-unix": "ELECTRON_START_URL=http://localhost:3000 electron .",
     "dev": "nf start -p 3000"
   },
   "eslintConfig": {
