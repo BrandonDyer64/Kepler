@@ -6,7 +6,7 @@ import '../node_modules/@mdi/font/css/materialdesignicons.min.css'
 import './index.css'
 import Frontend from './Frontend'
 import * as serviceWorker from './serviceWorker'
-import parseArrowChains from './Frontend/Languages/Parsers/ArrowChains'
+import Parsers from './Frontend/Parsers'
 
 const source = `
 function test() {
@@ -20,7 +20,7 @@ function test() {
 }
 `
 
-console.log(parseArrowChains(source))
+console.log(Parsers.parse('js', source))
 
 ReactDOM.render(<Frontend />, document.getElementById('root'))
 
