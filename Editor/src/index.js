@@ -6,6 +6,21 @@ import '../node_modules/@mdi/font/css/materialdesignicons.min.css'
 import './index.css'
 import Frontend from './Frontend'
 import * as serviceWorker from './serviceWorker'
+import parseArrowChains from './Frontend/Languages/Parsers/ArrowChains'
+
+const source = `
+function test() {
+  ("sometext")
+    -> outer(_, x)
+    -> aoeu
+    -> ckrbp(a, _, b)
+    -> rd093
+    .replace('b','a')
+    .replace('a','b')
+}
+`
+
+console.log(parseArrowChains(source))
 
 ReactDOM.render(<Frontend />, document.getElementById('root'))
 
