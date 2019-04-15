@@ -13,10 +13,11 @@ function test() {
   ("sometext")
     -> outer(_, x)
     -> aoeu
-    -> ckrbp(a, _, b)
+    -> ckrbp
     -> rd093
     .replace('b','a')
     .replace('a','b')
+    -> something
 }
 `
 
