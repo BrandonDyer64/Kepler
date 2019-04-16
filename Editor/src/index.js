@@ -6,22 +6,6 @@ import '../node_modules/@mdi/font/css/materialdesignicons.min.css'
 import './index.css'
 import Frontend from './Frontend'
 import * as serviceWorker from './serviceWorker'
-import Parsers from './Frontend/Parsers'
-
-const source = `
-function test() {
-  ("sometext")
-    -> outer(_, x)
-    -> aoeu
-    -> ckrbp
-    -> rd093
-    .replace('b','a')
-    .replace('a','b')
-    -> something
-}
-`
-
-console.log(Parsers.parse('js', source))
 
 ReactDOM.render(<Frontend />, document.getElementById('root'))
 
