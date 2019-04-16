@@ -2,14 +2,26 @@
   display: flex;
   flex-direction: row;
   text-align: left;
-  padding-top: 5px;
+  height: 28px;
+}
+
+.TitleBar.p_darwin {
+  padding-left: 64px;
+}
+
+.TitleBar.p_linux {
+  display: none;
 }
 
 .TitleBar > .content {
   -webkit-app-region: drag;
   -webkit-user-select: none;
+  line-height: 28px;
   flex-grow: 1;
   padding-left: 10px;
+}
+.TitleBar > .buttons {
+  display: flex;
 }
 
 .TitleBar > .buttons > span {
@@ -21,10 +33,10 @@
   cursor: pointer;
 }
 
-.TitleBar > .buttons > span:last-child:hover {
+.TitleBar > .buttons .mdi-window-close:hover {
   background-color: #f444;
 }
 
-.TitleBar > .buttons > .light-button {
+.TitleBar > .buttons > .separator {
   margin-right: 20px;
 }
