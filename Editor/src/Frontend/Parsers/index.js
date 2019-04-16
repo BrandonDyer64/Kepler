@@ -11,9 +11,10 @@ export default {
 
     // Apply languages parsers
     const parsers = language.parsers
-    parsers.forEach(parser => (source = parser(source)))
+    parsers.forEach(parser => {source = parser.parse(source)})
 
     return {
+      success: true,
       source,
       extension: language.extensionOut
     }
