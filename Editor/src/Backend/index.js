@@ -2,6 +2,8 @@
 const { app, BrowserWindow } = require('electron')
 const url = require('url')
 const path = require('path')
+const os = require('os')
+const platform = os.platform()
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -15,9 +17,11 @@ function createWindow(page) {
     webPreferences: {
       nodeIntegration: true
     },
-    frame: false,
-    titleBarStyle: 'hidden',
-    autoHideMenuBar: true
+    autoHideMenuBar: true,
+    ...(platform !== 'linux'
+      ? {frame: false, titleBarStyle: 'hidden',}
+      : {}
+    )
   })
 
   // and load the index.html of the app.
