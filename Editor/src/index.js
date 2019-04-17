@@ -9,16 +9,12 @@ import * as serviceWorker from './serviceWorker'
 import Parsers from './Frontend/Parsers'
 
 const source = `
-//#if true >= true
-  //#if true
-    something
-    /*@Engine.version@*/
-  //#endif
-//#endif
+var message: string = "Hello World!" ;
+console.log(message);
 `
 
 console.log(
-  Parsers.parse('js', source, { Engine: { version: '0.1.0' } }).source
+  Parsers.parse('ts', source, { Engine: { version: '0.1.0' } }).source
 )
 
 ReactDOM.render(<Frontend />, document.getElementById('root'))
