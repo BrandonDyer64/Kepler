@@ -1,7 +1,7 @@
 import languages from '../Languages'
 
 export default {
-  parse(extension, source) {
+  parse(extension, source, data = {}) {
     // Get language from extension
     const filteredLanguages = languages.filter(lang =>
       lang.extensionsIn.includes(extension)
@@ -11,7 +11,9 @@ export default {
 
     // Apply languages parsers
     const parsers = language.parsers
-    parsers.forEach(parser => {source = parser.parse(source)})
+    parsers.forEach(parser => {
+      source = parser.parse(source, data)
+    })
 
     return {
       success: true,
