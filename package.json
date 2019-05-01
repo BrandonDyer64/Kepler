@@ -1,0 +1,30 @@
+{
+  "name": "kepler-root",
+  "version": "1.0.0",
+  "description": "Root of the kepler repository",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "pre-commit": "^1.2.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MagentexSoftware/Kepler.git"
+  },
+  "keywords": [
+    "kepler",
+    "engine",
+    "kepler-engine",
+    "game",
+    "game-engine"
+  ],
+  "author": "Brandon Dyer",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/MagentexSoftware/Kepler/issues"
+  },
+  "homepage": "https://github.com/MagentexSoftware/Kepler#readme"
+}
