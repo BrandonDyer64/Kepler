@@ -11,7 +11,7 @@
     "pretty-quick": "^1.10.0"
   },
   "scripts": {
-    "test": "echo \"Nothing to test\" && exit 0"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
