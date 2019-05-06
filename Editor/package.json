@@ -1,7 +1,6 @@
 {
-  "name": "kepler-engine-editor",
+  "name": "kepler-ide",
   "version": "0.1.0",
-  "private": true,
   "dependencies": {
     "@mdi/font": "^3.5.95",
     "@mdi/js": "^3.5.95",

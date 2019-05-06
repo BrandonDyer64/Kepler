@@ -8,9 +8,16 @@
     "husky": "^2.2.0",
     "mocha": "^6.1.4",
     "prettier": "^1.17.0",
-    "pretty-quick": "^1.10.0"
+    "pretty-quick": "^1.10.0",
+    "submodules": "^3.0.0"
   },
   "scripts": {
+    "build": "cd Entities && npm run build && cd ../Core && npm run build",
+    "postinstall": "install-submodules -v && symlink-submodules -v",
+    "postuninstall": "prune-symlinked-submodules -v",
+    "prune": "npm prune && prune-submodules -v && prune-symlinked-submodules -v",
+    "outdated": "npm outdated && outdated-submodules -v",
+    "clean": "clean-submodules -v && rm -rf node_modules",
     "test": "mocha"
   },
   "repository": {
