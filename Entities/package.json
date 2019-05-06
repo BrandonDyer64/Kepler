@@ -1,0 +1,39 @@
+{
+  "name": "kepler-entities",
+  "main": "lib/binding.js",
+  "dependencies": {
+    "node-addon-api": "^1.1.0",
+    "nodemon": "^1.19.0"
+  },
+  "scripts": {
+    "dev": "nodemon -x \"npm run build && npm run test\"",
+    "build": "node-gyp configure build",
+    "rebuild": "node-gyp rebuild",
+    "test": "mocha --napi-modules"
+  },
+  "gypfile": true,
+  "version": "1.0.0",
+  "description": "EntityX binding for NodeJS",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MagentexSoftware/Kepler.git"
+  },
+  "keywords": [
+    "kepler",
+    "engine",
+    "kepler-engine",
+    "game",
+    "game-engine",
+    "entityx"
+  ],
+  "author": "Brandon Dyer",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MagentexSoftware/Kepler/issues"
+  },
+  "homepage": "https://github.com/MagentexSoftware/Kepler#readme",
+  "devDependencies": {
+    "mocha": "^6.1.4",
+    "node-gyp": "^4.0.0"
+  }
+}
