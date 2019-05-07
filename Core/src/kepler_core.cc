@@ -1,23 +1,33 @@
 #include <napi.h>
 #include "kepler/Kepler.hpp"
+#include <entityx/Entity.h>
+#include <display/Display.hpp>
 
 using namespace Napi;
 
-String Method(const CallbackInfo& info) {
+Boolean CheckEntityXInclude(const CallbackInfo& info) {
   Env env = info.Env();
-  return String::New(env, "world");
+  #ifdef Entity_h
+    return Boolean::New(env, true);
+  #else
+    return Boolean::New(env, false);
+  #endif
 }
 
-String Method2(const CallbackInfo& info) {
+Boolean CheckDisplayInclude(const CallbackInfo& info) {
   Env env = info.Env();
-  return String::New(env, "world2");
+  #ifdef Display_hpp
+    return Boolean::New(env, true);
+  #else
+    return Boolean::New(env, false);
+  #endif
 }
 
 Object Init(Env env, Object exports) {
-  exports.Set(String::New(env, "KeplerEntities"),
-              Function::New(env, Method));
-  exports.Set(String::New(env, "KeplerEntities2"),
-              Function::New(env, Method2));
+  exports.Set(String::New(env, "CheckEntityXInclude"),
+              Function::New(env, CheckEntityXInclude));
+  exports.Set(String::New(env, "CheckDisplayInclude"),
+              Function::New(env, CheckDisplayInclude));
   return exports;
 }
 

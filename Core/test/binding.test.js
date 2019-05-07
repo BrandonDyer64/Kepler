@@ -1,13 +1,13 @@
-const { KeplerEntities, KeplerEntities2 } = require('../lib/binding.js')
+const binding = require('../lib/binding.js')
 const assert = require('assert')
 
 describe('Kepler Core', function() {
-  describe('KeplerEntities', function() {
-    it('should return world', function() {
-      assert.equal(KeplerEntities(), 'world')
+  describe('Includes', function() {
+    it('should include EntityX', function() {
+      assert.equal(binding.CheckEntityXInclude(), true)
     })
-    it('should return world2', function() {
-      assert.equal(KeplerEntities2(), 'world2')
+    it('should include Display', function() {
+      assert.equal(binding.CheckDisplayInclude(), true)
     })
   })
 })

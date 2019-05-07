@@ -7,3 +7,4 @@ config.cmake
 *.mtl
 *.jpg
 *.log
+.nyc_output/

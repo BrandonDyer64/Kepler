@@ -9,7 +9,7 @@
  */
 
 #pragma once
-
+#define Entity_h
 
 #include <cstdint>
 #include <tuple>
@@ -1101,4 +1101,3 @@ template <> struct hash<const entityx::Entity> {
   }
 };
 }
-

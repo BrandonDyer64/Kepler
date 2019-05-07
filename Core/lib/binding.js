@@ -1,3 +1,3 @@
-const addon = require('../build/Release/kepler-entities-native')
+const addon = require('../build/Release/kepler-core-native')
 
 module.exports = addon

@@ -12,7 +12,7 @@
     "submodules": "^3.0.0"
   },
   "scripts": {
-    "build": "cd Entities && npm run build && cd ../Core && npm run build",
+    "build": "cd Entities && npm run build && cd ../Display && npm run build && cd ../Core && npm run build",
     "postinstall": "install-submodules -v && symlink-submodules -v",
     "postuninstall": "prune-symlinked-submodules -v",
     "prune": "npm prune && prune-submodules -v && prune-symlinked-submodules -v",
