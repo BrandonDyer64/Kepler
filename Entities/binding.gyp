@@ -2,7 +2,7 @@
   'targets': [
     {
       'target_name': 'kepler-entities-native',
-      'sources': [ 'src/kepler_entities.cc', 'src/Entity.cc', 'src/Event.cc', 'src/System.cc', 'src/help/Pool.cc', 'src/help/Timer.cc'],
+      'sources': [ "<!@(node -p \"require('fs').readdirSync('./src').map(f=>'src/'+f).join(' ')\")"],
       'include_dirs': ["<!@(node -p \"require('node-addon-api').include\")", "include"],
       'dependencies': ["<!(node -p \"require('node-addon-api').gyp\")"],
       'cflags!': [ '-fno-exceptions' ],
