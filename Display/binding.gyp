@@ -2,7 +2,7 @@
   'targets': [
     {
       'target_name': 'kepler-display-native',
-      'sources': [ 'src/kepler_display.cc' ],
+      'sources': [ "<!@(node -p \"require('fs').readdirSync('./src').map(f=>'src/'+f).join(' ')\")" ],
       'include_dirs': ["<!@(node -p \"require('node-addon-api').include\")", "include"],
       'dependencies': ["<!(node -p \"require('node-addon-api').gyp\")"],
       'cflags!': [ '-fno-exceptions' ],

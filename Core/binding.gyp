@@ -1,8 +1,8 @@
 {
   'targets': [
     {
-      'target_name': 'kepler-core-native',
-      'sources': [ 'src/kepler_core.cc'],
+      'target_name': "kepler-core-native",
+      'sources': [ "<!@(node -p \"require('fs').readdirSync('./src').map(f=>'src/'+f).join(' ')\")"],
       'include_dirs': [
         "node_modules/kepler-entities/include",
         "node_modules/kepler-display/include",
