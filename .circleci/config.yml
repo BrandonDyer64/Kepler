@@ -26,7 +26,7 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
-      - run: sudo apt-get install libx11-dev libxcursor-dev libxrandr-dev x11proto-xinerama-dev libxcb-xinerama0-dev
+      - run: sudo apt-get install libx11-dev libxtst-dev libxcursor-dev libxrandr-dev x11proto-xinerama-dev libxcb-xinerama0-dev
       - run: npm install
 
       - save_cache:
