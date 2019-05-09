@@ -33,5 +33,6 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
+      - run: apt install libx11-dev
       - run: npm run build
       - run: npm run test
