@@ -26,6 +26,7 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
+      - run: apt install libx11-dev
       - run: npm install
 
       - save_cache:
@@ -33,6 +34,5 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
-      - run: apt install libx11-dev
       - run: npm run build
       - run: npm run test
