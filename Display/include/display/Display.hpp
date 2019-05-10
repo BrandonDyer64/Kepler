@@ -20,7 +20,7 @@ public:
 
   int FrameWrap();
   void FrameWrap(int);
-  
+
 };
 
 }

@@ -3,8 +3,15 @@
     {
       'target_name': 'kepler-display-native',
       'sources': [ "<!@(node -p \"require('fs').readdirSync('./src').map(f=>'src/'+f).join(' ')\")" ],
-      'include_dirs': ["<!@(node -p \"require('node-addon-api').include\")", "include"],
-      'dependencies': ["<!(node -p \"require('node-addon-api').gyp\")"],
+      'include_dirs': [
+        "node_modules/kepler-glfw/glfw/include",
+        "<!@(node -p \"require('node-addon-api').include\")",
+        "include"
+      ],
+      'dependencies': [
+        "node_modules/kepler-glfw/binding.gyp:kepler-glfw-native",
+        "<!(node -p \"require('node-addon-api').gyp\")"
+      ],
       'cflags!': [ '-fno-exceptions' ],
       'cflags_cc!': [ '-fno-exceptions' ],
       'xcode_settings': {
