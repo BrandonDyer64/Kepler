@@ -28,7 +28,7 @@ jobs:
 
       - run:
           name: Install System Dependencies
-          command: sudo apt-get install libx11-dev libxtst-dev libxcursor-dev libxrandr-dev x11proto-xinerama-dev libxinerama-dev
+          command: sudo apt-get install libx11-dev libxtst-dev libxcursor-dev libxrandr-dev x11proto-xinerama-dev libxinerama-dev mesa-common-dev
 
       - run:
           name: Install Node Dependencies
