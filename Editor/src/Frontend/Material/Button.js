@@ -1,5 +1,6 @@
 import React from 'react'
 import cx from 'classnames'
+import gtk from '../gtk'
 
 export function Button(props) {
   return (
@@ -14,6 +15,7 @@ export function Button(props) {
           return 'mdl-button--' + value
         })
       )}
+      style={props.nogtk ? {} : gtk.button}
     >
       {props.title || props.children}
     </button>

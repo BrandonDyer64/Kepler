@@ -30,23 +30,24 @@ export default class ToolBar extends React.Component {
             id={id(button.name)}
             key={`ToolBar-Button-${i}`}
             onClick={button.onClick || (() => {})}
+            nogtk
           >
             <span className={'mdi mdi-' + button.icon} />
           </Button>
           {!!button.tooltip && (
-            <div className='mdl-tooltip' htmlFor={id(button.name)}>
+            <div className="mdl-tooltip" htmlFor={id(button.name)}>
               {button.tooltip}
             </div>
           )}
           {!!button.menu && (
             <ul
-              className='mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect'
+              className="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect"
               htmlFor={id(button.name)}
               key={`ToolBar-Menu-${i}`}
             >
               {button.menu.map((item, j) => (
                 <li
-                  className='mdl-menu__item'
+                  className="mdl-menu__item"
                   onClick={item.onClick}
                   key={`ToolBar-Menu-${i}-${j}`}
                 >

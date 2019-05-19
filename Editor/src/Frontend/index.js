@@ -8,6 +8,9 @@ import consoleAPI from './Windows/Main/Editors/Console/api'
 import Init from './Windows/Startup'
 import Main from './Windows/Main'
 
+import gtk from './gtk'
+console.log(gtk)
+
 const localStorage = window.localStorage
 
 class App extends Component {
@@ -32,13 +35,16 @@ class App extends Component {
   }
   render() {
     return (
-      <div className={`App ${this.state.isDarkTheme ? 'dark' : 'light'}-theme`}>
+      <div
+        className={`App ${this.state.isDarkTheme ? 'dark' : 'light'}-theme`}
+        style={gtk.background}
+      >
         <Router>
           <TitleBar onLightToggle={() => this.toggleDarkTheme()}>
             Kepler Engine
           </TitleBar>
-          <Route path='/init' component={Init} />
-          <Route path='/main' component={Main} />
+          <Route path="/init" component={Init} />
+          <Route path="/main" component={Main} />
           <SnackBar />
         </Router>
       </div>
