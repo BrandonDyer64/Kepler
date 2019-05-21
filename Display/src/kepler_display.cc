@@ -43,6 +43,44 @@ String GlfwGetVersion(const CallbackInfo& info) {
   return String::New(env, str.str());
 }
 
+Boolean GlfwTestOpenWindow(const CallbackInfo& info) {
+  Env env = info.Env();
+  GLFWwindow* window;
+
+  /* Initialize the library */
+  if (!glfwInit())
+    return Boolean::New(env, false);
+
+  /* Create a windowed mode window and its OpenGL context */
+  window = glfwCreateWindow(640, 480, "Kepler Engine", NULL, NULL);
+  if (!window)
+  {
+    glfwTerminate();
+    return Boolean::New(env, false);
+  }
+
+  /* Make the window's context current */
+  glfwMakeContextCurrent(window);
+  gladLoadGL();
+  glfwSwapInterval(1);
+
+  /* Loop until the user closes the window */
+  while (!glfwWindowShouldClose(window))
+  {
+    /* Render here */
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    /* Swap front and back buffers */
+    glfwSwapBuffers(window);
+
+    /* Poll for and process events */
+    glfwPollEvents();
+  }
+
+  glfwTerminate();
+  return Boolean::New(env, true);
+}
+
 Object Init(Env env, Object exports) {
   exports.Set(String::New(env, "Test_GlfwInit"),
               Function::New(env, Test_GlfwInit));
@@ -52,6 +90,8 @@ Object Init(Env env, Object exports) {
               Function::New(env, Test_GladIncluded));
   exports.Set(String::New(env, "GlfwGetVersion"),
               Function::New(env, GlfwGetVersion));
+  exports.Set(String::New(env, "GlfwTestOpenWindow"),
+              Function::New(env, GlfwTestOpenWindow));
   return exports;
 }
 

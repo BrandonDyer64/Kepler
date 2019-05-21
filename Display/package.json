@@ -10,7 +10,8 @@
     "dev": "nodemon -x \"npm run build && npm run test\"",
     "build": "node-gyp configure build",
     "rebuild": "node-gyp rebuild",
-    "test": "mocha --napi-modules"
+    "test": "mocha --napi-modules",
+    "test-window": "node test-desktop/window.js"
   },
   "gypfile": true,
   "version": "1.0.1",

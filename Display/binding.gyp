@@ -12,6 +12,11 @@
         "node_modules/kepler-glfw/binding.gyp:kepler-glfw-native",
         "<!(node -p \"require('node-addon-api').gyp\")"
       ],
+      "conditions":[
+        ["OS=='linux'", {
+          "libraries": [ "-lX11" ]
+        }],
+      ],
       'cflags!': [ '-fno-exceptions' ],
       'cflags_cc!': [ '-fno-exceptions' ],
       'xcode_settings': {
@@ -23,5 +28,5 @@
         'VCCLCompilerTool': { 'ExceptionHandling': 1 },
       }
     }
-  ]
+  ],
 }
