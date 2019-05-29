@@ -14,8 +14,11 @@
       ],
       "conditions":[
         ["OS=='linux'", {
-          "libraries": [ "-lX11" ]
-        }],
+          "libraries": [
+            "-lX11",
+            "-Wl,-rpath,./build/Release/,-rpath,$ORIGIN/,-rpath,./Display/build/Release/"
+          ]
+        }]
       ],
       'cflags!': [ '-fno-exceptions' ],
       'cflags_cc!': [ '-fno-exceptions' ],
@@ -27,6 +30,11 @@
       'msvs_settings': {
         'VCCLCompilerTool': { 'ExceptionHandling': 1 },
       }
+    },
+    {
+      'target_name': 'kepler-display-native-static',
+      'dependencies': [ 'kepler-display-native' ],
+      'type': 'static_library'
     }
   ],
 }

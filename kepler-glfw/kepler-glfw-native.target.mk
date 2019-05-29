@@ -104,6 +104,9 @@ OBJS := \
 # Add to the list of files we specially track dependencies for.
 all_deps += $(OBJS)
 
+# Make sure our dependencies are built before any of us.
+$(OBJS): | $(builddir)/nothing.a $(obj).target/../../kepler-glfw/node_modules/node-addon-api/src/nothing.a
+
 # CFLAGS et al overrides must be target-local.
 # See "Target-specific Variable Values" in the GNU Make manual.
 $(OBJS): TOOLSET := $(TOOLSET)
@@ -138,36 +141,29 @@ LDFLAGS_Release := \
 LIBS := \
 	-lX11
 
-$(obj).target/../../kepler-glfw/kepler-glfw-native.a: GYP_LDFLAGS := $(LDFLAGS_$(BUILDTYPE))
-$(obj).target/../../kepler-glfw/kepler-glfw-native.a: LIBS := $(LIBS)
-$(obj).target/../../kepler-glfw/kepler-glfw-native.a: TOOLSET := $(TOOLSET)
-$(obj).target/../../kepler-glfw/kepler-glfw-native.a: $(OBJS) FORCE_DO_CMD
-	$(call do_cmd,alink)
+$(obj).target/../../kepler-glfw/kepler-glfw-native.so: GYP_LDFLAGS := $(LDFLAGS_$(BUILDTYPE))
+$(obj).target/../../kepler-glfw/kepler-glfw-native.so: LIBS := $(LIBS)
+$(obj).target/../../kepler-glfw/kepler-glfw-native.so: LD_INPUTS := $(OBJS) $(obj).target/../../kepler-glfw/node_modules/node-addon-api/src/nothing.a
+$(obj).target/../../kepler-glfw/kepler-glfw-native.so: TOOLSET := $(TOOLSET)
+$(obj).target/../../kepler-glfw/kepler-glfw-native.so: $(OBJS) $(obj).target/../../kepler-glfw/node_modules/node-addon-api/src/nothing.a FORCE_DO_CMD
+	$(call do_cmd,solink)
 
-all_deps += $(obj).target/../../kepler-glfw/kepler-glfw-native.a
+all_deps += $(obj).target/../../kepler-glfw/kepler-glfw-native.so
 # Add target alias
 .PHONY: kepler-glfw-native
-kepler-glfw-native: $(obj).target/../../kepler-glfw/kepler-glfw-native.a
+kepler-glfw-native: $(builddir)/kepler-glfw-native.so
 
-# Add target alias to "all" target.
-.PHONY: all
-all: kepler-glfw-native
-
-# Add target alias
-.PHONY: kepler-glfw-native
-kepler-glfw-native: $(builddir)/kepler-glfw-native.a
-
-# Copy this to the static library output path.
-$(builddir)/kepler-glfw-native.a: TOOLSET := $(TOOLSET)
-$(builddir)/kepler-glfw-native.a: $(obj).target/../../kepler-glfw/kepler-glfw-native.a FORCE_DO_CMD
+# Copy this to the shared library output path.
+$(builddir)/kepler-glfw-native.so: TOOLSET := $(TOOLSET)
+$(builddir)/kepler-glfw-native.so: $(obj).target/../../kepler-glfw/kepler-glfw-native.so FORCE_DO_CMD
 	$(call do_cmd,copy)
 
-all_deps += $(builddir)/kepler-glfw-native.a
-# Short alias for building this static library.
-.PHONY: kepler-glfw-native.a
-kepler-glfw-native.a: $(obj).target/../../kepler-glfw/kepler-glfw-native.a $(builddir)/kepler-glfw-native.a
+all_deps += $(builddir)/kepler-glfw-native.so
+# Short alias for building this shared library.
+.PHONY: kepler-glfw-native.so
+kepler-glfw-native.so: $(obj).target/../../kepler-glfw/kepler-glfw-native.so $(builddir)/kepler-glfw-native.so
 
-# Add static library to "all" target.
+# Add shared library to "all" target.
 .PHONY: all
-all: $(builddir)/kepler-glfw-native.a
+all: $(builddir)/kepler-glfw-native.so
 
