@@ -1,0 +1,116 @@
+---
+---
+
+@import '{{ site.theme }}';
+@import url('https://fonts.googleapis.com/css?family=Poppins:100,300,400,600&display=swap');
+
+body {
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  overflow: hidden;
+  align-items: stretch;
+  color: #546e7a;
+  .thin {
+    font-weight: 100;
+  }
+  .sidebar {
+    color: #d5dae6;
+    background-color: #37474f;
+    width: 300px;
+    padding: 26px;
+    padding-right: 0px;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    .header {
+      color: #eceff1;
+      a {
+        color: #eceff1;
+        text-decoration: none;
+      }
+      .title {
+        font-size: 24px;
+        font-weight: 600;
+      }
+    }
+    .top-section {
+      display: flex;
+      flex-direction: column;
+      margin-top: 30px;
+      a {
+        color: #cfd8dc;
+        font-size: 14px;
+        padding: 3px;
+        padding-left: 15px;
+        border-left: 3px solid transparent;
+        transition: border-left 0.1s linear;
+        font-weight: 300;
+        text-transform: uppercase;
+      }
+      a:hover {
+        color: #eceff1;
+        text-decoration: none;
+        border-left-color: #2196f3aa;
+      }
+      a.selected {
+        color: #eceff1;
+        border-left-color: #2196f3ff;
+      }
+    }
+    .main-section {
+      display: flex;
+      flex-direction: column;
+      overflow-y: scroll;
+      margin-top: 30px;
+      a {
+        color: #cfd8dc;
+        font-size: 14px;
+        padding: 3px;
+        padding-left: 15px;
+        border-left: 3px solid transparent;
+        transition: border-left 0.1s linear;
+        font-weight: 300;
+      }
+      a:hover {
+        color: #eceff1;
+        text-decoration: none;
+      }
+      a.selected {
+        color: #eceff1;
+      }
+    }
+  }
+  .main-content {
+    overflow-y: scroll;
+    flex-grow: 2;
+    width: 64rem;
+    h1 {
+      color: #43a047;
+    }
+    h2 {
+      color: #4caf50;
+    }
+    h3 {
+      color: #66bb6a;
+    }
+    h4,
+    h5,
+    h6 {
+      color: #81c784;
+    }
+    a {
+      color: #1e88e5;
+    }
+    .site-footer {
+      margin-bottom: 30px;
+      .site-footer-credits {
+        color: #78909c;
+      }
+      * {
+        font-weight: 300;
+      }
+    }
+  }
+}
