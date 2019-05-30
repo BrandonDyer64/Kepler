@@ -7,41 +7,52 @@ DEFS_Debug := \
 	'-DUSING_UV_SHARED=1' \
 	'-DUSING_V8_SHARED=1' \
 	'-DV8_DEPRECATION_WARNINGS=1' \
+	'-D_DARWIN_USE_64_BIT_INODE=1' \
 	'-D_LARGEFILE_SOURCE' \
 	'-D_FILE_OFFSET_BITS=64' \
-	'-D_GLFW_X11' \
+	'-D_GLFW_COCOA' \
 	'-DDEBUG' \
 	'-D_DEBUG' \
 	'-DV8_ENABLE_CHECKS'
 
 # Flags passed to all source files.
 CFLAGS_Debug := \
-	-fPIC \
-	-pthread \
+	-O0 \
+	-gdwarf-2 \
+	-mmacosx-version-min=10.7 \
+	-arch x86_64 \
 	-Wall \
-	-Wextra \
-	-Wno-unused-parameter \
-	-m64 \
-	-g \
-	-O0
+	-Wendif-labels \
+	-W \
+	-Wno-unused-parameter
 
 # Flags passed to only C files.
-CFLAGS_C_Debug :=
+CFLAGS_C_Debug := \
+	-fno-strict-aliasing
 
 # Flags passed to only C++ files.
 CFLAGS_CC_Debug := \
+	-std=gnu++0x \
+	-stdlib=libc++ \
 	-fno-rtti \
-	-std=gnu++0x
+	-fno-threadsafe-statics \
+	-fno-strict-aliasing
+
+# Flags passed to only ObjC files.
+CFLAGS_OBJC_Debug :=
+
+# Flags passed to only ObjC++ files.
+CFLAGS_OBJCC_Debug :=
 
 INCS_Debug := \
-	-I/home/brandon/.node-gyp/8.10.0/include/node \
-	-I/home/brandon/.node-gyp/8.10.0/src \
-	-I/home/brandon/.node-gyp/8.10.0/deps/openssl/config \
-	-I/home/brandon/.node-gyp/8.10.0/deps/openssl/openssl/include \
-	-I/home/brandon/.node-gyp/8.10.0/deps/uv/include \
-	-I/home/brandon/.node-gyp/8.10.0/deps/zlib \
-	-I/home/brandon/.node-gyp/8.10.0/deps/v8/include \
-	-I/home/brandon/Documents/GitHub/kepler-glfw/node_modules/node-addon-api \
+	-I/Users/brandon.dyer/.node-gyp/8.12.0/include/node \
+	-I/Users/brandon.dyer/.node-gyp/8.12.0/src \
+	-I/Users/brandon.dyer/.node-gyp/8.12.0/deps/openssl/config \
+	-I/Users/brandon.dyer/.node-gyp/8.12.0/deps/openssl/openssl/include \
+	-I/Users/brandon.dyer/.node-gyp/8.12.0/deps/uv/include \
+	-I/Users/brandon.dyer/.node-gyp/8.12.0/deps/zlib \
+	-I/Users/brandon.dyer/.node-gyp/8.12.0/deps/v8/include \
+	-I/Users/brandon.dyer/Documents/GitHub/kepler-glfw/node_modules/node-addon-api \
 	-I$(srcdir)/../../kepler-glfw/glfw/include
 
 DEFS_Release := \
@@ -49,38 +60,49 @@ DEFS_Release := \
 	'-DUSING_UV_SHARED=1' \
 	'-DUSING_V8_SHARED=1' \
 	'-DV8_DEPRECATION_WARNINGS=1' \
+	'-D_DARWIN_USE_64_BIT_INODE=1' \
 	'-D_LARGEFILE_SOURCE' \
 	'-D_FILE_OFFSET_BITS=64' \
-	'-D_GLFW_X11'
+	'-D_GLFW_COCOA'
 
 # Flags passed to all source files.
 CFLAGS_Release := \
-	-fPIC \
-	-pthread \
+	-Os \
+	-gdwarf-2 \
+	-mmacosx-version-min=10.7 \
+	-arch x86_64 \
 	-Wall \
-	-Wextra \
-	-Wno-unused-parameter \
-	-m64 \
-	-O3 \
-	-fno-omit-frame-pointer
+	-Wendif-labels \
+	-W \
+	-Wno-unused-parameter
 
 # Flags passed to only C files.
-CFLAGS_C_Release :=
+CFLAGS_C_Release := \
+	-fno-strict-aliasing
 
 # Flags passed to only C++ files.
 CFLAGS_CC_Release := \
+	-std=gnu++0x \
+	-stdlib=libc++ \
 	-fno-rtti \
-	-std=gnu++0x
+	-fno-threadsafe-statics \
+	-fno-strict-aliasing
+
+# Flags passed to only ObjC files.
+CFLAGS_OBJC_Release :=
+
+# Flags passed to only ObjC++ files.
+CFLAGS_OBJCC_Release :=
 
 INCS_Release := \
-	-I/home/brandon/.node-gyp/8.10.0/include/node \
-	-I/home/brandon/.node-gyp/8.10.0/src \
-	-I/home/brandon/.node-gyp/8.10.0/deps/openssl/config \
-	-I/home/brandon/.node-gyp/8.10.0/deps/openssl/openssl/include \
-	-I/home/brandon/.node-gyp/8.10.0/deps/uv/include \
-	-I/home/brandon/.node-gyp/8.10.0/deps/zlib \
-	-I/home/brandon/.node-gyp/8.10.0/deps/v8/include \
-	-I/home/brandon/Documents/GitHub/kepler-glfw/node_modules/node-addon-api \
+	-I/Users/brandon.dyer/.node-gyp/8.12.0/include/node \
+	-I/Users/brandon.dyer/.node-gyp/8.12.0/src \
+	-I/Users/brandon.dyer/.node-gyp/8.12.0/deps/openssl/config \
+	-I/Users/brandon.dyer/.node-gyp/8.12.0/deps/openssl/openssl/include \
+	-I/Users/brandon.dyer/.node-gyp/8.12.0/deps/uv/include \
+	-I/Users/brandon.dyer/.node-gyp/8.12.0/deps/zlib \
+	-I/Users/brandon.dyer/.node-gyp/8.12.0/deps/v8/include \
+	-I/Users/brandon.dyer/Documents/GitHub/kepler-glfw/node_modules/node-addon-api \
 	-I$(srcdir)/../../kepler-glfw/glfw/include
 
 OBJS := \
@@ -90,80 +112,104 @@ OBJS := \
 	$(obj).target/$(TARGET)/../../kepler-glfw/glfw/src/monitor.o \
 	$(obj).target/$(TARGET)/../../kepler-glfw/glfw/src/vulkan.o \
 	$(obj).target/$(TARGET)/../../kepler-glfw/glfw/src/window.o \
-	$(obj).target/$(TARGET)/../../kepler-glfw/glfw/src/x11_init.o \
-	$(obj).target/$(TARGET)/../../kepler-glfw/glfw/src/x11_monitor.o \
-	$(obj).target/$(TARGET)/../../kepler-glfw/glfw/src/x11_window.o \
-	$(obj).target/$(TARGET)/../../kepler-glfw/glfw/src/xkb_unicode.o \
-	$(obj).target/$(TARGET)/../../kepler-glfw/glfw/src/posix_time.o \
+	$(obj).target/$(TARGET)/../../kepler-glfw/glfw/src/cocoa_init.o \
+	$(obj).target/$(TARGET)/../../kepler-glfw/glfw/src/cocoa_joystick.o \
+	$(obj).target/$(TARGET)/../../kepler-glfw/glfw/src/cocoa_monitor.o \
+	$(obj).target/$(TARGET)/../../kepler-glfw/glfw/src/cocoa_window.o \
+	$(obj).target/$(TARGET)/../../kepler-glfw/glfw/src/cocoa_time.o \
 	$(obj).target/$(TARGET)/../../kepler-glfw/glfw/src/posix_thread.o \
-	$(obj).target/$(TARGET)/../../kepler-glfw/glfw/src/glx_context.o \
+	$(obj).target/$(TARGET)/../../kepler-glfw/glfw/src/nsgl_context.o \
 	$(obj).target/$(TARGET)/../../kepler-glfw/glfw/src/egl_context.o \
-	$(obj).target/$(TARGET)/../../kepler-glfw/glfw/src/osmesa_context.o \
-	$(obj).target/$(TARGET)/../../kepler-glfw/glfw/src/linux_joystick.o
+	$(obj).target/$(TARGET)/../../kepler-glfw/glfw/src/osmesa_context.o
 
 # Add to the list of files we specially track dependencies for.
 all_deps += $(OBJS)
 
 # Make sure our dependencies are built before any of us.
-$(OBJS): | $(builddir)/nothing.a $(obj).target/../../kepler-glfw/node_modules/node-addon-api/src/nothing.a
+$(OBJS): | $(builddir)/nothing.a
 
 # CFLAGS et al overrides must be target-local.
 # See "Target-specific Variable Values" in the GNU Make manual.
 $(OBJS): TOOLSET := $(TOOLSET)
 $(OBJS): GYP_CFLAGS := $(DEFS_$(BUILDTYPE)) $(INCS_$(BUILDTYPE))  $(CFLAGS_$(BUILDTYPE)) $(CFLAGS_C_$(BUILDTYPE))
 $(OBJS): GYP_CXXFLAGS := $(DEFS_$(BUILDTYPE)) $(INCS_$(BUILDTYPE))  $(CFLAGS_$(BUILDTYPE)) $(CFLAGS_CC_$(BUILDTYPE))
+$(OBJS): GYP_OBJCFLAGS := $(DEFS_$(BUILDTYPE)) $(INCS_$(BUILDTYPE))  $(CFLAGS_$(BUILDTYPE)) $(CFLAGS_C_$(BUILDTYPE)) $(CFLAGS_OBJC_$(BUILDTYPE))
+$(OBJS): GYP_OBJCXXFLAGS := $(DEFS_$(BUILDTYPE)) $(INCS_$(BUILDTYPE))  $(CFLAGS_$(BUILDTYPE)) $(CFLAGS_CC_$(BUILDTYPE)) $(CFLAGS_OBJCC_$(BUILDTYPE))
 
 # Suffix rules, putting all outputs into $(obj).
 
 $(obj).$(TOOLSET)/$(TARGET)/%.o: $(srcdir)/%.c FORCE_DO_CMD
 	@$(call do_cmd,cc,1)
 
+$(obj).$(TOOLSET)/$(TARGET)/%.o: $(srcdir)/%.m FORCE_DO_CMD
+	@$(call do_cmd,objc,1)
+
 # Try building from generated source, too.
 
 $(obj).$(TOOLSET)/$(TARGET)/%.o: $(obj).$(TOOLSET)/%.c FORCE_DO_CMD
 	@$(call do_cmd,cc,1)
 
+$(obj).$(TOOLSET)/$(TARGET)/%.o: $(obj).$(TOOLSET)/%.m FORCE_DO_CMD
+	@$(call do_cmd,objc,1)
+
 $(obj).$(TOOLSET)/$(TARGET)/%.o: $(obj)/%.c FORCE_DO_CMD
 	@$(call do_cmd,cc,1)
+
+$(obj).$(TOOLSET)/$(TARGET)/%.o: $(obj)/%.m FORCE_DO_CMD
+	@$(call do_cmd,objc,1)
 
 # End of this set of suffix rules
 ### Rules for final target.
 LDFLAGS_Debug := \
-	-pthread \
-	-rdynamic \
-	-m64
+	-Wl,-no_pie \
+	-Wl,-search_paths_first \
+	-mmacosx-version-min=10.7 \
+	-arch x86_64 \
+	-L$(builddir) \
+	-install_name @rpath/kepler-glfw-native.dylib \
+	-stdlib=libc++
+
+LIBTOOLFLAGS_Debug := \
+	-Wl,-no_pie \
+	-Wl,-search_paths_first
 
 LDFLAGS_Release := \
-	-pthread \
-	-rdynamic \
-	-m64
+	-Wl,-no_pie \
+	-Wl,-search_paths_first \
+	-mmacosx-version-min=10.7 \
+	-arch x86_64 \
+	-L$(builddir) \
+	-install_name @rpath/kepler-glfw-native.dylib \
+	-stdlib=libc++
+
+LIBTOOLFLAGS_Release := \
+	-Wl,-no_pie \
+	-Wl,-search_paths_first
 
 LIBS := \
-	-lX11
+	-framework Cocoa \
+	-framework IOKit \
+	-framework CoreFoundation \
+	-framework CoreVideo
 
-$(obj).target/../../kepler-glfw/kepler-glfw-native.so: GYP_LDFLAGS := $(LDFLAGS_$(BUILDTYPE))
-$(obj).target/../../kepler-glfw/kepler-glfw-native.so: LIBS := $(LIBS)
-$(obj).target/../../kepler-glfw/kepler-glfw-native.so: LD_INPUTS := $(OBJS) $(obj).target/../../kepler-glfw/node_modules/node-addon-api/src/nothing.a
-$(obj).target/../../kepler-glfw/kepler-glfw-native.so: TOOLSET := $(TOOLSET)
-$(obj).target/../../kepler-glfw/kepler-glfw-native.so: $(OBJS) $(obj).target/../../kepler-glfw/node_modules/node-addon-api/src/nothing.a FORCE_DO_CMD
+$(builddir)/kepler-glfw-native.dylib: GYP_LDFLAGS := $(LDFLAGS_$(BUILDTYPE))
+$(builddir)/kepler-glfw-native.dylib: LIBS := $(LIBS)
+$(builddir)/kepler-glfw-native.dylib: GYP_LIBTOOLFLAGS := $(LIBTOOLFLAGS_$(BUILDTYPE))
+$(builddir)/kepler-glfw-native.dylib: LD_INPUTS := $(OBJS) $(builddir)/nothing.a
+$(builddir)/kepler-glfw-native.dylib: TOOLSET := $(TOOLSET)
+$(builddir)/kepler-glfw-native.dylib: $(OBJS) $(builddir)/nothing.a FORCE_DO_CMD
 	$(call do_cmd,solink)
 
-all_deps += $(obj).target/../../kepler-glfw/kepler-glfw-native.so
+all_deps += $(builddir)/kepler-glfw-native.dylib
 # Add target alias
 .PHONY: kepler-glfw-native
-kepler-glfw-native: $(builddir)/kepler-glfw-native.so
+kepler-glfw-native: $(builddir)/kepler-glfw-native.dylib
 
-# Copy this to the shared library output path.
-$(builddir)/kepler-glfw-native.so: TOOLSET := $(TOOLSET)
-$(builddir)/kepler-glfw-native.so: $(obj).target/../../kepler-glfw/kepler-glfw-native.so FORCE_DO_CMD
-	$(call do_cmd,copy)
-
-all_deps += $(builddir)/kepler-glfw-native.so
 # Short alias for building this shared library.
-.PHONY: kepler-glfw-native.so
-kepler-glfw-native.so: $(obj).target/../../kepler-glfw/kepler-glfw-native.so $(builddir)/kepler-glfw-native.so
+.PHONY: kepler-glfw-native.dylib
+kepler-glfw-native.dylib: $(builddir)/kepler-glfw-native.dylib
 
 # Add shared library to "all" target.
 .PHONY: all
-all: $(builddir)/kepler-glfw-native.so
+all: $(builddir)/kepler-glfw-native.dylib
 

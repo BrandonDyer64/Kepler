@@ -18,6 +18,15 @@
             "-lX11",
             "-Wl,-rpath,./build/Release/,-rpath,$ORIGIN/,-rpath,./Display/build/Release/"
           ]
+        }],
+        ["OS=='mac'", {
+          "libraries": [
+            "-framework Cocoa",
+            "-framework IOKit",
+            "-framework CoreFoundation",
+            "-framework CoreVideo",
+            "-Wl,-rpath,./build/Release/,-rpath,$ORIGIN/,-rpath,./Display/build/Release/"
+          ]
         }]
       ],
       'cflags!': [ '-fno-exceptions' ],
@@ -30,11 +39,6 @@
       'msvs_settings': {
         'VCCLCompilerTool': { 'ExceptionHandling': 1 },
       }
-    },
-    {
-      'target_name': 'kepler-display-native-static',
-      'dependencies': [ 'kepler-display-native' ],
-      'type': 'static_library'
     }
   ],
 }
