@@ -50,15 +50,19 @@
         {% endfor %}
       </div>
       <div class="main-section">
-        {% if page.dir == '/tutorials/' %} {% assign sorted_pages = (site.pages
-        | sort: 'sort_order') %} {% else %} {% assign sorted_pages = (site.pages
-        | sort: 'title') %} {% endif %} {% for p in sorted_pages %} {% if p.dir
-        == page.dir %}
-        <a
-          href="{{ site.url }}{{ p.url }}"
-          class="{% if p.url == page.url %}selected{% endif %}"
-          >{{ p.title }}</a
-        >
+        {% if page.dir == '/tutorials/' %}
+          {% assign sorted_pages = (site.pages | sort: 'sort_order') %}
+        {% else %}
+          {% assign sorted_pages = (site.pages | sort: 'title') %}
+        {% endif %}
+        {% for p in sorted_pages %}
+        {% if p.dir == page.dir and p.url != p.dir %}
+          <a
+            href="{{ site.url }}{{ p.url }}"
+            class="{% if p.url == page.url %}selected{% endif %}"
+          >
+            {{ p.title }}
+          </a>
         {% endif %} {% endfor %}
       </div>
     </div>

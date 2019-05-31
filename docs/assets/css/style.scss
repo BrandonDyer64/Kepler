@@ -4,6 +4,8 @@
 @import '{{ site.theme }}';
 @import url('https://fonts.googleapis.com/css?family=Poppins:100,300,400,600&display=swap');
 
+$break-small: 1000px;
+
 body {
   font-family: 'Poppins', sans-serif;
   display: flex;
@@ -12,27 +14,49 @@ body {
   overflow: hidden;
   align-items: stretch;
   color: #546e7a;
+  background-color: #f8f8f8;
   .thin {
     font-weight: 100;
   }
   .sidebar {
+    $unselected: #CFD8DC;
+    $hover: #ECEFF1;
+    $selected: #fff;
     color: #d5dae6;
     background-color: #37474f;
-    width: 300px;
+    width: 0px;
     padding: 26px;
     padding-right: 0px;
     min-width: 300px;
     display: flex;
     flex-direction: column;
+    white-space: nowrap;
+    transition: min-width 0.13s linear;
+    overflow: hidden;
+    &.toggled {
+      min-width: 0px;
+    }
+    @media screen and (max-width: $break-small) {
+      position: absolute;
+      min-width: 0px;
+      height: 100vh;
+      &.toggled {
+        min-width: 300px;
+      }
+    }
     .header {
-      color: #eceff1;
+      color: $selected;
+      padding-left: 18px;
       a {
-        color: #eceff1;
+        color: $hover;
         text-decoration: none;
       }
       .title {
         font-size: 24px;
         font-weight: 600;
+        a {
+          color: $selected;
+        }
       }
     }
     .top-section {
@@ -40,22 +64,22 @@ body {
       flex-direction: column;
       margin-top: 30px;
       a {
-        color: #cfd8dc;
+        color: $unselected;
         font-size: 14px;
         padding: 3px;
         padding-left: 15px;
         border-left: 3px solid transparent;
-        transition: border-left 0.1s linear;
+        transition: border-left 0.1s linear, color 0.1s linear;
         font-weight: 300;
         text-transform: uppercase;
       }
       a:hover {
-        color: #eceff1;
+        color: $hover;
         text-decoration: none;
         border-left-color: #2196f3aa;
       }
       a.selected {
-        color: #eceff1;
+        color: $selected;
         border-left-color: #2196f3ff;
       }
     }
@@ -63,22 +87,23 @@ body {
       display: flex;
       flex-direction: column;
       overflow-y: scroll;
+      overflow-x: hidden;
       margin-top: 30px;
       a {
-        color: #cfd8dc;
+        color: $unselected;
         font-size: 14px;
         padding: 3px;
         padding-left: 15px;
         border-left: 3px solid transparent;
-        transition: border-left 0.1s linear;
+        transition: color 0.1s linear;
         font-weight: 300;
       }
       a:hover {
-        color: #eceff1;
+        color: $hover;
         text-decoration: none;
       }
       a.selected {
-        color: #eceff1;
+        color: $selected;
       }
     }
   }
@@ -102,6 +127,9 @@ body {
     }
     a {
       color: #1e88e5;
+    }
+    @media screen and (max-width: $break-small) {
+      margin-left: 25px;
     }
     .site-footer {
       margin-bottom: 30px;
