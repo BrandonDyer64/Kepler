@@ -15,6 +15,39 @@ body {
   align-items: stretch;
   color: #546e7a;
   background-color: #f8f8f8;
+  &.dark {
+    background-color: #263238;
+    color: #ECEFF1;
+    div.highlight {
+      background-color: #37474F;
+      pre.highlight {
+        background-color: #37474F;
+        border-radius: .3rem;
+        border: none;
+        code {
+          color: #90A4AE;
+        }
+        .n {
+          color: #90A4AE;
+        }
+        .o, .p {
+          color: #CFD8DC;
+        }
+        .k, .kt, .kd {
+          color: #C8E6C9;
+        }
+        .s, .nf, .s1, .s2 {
+          color: #ef5350;
+        }
+        .c1, .cp {
+          color: #607D8B;
+        }
+      }
+    }
+    .site-footer {
+      border-color: #455A64;
+    }
+  }
   .thin {
     font-weight: 100;
   }
@@ -107,37 +140,64 @@ body {
       }
     }
   }
-  .main-content {
+  .main-container {
     overflow-y: scroll;
+    overflow-x: visible;
     flex-grow: 2;
-    width: 64rem;
-    h1 {
-      color: #43a047;
-    }
-    h2 {
-      color: #4caf50;
-    }
-    h3 {
-      color: #66bb6a;
-    }
-    h4,
-    h5,
-    h6 {
-      color: #81c784;
-    }
-    a {
-      color: #1e88e5;
-    }
     @media screen and (max-width: $break-small) {
       margin-left: 25px;
     }
-    .site-footer {
-      margin-bottom: 30px;
-      .site-footer-credits {
-        color: #78909c;
+    .main-content {
+      max-width: 100%;
+      width: 64rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      h1 {
+        color: #43a047;
       }
-      * {
-        font-weight: 300;
+      h2 {
+        color: #4caf50;
+      }
+      h3 {
+        color: #66bb6a;
+      }
+      h4,
+      h5,
+      h6 {
+        color: #81c784;
+      }
+      a {
+        color: #1e88e5;
+      }
+      .badge {
+        float: right;
+        &::before {
+          font-size: 14px;
+          background-color: #66bb6a;
+          color: white;
+          padding: 3px 10px;
+          margin-left: 10px;
+          border-radius: 3px;
+        }
+        &.proposed::before {
+          content: 'proposed';
+        }
+      }
+      div.highlight {
+        border-radius: 0.3rem;
+      }
+      .site-footer {
+        .site-footer-credits {
+          color: #78909c;
+        }
+        * {
+          font-weight: 300;
+        }
+        .dark-toggle {
+          float: right;
+        }
       }
     }
   }
