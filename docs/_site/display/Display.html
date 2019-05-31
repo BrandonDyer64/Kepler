@@ -26,7 +26,7 @@
     />
     <link
       rel="stylesheet"
-      href="/assets/css/style.css?v=30d2299ec0775c8a0d5690e6b5fd57a79398f2af"
+      href="/assets/css/style.css?v=305e69b26c10524d40a5d56b43eee8127aa60191"
     />
   </head>
   <body>
@@ -93,7 +93,53 @@
     <duv class="main-container">
       <div id="content" class="main-content" role="main">
         <div>
-          <h1 id="displayhpp">Display.hpp</h1>
+          
+<h1 id="displayhpp">Display.hpp</h1>
+
+<h2 id="namespace">Namespace</h2>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Kepler</span><span class="o">::</span><span class="n">Display</span>
+</code></pre></div></div>
+
+<h2 id="methods">Methods</h2>
+
+<h3 id="constructor">Constructor</h3>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Display</span><span class="o">::</span><span class="n">Display</span><span class="p">(</span><span class="kt">int</span> <span class="n">width</span><span class="p">,</span> <span class="kt">int</span> <span class="n">height</span><span class="p">,</span> <span class="n">string</span> <span class="n">title</span><span class="p">);</span>
+</code></pre></div></div>
+
+<ul>
+  <li><code class="highlighter-rouge">[in] width</code>: The width of the window.</li>
+  <li><code class="highlighter-rouge">[in] height</code>: The height of the window.</li>
+  <li><code class="highlighter-rouge">[in] title</code>: The name at the top of the window.</li>
+</ul>
+
+<p>Creates a new <code class="highlighter-rouge">Display</code> object.</p>
+
+<p>Note: <code class="highlighter-rouge">width</code> and <code class="highlighter-rouge">height</code> have no affect on consoles.</p>
+
+<h3 id="createframe">CreateFrame</h3>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="n">Display</span><span class="o">::</span><span class="n">CreateFrame</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>Adds a drawable frame to the window and creates a context for it.
+Create multiple for split screen.</p>
+
+<h3 id="isopen">IsOpen</h3>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">bool</span> <span class="n">Display</span><span class="o">::</span><span class="n">IsOpen</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>Returns whether or not the window is still open in the current desktop
+environment.</p>
+
+<h3 id="openwindow-">OpenWindow <a href="https://github.com/MagentexSoftware/Kepler/blob/master/Display/include/display/Display.hpp#L3" class="srclink"></a></h3>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="n">Display</span><span class="o">::</span><span class="n">OpenWindow</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>Makes the window open into the users screen.</p>
 
         </div>
 
@@ -124,7 +170,7 @@
 			  crossorigin="anonymous"></script>
     <script
       type="text/javascript"
-      src="/assets/js/script.js?v=30d2299ec0775c8a0d5690e6b5fd57a79398f2af"
+      src="/assets/js/script.js?v=305e69b26c10524d40a5d56b43eee8127aa60191"
     ></script>
   </body>
 </html>

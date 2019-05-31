@@ -162,6 +162,12 @@ body {
       }
       h3 {
         color: #66bb6a;
+        .srclink::after {
+          content: '</>';
+          color: #B0BEC5;
+          font-family: monospace;
+          float: right;
+        }
       }
       h4,
       h5,
@@ -170,6 +176,11 @@ body {
       }
       a {
         color: #1e88e5;
+      }
+      .methods {
+        h3 {
+          font-family: monospace;
+        }
       }
       .badge {
         float: right;

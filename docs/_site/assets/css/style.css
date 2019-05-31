@@ -353,8 +353,10 @@ body .main-container .main-content { max-width: 100%; width: 64rem; min-height: 
 body .main-container .main-content h1 { color: #43a047; }
 body .main-container .main-content h2 { color: #4caf50; }
 body .main-container .main-content h3 { color: #66bb6a; }
+body .main-container .main-content h3 .srclink::after { content: '</>'; color: #B0BEC5; font-family: monospace; float: right; }
 body .main-container .main-content h4, body .main-container .main-content h5, body .main-container .main-content h6 { color: #81c784; }
 body .main-container .main-content a { color: #1e88e5; }
+body .main-container .main-content .methods h3 { font-family: monospace; }
 body .main-container .main-content .badge { float: right; }
 body .main-container .main-content .badge::before { font-size: 14px; background-color: #66bb6a; color: white; padding: 3px 10px; margin-left: 10px; border-radius: 3px; }
 body .main-container .main-content .badge.proposed::before { content: 'proposed'; }

@@ -57,9 +57,9 @@
       </div>
       <div class="main-section">
         {% if page.dir == '/tutorials/' %}
-          {% assign sorted_pages = (site.pages | sort: 'sort_order') %}
+          {% assign sorted_pages = site.pages | sort: 'sort_order' %}
         {% else %}
-          {% assign sorted_pages = (site.pages | sort: 'title') %}
+          {% assign sorted_pages = site.pages | sort: 'title' %}
         {% endif %}
         {% for p in sorted_pages %}
         {% if p.dir == page.dir and p.url != p.dir %}
