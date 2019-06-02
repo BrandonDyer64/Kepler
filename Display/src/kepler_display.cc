@@ -1,4 +1,6 @@
 #include "display/Display.hpp"
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include "linmath.h"
 #include <napi.h>
 #include <sstream>
