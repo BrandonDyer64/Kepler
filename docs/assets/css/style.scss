@@ -1,0 +1,222 @@
+---
+---
+
+@import '{{ site.theme }}';
+@import url('https://fonts.googleapis.com/css?family=Poppins:100,300,400,600&display=swap');
+
+$break-small: 1000px;
+
+body {
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  overflow: hidden;
+  align-items: stretch;
+  color: #546e7a;
+  background-color: #f8f8f8;
+  &.dark {
+    background-color: #263238;
+    color: #ECEFF1;
+    .main-container {
+      .main-content {
+        .srclink::after {
+          color: #455A64;
+        }
+        div.highlight {
+          background-color: #37474F;
+          pre.highlight {
+            background-color: #37474F;
+            border-radius: .3rem;
+            border: none;
+            code {
+              color: #90A4AE;
+            }
+            .n {
+              color: #90A4AE;
+            }
+            .o, .p {
+              color: #CFD8DC;
+            }
+            .k, .kt, .kd {
+              color: #C8E6C9;
+            }
+            .s, .nf, .s1, .s2 {
+              color: #ef5350;
+            }
+            .c1, .cp {
+              color: #607D8B;
+            }
+          }
+        }
+        .site-footer {
+          border-color: #455A64;
+        }
+      }
+    }
+  }
+  .thin {
+    font-weight: 100;
+  }
+  .sidebar {
+    $unselected: #CFD8DC;
+    $hover: #ECEFF1;
+    $selected: #fff;
+    color: #d5dae6;
+    background-color: #37474f;
+    width: 0px;
+    padding: 26px;
+    padding-right: 0px;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    white-space: nowrap;
+    transition: min-width 0.13s linear;
+    overflow: hidden;
+    &.toggled {
+      min-width: 0px;
+    }
+    @media screen and (max-width: $break-small) {
+      position: absolute;
+      min-width: 0px;
+      height: 100vh;
+      &.toggled {
+        min-width: 300px;
+      }
+    }
+    .header {
+      color: $selected;
+      padding-left: 18px;
+      a {
+        color: $hover;
+        text-decoration: none;
+      }
+      .title {
+        font-size: 24px;
+        font-weight: 600;
+        a {
+          color: $selected;
+        }
+      }
+    }
+    .top-section {
+      display: flex;
+      flex-direction: column;
+      margin-top: 30px;
+      a {
+        color: $unselected;
+        font-size: 14px;
+        padding: 3px;
+        padding-left: 15px;
+        border-left: 3px solid transparent;
+        transition: border-left 0.1s linear, color 0.1s linear;
+        font-weight: 300;
+        text-transform: uppercase;
+      }
+      a:hover {
+        color: $hover;
+        text-decoration: none;
+        border-left-color: #2196f3aa;
+      }
+      a.selected {
+        color: $selected;
+        border-left-color: #2196f3ff;
+      }
+    }
+    .main-section {
+      display: flex;
+      flex-direction: column;
+      overflow-y: scroll;
+      overflow-x: hidden;
+      margin-top: 30px;
+      a {
+        color: $unselected;
+        font-size: 14px;
+        padding: 3px;
+        padding-left: 15px;
+        border-left: 3px solid transparent;
+        transition: color 0.1s linear;
+        font-weight: 300;
+      }
+      a:hover {
+        color: $hover;
+        text-decoration: none;
+      }
+      a.selected {
+        color: $selected;
+      }
+    }
+  }
+  .main-container {
+    overflow-y: scroll;
+    overflow-x: visible;
+    flex-grow: 2;
+    @media screen and (max-width: $break-small) {
+      margin-left: 25px;
+    }
+    .main-content {
+      max-width: 100%;
+      width: 64rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      h1 {
+        color: #43a047;
+      }
+      h2 {
+        color: #4caf50;
+      }
+      h3 {
+        color: #66bb6a;
+      }
+      h4,
+      h5,
+      h6 {
+        color: #81c784;
+      }
+      a {
+        color: #1e88e5;
+      }
+      .srclink::after {
+        content: '</>';
+        color: #B0BEC5;
+        font-family: monospace;
+        float: right;
+      }
+      .methods {
+        h3 {
+          font-family: monospace;
+        }
+      }
+      .badge {
+        float: right;
+        &::before {
+          font-size: 14px;
+          background-color: #66bb6a;
+          color: white;
+          padding: 3px 10px;
+          margin-left: 10px;
+          border-radius: 3px;
+        }
+        &.proposed::before {
+          content: 'proposed';
+        }
+      }
+      div.highlight {
+        border-radius: 0.3rem;
+      }
+      .site-footer {
+        .site-footer-credits {
+          color: #78909c;
+        }
+        * {
+          font-weight: 300;
+        }
+        .dark-toggle {
+          float: right;
+        }
+      }
+    }
+  }
+}

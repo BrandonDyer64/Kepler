@@ -8,3 +8,4 @@ config.cmake
 *.jpg
 *.log
 .nyc_output/
+docs/vendor/
