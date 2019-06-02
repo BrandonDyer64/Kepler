@@ -6,8 +6,6 @@ const {
 } = require('../lib/binding.js')
 const assert = require('assert')
 
-console.log(GlfwGetVersion())
-
 describe('Kepler Display', function() {
   describe('GLAD', function() {
     it('should be included', function() {
@@ -18,8 +16,8 @@ describe('Kepler Display', function() {
     it('should be included', function() {
       assert.equal(Test_GlfwIncluded(), true)
     })
-    it('should initialize', function() {
-      assert.equal(Test_GlfwInit(), true)
+    it('should have a version', function() {
+      assert.ok(GlfwGetVersion(), true)
     })
   })
 })
