@@ -1,6 +1,8 @@
 #ifndef Display_hpp
 #define Display_hpp
 
+#include <string>
+
 #define DISPLAY_FRAME_VERTICAL 0
 #define DISPLAY_FRAME_HORIZONTAL 1
 
@@ -20,7 +22,7 @@ public:
 
   int FrameWrap();
   void FrameWrap(int);
-  
+
 };
 
 }

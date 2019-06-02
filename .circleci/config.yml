@@ -26,12 +26,22 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
-      - run: npm install
+      - run:
+          name: Install System Dependencies
+          command: sudo apt-get install libx11-dev libxtst-dev libxcursor-dev libxrandr-dev x11proto-xinerama-dev libxinerama-dev mesa-common-dev
+
+      - run:
+          name: Install Node Dependencies
+          command: npm install
 
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
-      - run: npm run build
-      - run: npm run test
+      - run:
+          name: Build
+          command: npm run build
+      - run:
+          name: Test
+          command: npm run test

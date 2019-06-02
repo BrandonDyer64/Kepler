@@ -1,13 +1,23 @@
-const { KeplerEntities, KeplerEntities2 } = require('../lib/binding.js')
+const {
+  Test_GlfwInit,
+  Test_GlfwIncluded,
+  Test_GladIncluded,
+  GlfwGetVersion
+} = require('../lib/binding.js')
 const assert = require('assert')
 
 describe('Kepler Display', function() {
-  describe('Hello, World!', function() {
-    it('should return world', function() {
-      assert.equal(KeplerEntities(), 'world')
+  describe('GLAD', function() {
+    it('should be included', function() {
+      assert.equal(Test_GladIncluded(), true)
     })
-    it('should return world2', function() {
-      assert.equal(KeplerEntities2(), 'world2')
+  })
+  describe('GLFW', function() {
+    it('should be included', function() {
+      assert.equal(Test_GlfwIncluded(), true)
+    })
+    it('should have a version', function() {
+      assert.ok(GlfwGetVersion(), true)
     })
   })
 })
