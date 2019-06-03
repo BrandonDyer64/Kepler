@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    
+    <meta charset="UTF-8" />
+
+    <!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Shader | Kepler</title>
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="Shader" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Kepler, an Open Game Engine" />
+<meta property="og:description" content="Kepler, an Open Game Engine" />
+<link rel="canonical" href="http://localhost:4000/display/Shader.html" />
+<meta property="og:url" content="http://localhost:4000/display/Shader.html" />
+<meta property="og:site_name" content="Kepler" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/display/Shader.html","headline":"Shader","description":"Kepler, an Open Game Engine","@type":"WebPage","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#157878" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <link
+      rel="stylesheet"
+      href="/assets/css/style.css?v=b3ceb4d6dc2c93650a66312e707b8145b8cdb338"
+    />
+  </head>
+  <body>
+    <div class="sidebar">
+      <div class="header">
+        <span class="title"
+          ><a href="http://localhost:4000"
+            >Kepler
+            <span class="thin">&nbsp;Docs</span></a
+          ></span
+        >
+      </div>
+      <div class="top-section">
+        <a
+          href="http://localhost:4000"
+          class=""
+        >
+          home
+        </a>
+         
+        <a
+          href="http://localhost:4000/tutorials/"
+          class=""
+          >tutorials</a
+        >
+         
+        <a
+          href="http://localhost:4000/flowscript/"
+          class=""
+          >flowscript</a
+        >
+         
+        <a
+          href="http://localhost:4000/fractal/"
+          class=""
+          >fractal</a
+        >
+         
+        <a
+          href="http://localhost:4000/actor/"
+          class=""
+          >actor</a
+        >
+        
+      </div>
+      <div class="main-section">
+        
+        
+         
+         
+         
+         
+        
+          <a
+            href="http://localhost:4000/display/Display.html"
+            class=""
+          >
+            Display
+          </a>
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+        
+          <a
+            href="http://localhost:4000/display/Shader.html"
+            class="selected"
+          >
+            Shader
+          </a>
+         
+         
+         
+      </div>
+    </div>
+    <duv class="main-container">
+      <div id="content" class="main-content" role="main">
+        <div>
+          <h1 id="shaderhpp">Shader.hpp</h1>
+
+<p>For making shaders</p>
+
+<h2 id="namespace">Namespace</h2>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Kepler</span><span class="o">::</span><span class="n">Display</span>
+</code></pre></div></div>
+
+<h2 id="example">Example</h2>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;Display/Shader.hpp&gt;
+</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">Kepler</span><span class="o">::</span><span class="n">Display</span><span class="p">;</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">fragmentShader</span> <span class="o">=</span> <span class="s">R"(
+  void main() {
+    color = vec4(1., 0., 0., 1.);
+  }
+)"</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1">// ...
+</span>
+  <span class="n">Shader</span> <span class="n">myShader</span><span class="p">(</span><span class="n">fragmentShader</span><span class="p">);</span>
+
+  <span class="k">while</span><span class="p">(</span><span class="n">loop</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="n">myShader</span><span class="p">.</span><span class="n">Use</span><span class="p">();</span>
+
+    <span class="c1">// ...
+</span>  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="methods">Methods</h2>
+
+<h3 id="constructor">Constructor</h3>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Shader</span><span class="o">::</span><span class="n">Shader</span><span class="p">(</span><span class="n">string</span> <span class="n">fragmentSource</span><span class="p">);</span>
+</code></pre></div></div>
+
+<ul>
+  <li><code class="highlighter-rouge">[in] fragmentSource</code>: The source code of the fragment shader to be displayed
+across the entire screen. This is expected to be the entire display pipeline.</li>
+</ul>
+
+<p>Creates a new <code class="highlighter-rouge">Shader</code> object.</p>
+
+<h3 id="use">Use()</h3>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="n">Shader</span><span class="o">::</span><span class="n">Use</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>Tells OpenGL to use the current shader.</p>
+
+<h3 id="getprogram-">GetProgram() <span class="badge proposed"></span></h3>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">Shader</span><span class="o">::</span><span class="n">GetProgram</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>Returns the OpenGL program id.</p>
+
+        </div>
+
+        <footer class="site-footer">
+          
+          <span class="site-footer-owner"
+            ><a href="https://github.com/MagentexSoftware/Kepler"
+              >Kepler</a
+            >
+            is maintained by
+            <a href="https://github.com/MagentexSoftware">MagentexSoftware</a
+            >.</span
+          >
+          
+          <span class="site-footer-credits"
+            >This page was generated by
+            <a href="https://pages.github.com">GitHub Pages</a>.</span
+          >
+          <a class="dark-toggle" href="JavaScript:toggleDark()">
+            Toggle Night Mode
+          </a>
+        </footer>
+      </div>
+    </div>
+    <script
+			  src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+			  integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8="
+			  crossorigin="anonymous"></script>
+    <script
+      type="text/javascript"
+      src="/assets/js/script.js?v=b3ceb4d6dc2c93650a66312e707b8145b8cdb338"
+    ></script>
+  </body>
+</html>

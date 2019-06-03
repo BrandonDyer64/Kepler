@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    
+    <meta charset="UTF-8" />
+
+    <!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Display | Kepler</title>
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="Display" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Kepler, an Open Game Engine" />
+<meta property="og:description" content="Kepler, an Open Game Engine" />
+<link rel="canonical" href="http://localhost:4000/display/Display.html" />
+<meta property="og:url" content="http://localhost:4000/display/Display.html" />
+<meta property="og:site_name" content="Kepler" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/display/Display.html","headline":"Display","description":"Kepler, an Open Game Engine","@type":"WebPage","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#157878" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <link
+      rel="stylesheet"
+      href="/assets/css/style.css?v=b3ceb4d6dc2c93650a66312e707b8145b8cdb338"
+    />
+  </head>
+  <body>
+    <div class="sidebar">
+      <div class="header">
+        <span class="title"
+          ><a href="http://localhost:4000"
+            >Kepler
+            <span class="thin">&nbsp;Docs</span></a
+          ></span
+        >
+      </div>
+      <div class="top-section">
+        <a
+          href="http://localhost:4000"
+          class=""
+        >
+          home
+        </a>
+         
+        <a
+          href="http://localhost:4000/tutorials/"
+          class=""
+          >tutorials</a
+        >
+         
+        <a
+          href="http://localhost:4000/flowscript/"
+          class=""
+          >flowscript</a
+        >
+         
+        <a
+          href="http://localhost:4000/fractal/"
+          class=""
+          >fractal</a
+        >
+         
+        <a
+          href="http://localhost:4000/actor/"
+          class=""
+          >actor</a
+        >
+        
+      </div>
+      <div class="main-section">
+        
+        
+         
+         
+         
+         
+        
+          <a
+            href="http://localhost:4000/display/Display.html"
+            class="selected"
+          >
+            Display
+          </a>
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+        
+          <a
+            href="http://localhost:4000/display/Shader.html"
+            class=""
+          >
+            Shader
+          </a>
+         
+         
+         
+      </div>
+    </div>
+    <duv class="main-container">
+      <div id="content" class="main-content" role="main">
+        <div>
+          <h1 id="displayhpp-">Display.hpp <a href="https://github.com/MagentexSoftware/Kepler/blob/master/Display/include/display/Display.hpp#L9" class="srclink" target="_blank"></a></h1>
+
+<h2 id="namespace">Namespace</h2>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Kepler</span><span class="o">::</span><span class="n">Display</span>
+</code></pre></div></div>
+
+<h2 id="methods">Methods</h2>
+
+<h3 id="constructor">Constructor</h3>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Display</span><span class="o">::</span><span class="n">Display</span><span class="p">(</span><span class="kt">int</span> <span class="n">width</span><span class="p">,</span> <span class="kt">int</span> <span class="n">height</span><span class="p">,</span> <span class="n">string</span> <span class="n">title</span><span class="p">);</span>
+</code></pre></div></div>
+
+<ul>
+  <li><code class="highlighter-rouge">[in] width</code>: The width of the window.</li>
+  <li><code class="highlighter-rouge">[in] height</code>: The height of the window.</li>
+  <li><code class="highlighter-rouge">[in] title</code>: The name at the top of the window.</li>
+</ul>
+
+<p>Creates a new <code class="highlighter-rouge">Display</code> object.</p>
+
+<p>Note: <code class="highlighter-rouge">width</code> and <code class="highlighter-rouge">height</code> have no affect on consoles.</p>
+
+<h3 id="createframe-">CreateFrame <a href="https://github.com/MagentexSoftware/Kepler/blob/master/Display/src/Display.cc#L13" class="srclink" target="_blank"></a></h3>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="n">Display</span><span class="o">::</span><span class="n">CreateFrame</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>Adds a drawable frame to the window and creates a context for it.
+Create multiple for split screen.</p>
+
+<h3 id="isopen">IsOpen</h3>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">bool</span> <span class="n">Display</span><span class="o">::</span><span class="n">IsOpen</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>Returns whether or not the window is still open in the current desktop
+environment.</p>
+
+<h3 id="openwindow-">OpenWindow <a href="https://github.com/MagentexSoftware/Kepler/blob/master/Display/src/Display.cc#L3" class="srclink" target="_blank"></a></h3>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="n">Display</span><span class="o">::</span><span class="n">OpenWindow</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>Makes the window open into the users screen.</p>
+
+<h3 id="framedirection">FrameDirection</h3>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">Display</span><span class="o">::</span><span class="n">FrameDirection</span><span class="p">();</span>
+</code></pre></div></div>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="n">Display</span><span class="o">::</span><span class="n">FrameDirection</span><span class="p">(</span><span class="kt">int</span> <span class="n">direction</span><span class="p">);</span>
+</code></pre></div></div>
+
+<ul>
+  <li><code class="highlighter-rouge">[in] direction</code>:
+    <ul>
+      <li><code class="highlighter-rouge">0 | DISPLAY_FRAME_VERTICAL</code>: vertical</li>
+      <li><code class="highlighter-rouge">1 | DISPLAY_FRAME_HORIZONTAL</code>: horizontal</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Sets whether multiple frames should be aligned vertically or horizontally.
+Defaults horizontal.</p>
+
+<h3 id="framewrap">FrameWrap</h3>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">Display</span><span class="o">::</span><span class="n">FrameWrap</span><span class="p">();</span>
+</code></pre></div></div>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="n">Display</span><span class="o">::</span><span class="n">FrameWrap</span><span class="p">(</span><span class="kt">int</span> <span class="n">frames</span><span class="p">);</span>
+</code></pre></div></div>
+
+<ul>
+  <li><code class="highlighter-rouge">[in] frames</code>: Number of frames to show until wrapping to a new line.</li>
+</ul>
+
+<p>Defaults 2.</p>
+
+        </div>
+
+        <footer class="site-footer">
+          
+          <span class="site-footer-owner"
+            ><a href="https://github.com/MagentexSoftware/Kepler"
+              >Kepler</a
+            >
+            is maintained by
+            <a href="https://github.com/MagentexSoftware">MagentexSoftware</a
+            >.</span
+          >
+          
+          <span class="site-footer-credits"
+            >This page was generated by
+            <a href="https://pages.github.com">GitHub Pages</a>.</span
+          >
+          <a class="dark-toggle" href="JavaScript:toggleDark()">
+            Toggle Night Mode
+          </a>
+        </footer>
+      </div>
+    </div>
+    <script
+			  src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+			  integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8="
+			  crossorigin="anonymous"></script>
+    <script
+      type="text/javascript"
+      src="/assets/js/script.js?v=b3ceb4d6dc2c93650a66312e707b8145b8cdb338"
+    ></script>
+  </body>
+</html>

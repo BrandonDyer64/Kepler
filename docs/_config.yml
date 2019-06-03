@@ -2,4 +2,6 @@ theme: jekyll-theme-cayman
 test: I'm a test
 modules:
   - tutorials
-  - display
+  - flowscript
+  - fractal
+  - actor
