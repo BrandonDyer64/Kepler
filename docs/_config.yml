@@ -1,7 +1,0 @@
-theme: jekyll-theme-cayman
-test: I'm a test
-modules:
-  - tutorials
-  - flowscript
-  - fractal
-  - actor

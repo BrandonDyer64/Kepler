@@ -9,3 +9,11 @@ config.cmake
 *.log
 .nyc_output/
 docs/vendor/
+
+
+#Added by cargo
+#
+#already existing elements are commented out
+
+/target
+**/*.rs.bk
