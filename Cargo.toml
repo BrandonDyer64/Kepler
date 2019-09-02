@@ -5,4 +5,11 @@ authors = ["Brandon Dyer <BrandonDyer64@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+cgmath = "0.17"
+image = "0.22.1"
+specs = "0.15.0"
+time = "0.1.42"
 vulkano = "0.14.0"
+vulkano-win = "0.14.0"
+vulkano-shaders = "0.14.0"
+winit = "0.19.3"
