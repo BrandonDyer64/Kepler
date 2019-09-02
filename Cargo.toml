@@ -1,7 +1,8 @@
 [package]
 name = "Kepler"
 version = "0.1.0"
-authors = ["brandon"]
+authors = ["Brandon Dyer <BrandonDyer64@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+vulkano = "0.14.0"
