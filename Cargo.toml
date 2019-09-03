@@ -15,18 +15,20 @@ vulkan = ["gfx-backend-vulkan"]
 unstable = []
 
 [dependencies]
-env_logger = "0.6"
 image = "0.21"
 log = "0.4"
-gfx-hal = "0.3"
-gfx-backend-empty = "0.3"
-specs = "0.15.0"
+hal = { git = "https://github.com/gfx-rs/gfx", version = "0.3", package = "gfx-hal" }
+gfx-backend-empty = { git = "https://github.com/gfx-rs/gfx", version = "0.3" }
+
+[target.'cfg(debug_assertions)'.dependencies]
+env_logger = "0.6"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-winit = "0.19"
+winit = "0.20.0-alpha3"
 glsl-to-spirv = "0.1.4"
 
 [dependencies.gfx-backend-gl]
+git = "https://github.com/gfx-rs/gfx"
 version = "0.3"
 optional = true
 
@@ -40,21 +42,25 @@ version = "0.3.6"
 features = [ "console", "Document", "Element", "HtmlElement", "Node", "Window" ]
 
 [dependencies.gfx-backend-vulkan]
+git = "https://github.com/gfx-rs/gfx"
 version = "0.3"
 features = ["winit", "x11"]
 optional = true
 
 [target.'cfg(any(target_os = "macos", all(target_os = "ios", target_arch = "aarch64")))'.dependencies.gfx-backend-metal]
+git = "https://github.com/gfx-rs/gfx"
 version = "0.3"
 features = ["winit"]
 optional = true
 
 [target.'cfg(windows)'.dependencies.gfx-backend-dx11]
+git = "https://github.com/gfx-rs/gfx"
 version = "0.3"
 features = ["winit"]
 optional = true
 
 [target.'cfg(windows)'.dependencies.gfx-backend-dx12]
+git = "https://github.com/gfx-rs/gfx"
 version = "0.3"
 features = ["winit"]
 optional = true

@@ -4,9 +4,6 @@
 layout(location = 0) in vec2 v_uv;
 layout(location = 0) out vec4 target0;
 
-layout(set = 0, binding = 0) uniform texture2D u_texture;
-layout(set = 0, binding = 1) uniform sampler u_sampler;
-
 const int MAX_MARCHING_STEPS = 512;
 const float MIN_DIST = 0.0;
 const float MAX_DIST = 100.0;
