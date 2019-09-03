@@ -1,642 +1,885 @@
-#[macro_use]
-extern crate vulkano;
-extern crate vulkano_win;
-extern crate winit;
+#![cfg_attr(
+    not(any(
+        feature = "vulkan",
+        feature = "dx11",
+        feature = "dx12",
+        feature = "metal",
+        feature = "gl",
+        feature = "wgl"
+    )),
+    allow(dead_code, unused_extern_crates, unused_imports)
+)]
 
-use std::sync::Arc;
-use std::collections::HashSet;
+#[cfg(feature = "dx11")]
+extern crate gfx_backend_dx11 as back;
+#[cfg(feature = "dx12")]
+extern crate gfx_backend_dx12 as back;
+#[cfg(any(feature = "gl", feature = "wgl"))]
+extern crate gfx_backend_gl as back;
+#[cfg(feature = "metal")]
+extern crate gfx_backend_metal as back;
+#[cfg(feature = "vulkan")]
+extern crate gfx_backend_vulkan as back;
+extern crate gfx_hal as hal;
 
-use winit::{EventsLoop, WindowBuilder, Window, dpi::LogicalSize, Event, WindowEvent};
-use vulkano_win::VkSurfaceBuild;
+#[cfg(target_arch = "wasm32")]
+use wasm_bindgen::prelude::*;
 
-use vulkano::instance::{
-    Instance,
-    InstanceExtensions,
-    ApplicationInfo,
-    Version,
-    layers_list,
-    PhysicalDevice,
-};
-use vulkano::instance::debug::{DebugCallback, MessageTypes};
-use vulkano::device::{Device, DeviceExtensions, Queue, Features};
-use vulkano::swapchain::{
-    Surface,
-    Capabilities,
-    ColorSpace,
-    SupportedPresentModes,
-    PresentMode,
-    Swapchain,
-    CompositeAlpha,
-    acquire_next_image,
-    AcquireError,
-};
-use vulkano::format::Format;
-use vulkano::image::{ImageUsage, swapchain::SwapchainImage};
-use vulkano::sync::{self, SharingMode, GpuFuture};
-use vulkano::pipeline::{
-    GraphicsPipeline,
-    GraphicsPipelineAbstract,
-    viewport::Viewport,
-};
-use vulkano::framebuffer::{
-    RenderPassAbstract,
-    Subpass,
-    FramebufferAbstract,
-    Framebuffer,
-};
-use vulkano::command_buffer::{
-    AutoCommandBuffer,
-    AutoCommandBufferBuilder,
-    DynamicState,
-};
-use vulkano::buffer::{
-    immutable::ImmutableBuffer,
-    BufferUsage,
-    BufferAccess,
-    TypedBufferAccess,
-};
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen(start)]
+pub fn wasm_main() {
+    std::panic::set_hook(Box::new(console_error_panic_hook::hook));
+    main();
+}
 
-const WIDTH: u32 = 800;
-const HEIGHT: u32 = 600;
+use hal::format::{AsFormat, ChannelType, Rgba8Srgb as ColorFormat, Swizzle};
+use hal::pass::Subpass;
+use hal::pso::{PipelineStage, ShaderStageFlags, VertexInputRate};
+use hal::queue::Submission;
+use hal::{
+    buffer,
+    command,
+    format as f,
+    image as i,
+    memory as m,
+    pass,
+    pool,
+    pso,
+    window::Extent2D,
+};
+use hal::{DescriptorPool, Primitive, SwapchainConfig};
+use hal::{Device, Instance, PhysicalDevice, Surface, Swapchain};
 
-const VALIDATION_LAYERS: &[&str] =  &[
-    "VK_LAYER_LUNARG_standard_validation"
+use std::io::Cursor;
+
+#[cfg_attr(rustfmt, rustfmt_skip)]
+const DIMS: Extent2D = Extent2D { width: 1024,height: 768 };
+
+const ENTRY_NAME: &str = "main";
+
+#[derive(Debug, Clone, Copy)]
+#[allow(non_snake_case)]
+struct Vertex {
+    a_Pos: [f32; 2],
+    a_Uv: [f32; 2],
+}
+
+#[cfg_attr(rustfmt, rustfmt_skip)]
+const QUAD: [Vertex; 6] = [
+    Vertex { a_Pos: [ -0.5, 0.33 ], a_Uv: [0.0, 1.0] },
+    Vertex { a_Pos: [  0.5, 0.33 ], a_Uv: [1.0, 1.0] },
+    Vertex { a_Pos: [  0.5,-0.33 ], a_Uv: [1.0, 0.0] },
+
+    Vertex { a_Pos: [ -0.5, 0.33 ], a_Uv: [0.0, 1.0] },
+    Vertex { a_Pos: [  0.5,-0.33 ], a_Uv: [1.0, 0.0] },
+    Vertex { a_Pos: [ -0.5,-0.33 ], a_Uv: [0.0, 0.0] },
 ];
 
-/// Required device extensions
-fn device_extensions() -> DeviceExtensions {
-    DeviceExtensions {
-        khr_swapchain: true,
-        .. vulkano::device::DeviceExtensions::none()
-    }
-}
+const COLOR_RANGE: i::SubresourceRange = i::SubresourceRange {
+    aspects: f::Aspects::COLOR,
+    levels: 0 .. 1,
+    layers: 0 .. 1,
+};
 
-#[cfg(all(debug_assertions))]
-const ENABLE_VALIDATION_LAYERS: bool = true;
-#[cfg(not(debug_assertions))]
-const ENABLE_VALIDATION_LAYERS: bool = false;
+#[cfg(any(
+    feature = "vulkan",
+    feature = "dx11",
+    feature = "dx12",
+    feature = "metal",
+    feature = "gl",
+    feature = "wgl"
+))]
+fn main() {
+    #[cfg(target_arch = "wasm32")]
+    console_log::init_with_level(log::Level::Debug).unwrap();
+    #[cfg(not(target_arch = "wasm32"))]
+    env_logger::init();
 
-struct QueueFamilyIndices {
-    graphics_family: i32,
-    present_family: i32,
-}
-impl QueueFamilyIndices {
-    fn new() -> Self {
-        Self { graphics_family: -1, present_family: -1 }
-    }
+    #[cfg(not(target_arch = "wasm32"))]
+    let mut events_loop = winit::EventsLoop::new();
 
-    fn is_complete(&self) -> bool {
-        self.graphics_family >= 0 && self.present_family >= 0
-    }
-}
-
-#[derive(Copy, Clone)]
-struct Vertex {
-    pos: [f32; 2],
-    color: [f32; 3],
-}
-impl Vertex {
-    fn new(pos: [f32; 2], color: [f32; 3]) -> Self {
-        Self { pos, color }
-    }
-}
-impl_vertex!(Vertex, pos, color);
-
-fn vertices() -> [Vertex; 4] {
-    [
-        Vertex::new([-0.5, -0.5], [1.0, 0.0, 0.0]),
-        Vertex::new([0.5, -0.5], [0.0, 1.0, 0.0]),
-        Vertex::new([0.5, 0.5], [0.0, 0.0, 1.0]),
-        Vertex::new([-0.5, 0.5], [1.0, 1.0, 1.0])
-    ]
-}
-
-fn indices() -> [u16; 6] {
-    [0, 1, 2, 2, 3, 0]
-}
-
-struct HelloTriangleApplication {
-    instance: Arc<Instance>,
-    #[allow(unused)]
-    debug_callback: Option<DebugCallback>,
-
-    events_loop: EventsLoop,
-    surface: Arc<Surface<Window>>,
-
-    physical_device_index: usize, // can't store PhysicalDevice directly (lifetime issues)
-    device: Arc<Device>,
-
-    graphics_queue: Arc<Queue>,
-    present_queue: Arc<Queue>,
-
-    swap_chain: Arc<Swapchain<Window>>,
-    swap_chain_images: Vec<Arc<SwapchainImage<Window>>>,
-
-    render_pass: Arc<RenderPassAbstract + Send + Sync>,
-    graphics_pipeline: Arc<GraphicsPipelineAbstract + Send + Sync>,
-
-    swap_chain_framebuffers: Vec<Arc<FramebufferAbstract + Send + Sync>>,
-
-    vertex_buffer: Arc<BufferAccess + Send + Sync>,
-    index_buffer: Arc<TypedBufferAccess<Content=[u16]> + Send + Sync>,
-    command_buffers: Vec<Arc<AutoCommandBuffer>>,
-
-    previous_frame_end: Option<Box<GpuFuture>>,
-    recreate_swap_chain: bool,
-}
-
-impl HelloTriangleApplication {
-    pub fn initialize() -> Self {
-        let instance = Self::create_instance();
-        let debug_callback = Self::setup_debug_callback(&instance);
-        let (events_loop, surface) = Self::create_surface(&instance);
-
-        let physical_device_index = Self::pick_physical_device(&instance, &surface);
-        let (device, graphics_queue, present_queue) = Self::create_logical_device(
-            &instance, &surface, physical_device_index);
-
-        let (swap_chain, swap_chain_images) = Self::create_swap_chain(&instance, &surface, physical_device_index,
-            &device, &graphics_queue, &present_queue, None);
-
-        let render_pass = Self::create_render_pass(&device, swap_chain.format());
-        let graphics_pipeline = Self::create_graphics_pipeline(&device, swap_chain.dimensions(), &render_pass);
-
-        let swap_chain_framebuffers = Self::create_framebuffers(&swap_chain_images, &render_pass);
-
-        let vertex_buffer = Self::create_vertex_buffer(&graphics_queue);
-        let index_buffer = Self::create_index_buffer(&graphics_queue);
-
-        let previous_frame_end = Some(Self::create_sync_objects(&device));
-
-        let mut app = Self {
-            instance,
-            debug_callback,
-
-            events_loop,
-            surface,
-
-            physical_device_index,
-            device,
-
-            graphics_queue,
-            present_queue,
-
-            swap_chain,
-            swap_chain_images,
-
-            render_pass,
-            graphics_pipeline,
-
-            swap_chain_framebuffers,
-
-            vertex_buffer,
-            index_buffer,
-            command_buffers: vec![],
-
-            previous_frame_end,
-            recreate_swap_chain: false,
+    #[cfg(not(target_arch = "wasm32"))]
+    let wb = winit::WindowBuilder::new()
+        .with_min_dimensions(winit::dpi::LogicalSize::new(1.0, 1.0))
+        .with_dimensions(winit::dpi::LogicalSize::new(
+            DIMS.width as _,
+            DIMS.height as _,
+        ))
+        .with_title("quad".to_string());
+    // instantiate backend
+    #[cfg(not(feature = "gl"))]
+    let (_window, _instance, mut adapters, mut surface) = {
+        let window = wb.build(&events_loop).unwrap();
+        let instance = back::Instance::create("gfx-rs quad", 1);
+        let surface = instance.create_surface(&window);
+        let adapters = instance.enumerate_adapters();
+        (window, instance, adapters, surface)
+    };
+    #[cfg(feature = "gl")]
+    let (window, mut adapters, mut surface) = {
+        #[cfg(not(target_arch = "wasm32"))]
+        let (window, surface) = {
+            let builder =
+                back::config_context(back::glutin::ContextBuilder::new(), ColorFormat::SELF, None)
+                    .with_vsync(true);
+            let windowed_context = builder.build_windowed(wb, &events_loop).unwrap();
+            let (context, window) = unsafe { windowed_context.make_current().expect("Unable to make context current").split() };
+            let surface = back::Surface::from_context(context);
+            (window, surface)
+        };
+        #[cfg(target_arch = "wasm32")]
+        let (window, surface) = {
+            let window = back::Window;
+            let surface = back::Surface::from_window(&window);
+            (window, surface)
         };
 
-        app.create_command_buffers();
-        app
+        let adapters = surface.enumerate_adapters();
+        (window, adapters, surface)
+    };
+
+    for adapter in &adapters {
+        println!("{:?}", adapter.info);
     }
 
-    fn create_instance() -> Arc<Instance> {
-        if ENABLE_VALIDATION_LAYERS && !Self::check_validation_layer_support() {
-            println!("Validation layers requested, but not available!")
-        }
+    let mut adapter = adapters.remove(0);
+    let memory_types = adapter.physical_device.memory_properties().memory_types;
+    let limits = adapter.physical_device.limits();
 
-        let supported_extensions = InstanceExtensions::supported_by_core()
-            .expect("failed to retrieve supported extensions");
-        println!("Supported extensions: {:?}", supported_extensions);
+    // Build a new device and associated command queues
+    let (device, mut queue_group) = adapter
+        .open_with::<_, hal::Graphics>(1, |family| surface.supports_queue_family(family))
+        .unwrap();
 
-        let app_info = ApplicationInfo {
-            application_name: Some("Hello Triangle".into()),
-            application_version: Some(Version { major: 1, minor: 0, patch: 0 }),
-            engine_name: Some("No Engine".into()),
-            engine_version: Some(Version { major: 1, minor: 0, patch: 0 }),
-        };
-
-        let required_extensions = Self::get_required_extensions();
-
-        if ENABLE_VALIDATION_LAYERS && Self::check_validation_layer_support() {
-            Instance::new(Some(&app_info), &required_extensions, VALIDATION_LAYERS.iter().cloned())
-                .expect("failed to create Vulkan instance")
-        } else {
-            Instance::new(Some(&app_info), &required_extensions, None)
-                .expect("failed to create Vulkan instance")
-        }
+    let mut command_pool = unsafe {
+        device.create_command_pool_typed(&queue_group, pool::CommandPoolCreateFlags::empty())
     }
+    .expect("Can't create command pool");
 
-    fn check_validation_layer_support() -> bool {
-        let layers: Vec<_> = layers_list().unwrap().map(|l| l.name().to_owned()).collect();
-        VALIDATION_LAYERS.iter()
-            .all(|layer_name| layers.contains(&layer_name.to_string()))
-    }
-
-    fn get_required_extensions() -> InstanceExtensions {
-        let mut extensions = vulkano_win::required_extensions();
-        if ENABLE_VALIDATION_LAYERS {
-            // TODO!: this should be ext_debug_utils (_report is deprecated), but that doesn't exist yet in vulkano
-            extensions.ext_debug_report = true;
-        }
-
-        extensions
-    }
-
-    fn setup_debug_callback(instance: &Arc<Instance>) -> Option<DebugCallback> {
-        if !ENABLE_VALIDATION_LAYERS  {
-            return None;
-        }
-
-        let msg_types = MessageTypes {
-            error: true,
-            warning: true,
-            performance_warning: true,
-            information: false,
-            debug: true,
-        };
-        DebugCallback::new(&instance, msg_types, |msg| {
-            println!("validation layer: {:?}", msg.description);
-        }).ok()
-    }
-
-    fn pick_physical_device(instance: &Arc<Instance>, surface: &Arc<Surface<Window>>) -> usize {
-        PhysicalDevice::enumerate(&instance)
-            .position(|device| Self::is_device_suitable(surface, &device))
-            .expect("failed to find a suitable GPU!")
-    }
-
-    fn is_device_suitable(surface: &Arc<Surface<Window>>, device: &PhysicalDevice) -> bool {
-        let indices = Self::find_queue_families(surface, device);
-        let extensions_supported = Self::check_device_extension_support(device);
-
-        let swap_chain_adequate = if extensions_supported {
-                let capabilities = surface.capabilities(*device)
-                    .expect("failed to get surface capabilities");
-                !capabilities.supported_formats.is_empty() &&
-                    capabilities.present_modes.iter().next().is_some()
-            } else {
-                false
-            };
-
-        indices.is_complete() && extensions_supported && swap_chain_adequate
-    }
-
-    fn check_device_extension_support(device: &PhysicalDevice) -> bool {
-        let available_extensions = DeviceExtensions::supported_by_device(*device);
-        let device_extensions = device_extensions();
-        available_extensions.intersection(&device_extensions) == device_extensions
-    }
-
-    fn choose_swap_surface_format(available_formats: &[(Format, ColorSpace)]) -> (Format, ColorSpace) {
-        // NOTE: the 'preferred format' mentioned in the tutorial doesn't seem to be
-        // queryable in Vulkano (no VK_FORMAT_UNDEFINED enum)
-        *available_formats.iter()
-            .find(|(format, color_space)|
-                *format == Format::B8G8R8A8Unorm && *color_space == ColorSpace::SrgbNonLinear
-            )
-            .unwrap_or_else(|| &available_formats[0])
-    }
-
-    fn choose_swap_present_mode(available_present_modes: SupportedPresentModes) -> PresentMode {
-        if available_present_modes.mailbox {
-            PresentMode::Mailbox
-        } else if available_present_modes.immediate {
-            PresentMode::Immediate
-        } else {
-            PresentMode::Fifo
-        }
-    }
-
-    fn choose_swap_extent(capabilities: &Capabilities) -> [u32; 2] {
-        if let Some(current_extent) = capabilities.current_extent {
-            return current_extent
-        } else {
-            let mut actual_extent = [WIDTH, HEIGHT];
-            actual_extent[0] = capabilities.min_image_extent[0]
-                .max(capabilities.max_image_extent[0].min(actual_extent[0]));
-            actual_extent[1] = capabilities.min_image_extent[1]
-                .max(capabilities.max_image_extent[1].min(actual_extent[1]));
-            actual_extent
-        }
-    }
-
-    fn create_swap_chain(
-        instance: &Arc<Instance>,
-        surface: &Arc<Surface<Window>>,
-        physical_device_index: usize,
-        device: &Arc<Device>,
-        graphics_queue: &Arc<Queue>,
-        present_queue: &Arc<Queue>,
-        old_swapchain: Option<Arc<Swapchain<Window>>>,
-    ) -> (Arc<Swapchain<Window>>, Vec<Arc<SwapchainImage<Window>>>) {
-        let physical_device = PhysicalDevice::from_index(&instance, physical_device_index).unwrap();
-        let capabilities = surface.capabilities(physical_device)
-            .expect("failed to get surface capabilities");
-
-        let surface_format = Self::choose_swap_surface_format(&capabilities.supported_formats);
-        let present_mode = Self::choose_swap_present_mode(capabilities.present_modes);
-        let extent = Self::choose_swap_extent(&capabilities);
-
-        let mut image_count = capabilities.min_image_count + 1;
-        if capabilities.max_image_count.is_some() && image_count > capabilities.max_image_count.unwrap() {
-            image_count = capabilities.max_image_count.unwrap();
-        }
-
-        let image_usage = ImageUsage {
-            color_attachment: true,
-            .. ImageUsage::none()
-        };
-
-        let indices = Self::find_queue_families(&surface, &physical_device);
-
-        let sharing: SharingMode = if indices.graphics_family != indices.present_family {
-            vec![graphics_queue, present_queue].as_slice().into()
-        } else {
-            graphics_queue.into()
-        };
-
-        let (swap_chain, images) = Swapchain::new(
-            device.clone(),
-            surface.clone(),
-            image_count,
-            surface_format.0, // TODO: color space?
-            extent,
-            1, // layers
-            image_usage,
-            sharing,
-            capabilities.current_transform,
-            CompositeAlpha::Opaque,
-            present_mode,
-            true, // clipped
-            old_swapchain.as_ref()
-        ).expect("failed to create swap chain!");
-
-        (swap_chain, images)
-    }
-
-    fn create_render_pass(device: &Arc<Device>, color_format: Format) -> Arc<RenderPassAbstract + Send + Sync> {
-        Arc::new(single_pass_renderpass!(device.clone(),
-            attachments: {
-                color: {
-                    load: Clear,
-                    store: Store,
-                    format: color_format,
-                    samples: 1,
-                }
-            },
-            pass: {
-                color: [color],
-                depth_stencil: {}
-            }
-        ).unwrap())
-    }
-
-    fn create_graphics_pipeline(
-        device: &Arc<Device>,
-        swap_chain_extent: [u32; 2],
-        render_pass: &Arc<RenderPassAbstract + Send + Sync>,
-    ) -> Arc<GraphicsPipelineAbstract + Send + Sync> {
-        mod vertex_shader {
-            vulkano_shaders::shader! {
-               ty: "vertex",
-               path: "src/bin/17_shader_vertexbuffer.vert"
-            }
-        }
-
-        mod fragment_shader {
-            vulkano_shaders::shader! {
-                ty: "fragment",
-                path: "src/bin/17_shader_vertexbuffer.frag"
-            }
-        }
-
-        let vert_shader_module = vertex_shader::Shader::load(device.clone())
-            .expect("failed to create vertex shader module!");
-        let frag_shader_module = fragment_shader::Shader::load(device.clone())
-            .expect("failed to create fragment shader module!");
-
-        let dimensions = [swap_chain_extent[0] as f32, swap_chain_extent[1] as f32];
-        let viewport = Viewport {
-            origin: [0.0, 0.0],
-            dimensions,
-            depth_range: 0.0 .. 1.0,
-        };
-
-        Arc::new(GraphicsPipeline::start()
-            .vertex_input_single_buffer::<Vertex>()
-            .vertex_shader(vert_shader_module.main_entry_point(), ())
-            .triangle_list()
-            .primitive_restart(false)
-            .viewports(vec![viewport]) // NOTE: also sets scissor to cover whole viewport
-            .fragment_shader(frag_shader_module.main_entry_point(), ())
-            .depth_clamp(false)
-            // NOTE: there's an outcommented .rasterizer_discard() in Vulkano...
-            .polygon_mode_fill() // = default
-            .line_width(1.0) // = default
-            .cull_mode_back()
-            .front_face_clockwise()
-            // NOTE: no depth_bias here, but on pipeline::raster::Rasterization
-            .blend_pass_through() // = default
-            .render_pass(Subpass::from(render_pass.clone(), 0).unwrap())
-            .build(device.clone())
-            .unwrap()
+    // Setup renderpass and pipeline
+    let set_layout = unsafe {
+        device.create_descriptor_set_layout(
+            &[
+                pso::DescriptorSetLayoutBinding {
+                    binding: 0,
+                    ty: pso::DescriptorType::SampledImage,
+                    count: 1,
+                    stage_flags: ShaderStageFlags::FRAGMENT,
+                    immutable_samplers: false,
+                },
+                pso::DescriptorSetLayoutBinding {
+                    binding: 1,
+                    ty: pso::DescriptorType::Sampler,
+                    count: 1,
+                    stage_flags: ShaderStageFlags::FRAGMENT,
+                    immutable_samplers: false,
+                },
+            ],
+            &[],
         )
     }
+    .expect("Can't create descriptor set layout");
 
-    fn create_framebuffers(
-        swap_chain_images: &[Arc<SwapchainImage<Window>>],
-        render_pass: &Arc<RenderPassAbstract + Send + Sync>
-    ) -> Vec<Arc<FramebufferAbstract + Send + Sync>> {
-        swap_chain_images.iter()
-            .map(|image| {
-                let fba: Arc<FramebufferAbstract + Send + Sync> = Arc::new(Framebuffer::start(render_pass.clone())
-                    .add(image.clone()).unwrap()
-                    .build().unwrap());
-                fba
-            }
-        ).collect::<Vec<_>>()
+    // Descriptors
+    let mut desc_pool = unsafe {
+        device.create_descriptor_pool(
+            1, // sets
+            &[
+                pso::DescriptorRangeDesc {
+                    ty: pso::DescriptorType::SampledImage,
+                    count: 1,
+                },
+                pso::DescriptorRangeDesc {
+                    ty: pso::DescriptorType::Sampler,
+                    count: 1,
+                },
+            ],
+            pso::DescriptorPoolCreateFlags::empty(),
+        )
     }
+    .expect("Can't create descriptor pool");
+    let desc_set = unsafe { desc_pool.allocate_set(&set_layout) }.unwrap();
 
-    fn create_vertex_buffer(graphics_queue: &Arc<Queue>) -> Arc<BufferAccess + Send + Sync> {
-        let (buffer, future) = ImmutableBuffer::from_iter(
-            vertices().iter().cloned(), BufferUsage::vertex_buffer(),
-            graphics_queue.clone())
+    // Buffer allocations
+    println!("Memory types: {:?}", memory_types);
+
+    let buffer_stride = std::mem::size_of::<Vertex>() as u64;
+    let buffer_len = QUAD.len() as u64 * buffer_stride;
+
+    assert_ne!(buffer_len, 0);
+    let mut vertex_buffer =
+        unsafe { device.create_buffer(buffer_len, buffer::Usage::VERTEX) }.unwrap();
+
+    let buffer_req = unsafe { device.get_buffer_requirements(&vertex_buffer) };
+
+    let upload_type = memory_types
+        .iter()
+        .enumerate()
+        .position(|(id, mem_type)| {
+            // type_mask is a bit field where each bit represents a memory type. If the bit is set
+            // to 1 it means we can use that type for our buffer. So this code finds the first
+            // memory type that has a `1` (or, is allowed), and is visible to the CPU.
+            buffer_req.type_mask & (1 << id) != 0
+                && mem_type.properties.contains(m::Properties::CPU_VISIBLE)
+        })
+        .unwrap()
+        .into();
+
+    let buffer_memory = unsafe { device.allocate_memory(upload_type, buffer_req.size) }.unwrap();
+
+    unsafe { device.bind_buffer_memory(&buffer_memory, 0, &mut vertex_buffer) }.unwrap();
+
+    // TODO: check transitions: read/write mapping and vertex buffer read
+    unsafe {
+        let mut vertices = device
+            .acquire_mapping_writer::<Vertex>(&buffer_memory, 0 .. buffer_req.size)
             .unwrap();
-        future.flush().unwrap();
-        buffer
+        vertices[0 .. QUAD.len()].copy_from_slice(&QUAD);
+        device.release_mapping_writer(vertices).unwrap();
     }
 
-    fn create_index_buffer(graphics_queue: &Arc<Queue>) -> Arc<TypedBufferAccess<Content=[u16]> + Send + Sync> {
-        let (buffer, future) = ImmutableBuffer::from_iter(
-            indices().iter().cloned(), BufferUsage::index_buffer(),
-            graphics_queue.clone())
+    // Image
+    let img_data = include_bytes!("data/logo.png");
+
+    let img = image::load(Cursor::new(&img_data[..]), image::PNG)
+        .unwrap()
+        .to_rgba();
+    let (width, height) = img.dimensions();
+    let kind = i::Kind::D2(width as i::Size, height as i::Size, 1, 1);
+    let row_alignment_mask = limits.optimal_buffer_copy_pitch_alignment as u32 - 1;
+    let image_stride = 4usize;
+    let row_pitch = (width * image_stride as u32 + row_alignment_mask) & !row_alignment_mask;
+    let upload_size = (height * row_pitch) as u64;
+
+    let mut image_upload_buffer =
+        unsafe { device.create_buffer(upload_size, buffer::Usage::TRANSFER_SRC) }.unwrap();
+    let image_mem_reqs = unsafe { device.get_buffer_requirements(&image_upload_buffer) };
+    let image_upload_memory =
+        unsafe { device.allocate_memory(upload_type, image_mem_reqs.size) }.unwrap();
+
+    unsafe { device.bind_buffer_memory(&image_upload_memory, 0, &mut image_upload_buffer) }
+        .unwrap();
+
+    // copy image data into staging buffer
+    unsafe {
+        let mut data = device
+            .acquire_mapping_writer::<u8>(&image_upload_memory, 0 .. image_mem_reqs.size)
             .unwrap();
-        future.flush().unwrap();
-        buffer
-    }
-
-    fn create_command_buffers(&mut self) {
-        let queue_family = self.graphics_queue.family();
-        self.command_buffers = self.swap_chain_framebuffers.iter()
-            .map(|framebuffer| {
-                Arc::new(AutoCommandBufferBuilder::primary_simultaneous_use(self.device.clone(), queue_family)
-                    .unwrap()
-                    .begin_render_pass(framebuffer.clone(), false, vec![[0.0, 0.0, 0.0, 1.0].into()])
-                    .unwrap()
-                    .draw_indexed(self.graphics_pipeline.clone(), &DynamicState::none(),
-                        vec![self.vertex_buffer.clone()],
-                        self.index_buffer.clone(), (), ())
-                    .unwrap()
-                    .end_render_pass()
-                    .unwrap()
-                    .build()
-                    .unwrap())
-            })
-            .collect();
-    }
-
-    fn create_sync_objects(device: &Arc<Device>) -> Box<GpuFuture> {
-        Box::new(sync::now(device.clone())) as Box<GpuFuture>
-    }
-
-    fn find_queue_families(surface: &Arc<Surface<Window>>, device: &PhysicalDevice) -> QueueFamilyIndices {
-        let mut indices = QueueFamilyIndices::new();
-        // TODO: replace index with id to simplify?
-        for (i, queue_family) in device.queue_families().enumerate() {
-            if queue_family.supports_graphics() {
-                indices.graphics_family = i as i32;
-            }
-
-            if surface.is_supported(queue_family).unwrap() {
-                indices.present_family = i as i32;
-            }
-
-            if indices.is_complete() {
-                break;
-            }
+        for y in 0 .. height as usize {
+            let row = &(*img)
+                [y * (width as usize) * image_stride .. (y + 1) * (width as usize) * image_stride];
+            let dest_base = y * row_pitch as usize;
+            data[dest_base .. dest_base + row.len()].copy_from_slice(row);
         }
-
-        indices
+        device.release_mapping_writer(data).unwrap();
     }
 
-    fn create_logical_device(
-        instance: &Arc<Instance>,
-        surface: &Arc<Surface<Window>>,
-        physical_device_index: usize,
-    ) -> (Arc<Device>, Arc<Queue>, Arc<Queue>) {
-        let physical_device = PhysicalDevice::from_index(&instance, physical_device_index).unwrap();
-        let indices = Self::find_queue_families(&surface, &physical_device);
-
-        let families = [indices.graphics_family, indices.present_family];
-        use std::iter::FromIterator;
-        let unique_queue_families: HashSet<&i32> = HashSet::from_iter(families.iter());
-
-        let queue_priority = 1.0;
-        let queue_families = unique_queue_families.iter().map(|i| {
-            (physical_device.queue_families().nth(**i as usize).unwrap(), queue_priority)
-        });
-
-        // NOTE: the tutorial recommends passing the validation layers as well
-        // for legacy reasons (if ENABLE_VALIDATION_LAYERS is true). Vulkano handles that
-        // for us internally.
-
-        let (device, mut queues) = Device::new(physical_device, &Features::none(),
-            &device_extensions(), queue_families)
-            .expect("failed to create logical device!");
-
-        let graphics_queue = queues.next().unwrap();
-        let present_queue = queues.next().unwrap_or_else(|| graphics_queue.clone());
-
-        (device, graphics_queue, present_queue)
+    let mut image_logo = unsafe {
+        device.create_image(
+            kind,
+            1,
+            ColorFormat::SELF,
+            i::Tiling::Optimal,
+            i::Usage::TRANSFER_DST | i::Usage::SAMPLED,
+            i::ViewCapabilities::empty(),
+        )
     }
+    .unwrap();
+    let image_req = unsafe { device.get_image_requirements(&image_logo) };
 
-    fn create_surface(instance: &Arc<Instance>) -> (EventsLoop, Arc<Surface<Window>>) {
-        let events_loop = EventsLoop::new();
-        let surface = WindowBuilder::new()
-            .with_title("Vulkan")
-            .with_dimensions(LogicalSize::new(f64::from(WIDTH), f64::from(HEIGHT)))
-            .build_vk_surface(&events_loop, instance.clone())
-            .expect("failed to create window surface!");
-        (events_loop, surface)
+    let device_type = memory_types
+        .iter()
+        .enumerate()
+        .position(|(id, memory_type)| {
+            image_req.type_mask & (1 << id) != 0
+                && memory_type.properties.contains(m::Properties::DEVICE_LOCAL)
+        })
+        .unwrap()
+        .into();
+    let image_memory = unsafe { device.allocate_memory(device_type, image_req.size) }.unwrap();
+
+    unsafe { device.bind_image_memory(&image_memory, 0, &mut image_logo) }.unwrap();
+    let image_srv = unsafe {
+        device.create_image_view(
+            &image_logo,
+            i::ViewKind::D2,
+            ColorFormat::SELF,
+            Swizzle::NO,
+            COLOR_RANGE.clone(),
+        )
     }
+    .unwrap();
 
-    #[allow(unused)]
-    fn main_loop(&mut self) {
-        loop {
-            self.draw_frame();
-
-            let mut done = false;
-            self.events_loop.poll_events(|ev| {
-                if let Event::WindowEvent { event: WindowEvent::CloseRequested, .. } = ev {
-                    done = true
-                }
-            });
-            if done {
-                return;
-            }
-        }
+    let sampler = unsafe {
+        device.create_sampler(i::SamplerInfo::new(i::Filter::Linear, i::WrapMode::Clamp))
     }
+    .expect("Can't create sampler");
 
-    fn draw_frame(&mut self) {
-        self.previous_frame_end.as_mut().unwrap().cleanup_finished();
-
-        if self.recreate_swap_chain {
-            self.recreate_swap_chain();
-            self.recreate_swap_chain = false;
-        }
-
-        let (image_index, acquire_future) = match acquire_next_image(self.swap_chain.clone(), None) {
-            Ok(r) => r,
-            Err(AcquireError::OutOfDate) => {
-                self.recreate_swap_chain = true;
-                return;
+    unsafe {
+        device.write_descriptor_sets(vec![
+            pso::DescriptorSetWrite {
+                set: &desc_set,
+                binding: 0,
+                array_offset: 0,
+                descriptors: Some(pso::Descriptor::Image(&image_srv, i::Layout::ShaderReadOnlyOptimal)),
             },
-            Err(err) => panic!("{:?}", err)
+            pso::DescriptorSetWrite {
+                set: &desc_set,
+                binding: 1,
+                array_offset: 0,
+                descriptors: Some(pso::Descriptor::Sampler(&sampler)),
+            },
+        ]);
+    }
+
+    // copy buffer to texture
+    let mut copy_fence = device.create_fence(false).expect("Could not create fence");
+    unsafe {
+        let mut cmd_buffer = command_pool.acquire_command_buffer::<command::OneShot>();
+        cmd_buffer.begin();
+
+        let image_barrier = m::Barrier::Image {
+            states: (i::Access::empty(), i::Layout::Undefined)
+                .. (i::Access::TRANSFER_WRITE, i::Layout::TransferDstOptimal),
+            target: &image_logo,
+            families: None,
+            range: COLOR_RANGE.clone(),
         };
 
-        let command_buffer = self.command_buffers[image_index].clone();
+        cmd_buffer.pipeline_barrier(
+            PipelineStage::TOP_OF_PIPE .. PipelineStage::TRANSFER,
+            m::Dependencies::empty(),
+            &[image_barrier],
+        );
 
-        let future = self.previous_frame_end.take().unwrap()
-            .join(acquire_future)
-            .then_execute(self.graphics_queue.clone(), command_buffer)
-            .unwrap()
-            .then_swapchain_present(self.present_queue.clone(), self.swap_chain.clone(), image_index)
-            .then_signal_fence_and_flush();
+        cmd_buffer.copy_buffer_to_image(
+            &image_upload_buffer,
+            &image_logo,
+            i::Layout::TransferDstOptimal,
+            &[command::BufferImageCopy {
+                buffer_offset: 0,
+                buffer_width: row_pitch / (image_stride as u32),
+                buffer_height: height as u32,
+                image_layers: i::SubresourceLayers {
+                    aspects: f::Aspects::COLOR,
+                    level: 0,
+                    layers: 0 .. 1,
+                },
+                image_offset: i::Offset { x: 0, y: 0, z: 0 },
+                image_extent: i::Extent {
+                    width,
+                    height,
+                    depth: 1,
+                },
+            }],
+        );
 
-        match future {
-            Ok(future) => {
-                self.previous_frame_end = Some(Box::new(future) as Box<_>);
-            }
-            Err(vulkano::sync::FlushError::OutOfDate) => {
-                self.recreate_swap_chain = true;
-                self.previous_frame_end
-                    = Some(Box::new(vulkano::sync::now(self.device.clone())) as Box<_>);
-            }
-            Err(e) => {
-                println!("{:?}", e);
-                self.previous_frame_end
-                    = Some(Box::new(vulkano::sync::now(self.device.clone())) as Box<_>);
-            }
+        let image_barrier = m::Barrier::Image {
+            states: (i::Access::TRANSFER_WRITE, i::Layout::TransferDstOptimal)
+                .. (i::Access::SHADER_READ, i::Layout::ShaderReadOnlyOptimal),
+            target: &image_logo,
+            families: None,
+            range: COLOR_RANGE.clone(),
+        };
+        cmd_buffer.pipeline_barrier(
+            PipelineStage::TRANSFER .. PipelineStage::FRAGMENT_SHADER,
+            m::Dependencies::empty(),
+            &[image_barrier],
+        );
+
+        cmd_buffer.finish();
+
+        queue_group.queues[0].submit_without_semaphores(Some(&cmd_buffer), Some(&mut copy_fence));
+
+        device
+            .wait_for_fence(&copy_fence, !0)
+            .expect("Can't wait for fence");
+    }
+
+    unsafe {
+        device.destroy_fence(copy_fence);
+    }
+
+    let (caps, formats, _present_modes) = surface.compatibility(&mut adapter.physical_device);
+    println!("formats: {:?}", formats);
+    let format = formats.map_or(f::Format::Rgba8Srgb, |formats| {
+        formats
+            .iter()
+            .find(|format| format.base_format().1 == ChannelType::Srgb)
+            .map(|format| *format)
+            .unwrap_or(formats[0])
+    });
+
+    let swap_config = SwapchainConfig::from_caps(&caps, format, DIMS);
+    println!("{:?}", swap_config);
+    let extent = swap_config.extent.to_extent();
+
+    let (mut swap_chain, mut backbuffer) =
+        unsafe { device.create_swapchain(&mut surface, swap_config, None) }
+            .expect("Can't create swapchain");
+
+    let render_pass = {
+        let attachment = pass::Attachment {
+            format: Some(format),
+            samples: 1,
+            ops: pass::AttachmentOps::new(
+                pass::AttachmentLoadOp::Clear,
+                pass::AttachmentStoreOp::Store,
+            ),
+            stencil_ops: pass::AttachmentOps::DONT_CARE,
+            layouts: i::Layout::Undefined .. i::Layout::Present,
+        };
+
+        let subpass = pass::SubpassDesc {
+            colors: &[(0, i::Layout::ColorAttachmentOptimal)],
+            depth_stencil: None,
+            inputs: &[],
+            resolves: &[],
+            preserves: &[],
+        };
+
+        let dependency = pass::SubpassDependency {
+            passes: pass::SubpassRef::External .. pass::SubpassRef::Pass(0),
+            stages: PipelineStage::COLOR_ATTACHMENT_OUTPUT
+                .. PipelineStage::COLOR_ATTACHMENT_OUTPUT,
+            accesses: i::Access::empty()
+                .. (i::Access::COLOR_ATTACHMENT_READ | i::Access::COLOR_ATTACHMENT_WRITE),
+        };
+
+        unsafe { device.create_render_pass(&[attachment], &[subpass], &[dependency]) }
+            .expect("Can't create render pass")
+    };
+
+    let (mut frame_images, mut framebuffers) = {
+        let pairs = backbuffer
+            .into_iter()
+            .map(|image| unsafe {
+                let rtv = device
+                    .create_image_view(
+                        &image,
+                        i::ViewKind::D2,
+                        format,
+                        Swizzle::NO,
+                        COLOR_RANGE.clone(),
+                    )
+                    .unwrap();
+                (image, rtv)
+            })
+            .collect::<Vec<_>>();
+        let fbos = pairs
+            .iter()
+            .map(|&(_, ref rtv)| unsafe {
+                device
+                    .create_framebuffer(&render_pass, Some(rtv), extent)
+                    .unwrap()
+            })
+            .collect::<Vec<_>>();
+        (pairs, fbos)
+    };
+
+    // Define maximum number of frames we want to be able to be "in flight" (being computed
+    // simultaneously) at once
+    let frames_in_flight = 3;
+
+    // Number of image acquisition semaphores is based on the number of swapchain images, not frames in flight,
+    // plus one extra which we can guarantee is unused at any given time by swapping it out with the ones
+    // in the rest of the queue.
+    let mut image_acquire_semaphores = Vec::with_capacity(frame_images.len());
+    let mut free_acquire_semaphore = device
+        .create_semaphore()
+        .expect("Could not create semaphore");
+
+    // The number of the rest of the resources is based on the frames in flight.
+    let mut submission_complete_semaphores = Vec::with_capacity(frames_in_flight);
+    let mut submission_complete_fences = Vec::with_capacity(frames_in_flight);
+    // Note: We don't really need a different command pool per frame in such a simple demo like this,
+    // but in a more 'real' application, it's generally seen as optimal to have one command pool per
+    // thread per frame. There is a flag that lets a command pool reset individual command buffers
+    // which are created from it, but by default the whole pool (and therefore all buffers in it)
+    // must be reset at once. Furthermore, it is often the case that resetting a whole pool is actually
+    // faster and more efficient for the hardware than resetting individual command buffers, so it's
+    // usually best to just make a command pool for each set of buffers which need to be reset at the
+    // same time (each frame). In our case, each pool will only have one command buffer created from it,
+    // though.
+    let mut cmd_pools = Vec::with_capacity(frames_in_flight);
+    let mut cmd_buffers = Vec::with_capacity(frames_in_flight);
+
+    cmd_pools.push(command_pool);
+    for _ in 1 .. frames_in_flight {
+        unsafe {
+            cmd_pools.push(
+                device
+                    .create_command_pool_typed(&queue_group, pool::CommandPoolCreateFlags::empty())
+                    .expect("Can't create command pool"),
+            );
         }
     }
 
-    fn recreate_swap_chain(&mut self) {
-        let (swap_chain, images) = Self::create_swap_chain(&self.instance, &self.surface, self.physical_device_index,
-            &self.device, &self.graphics_queue, &self.present_queue, Some(self.swap_chain.clone()));
-        self.swap_chain = swap_chain;
-        self.swap_chain_images = images;
+    for _ in 0 .. frame_images.len() {
+        image_acquire_semaphores.push(
+            device
+                .create_semaphore()
+                .expect("Could not create semaphore"),
+        );
+    }
 
-        self.render_pass = Self::create_render_pass(&self.device, self.swap_chain.format());
-        self.graphics_pipeline = Self::create_graphics_pipeline(&self.device, self.swap_chain.dimensions(),
-            &self.render_pass);
-        self.swap_chain_framebuffers = Self::create_framebuffers(&self.swap_chain_images, &self.render_pass);
-        self.create_command_buffers();
+    for i in 0 .. frames_in_flight {
+        submission_complete_semaphores.push(
+            device
+                .create_semaphore()
+                .expect("Could not create semaphore"),
+        );
+        submission_complete_fences.push(
+            device
+                .create_fence(true)
+                .expect("Could not create semaphore"),
+        );
+        cmd_buffers.push(cmd_pools[i].acquire_command_buffer::<command::MultiShot>());
+    }
+
+    let pipeline_layout = unsafe {
+        device.create_pipeline_layout(
+            std::iter::once(&set_layout),
+            &[(pso::ShaderStageFlags::VERTEX, 0 .. 8)],
+        )
+    }
+    .expect("Can't create pipeline layout");
+    let pipeline = {
+        let vs_module = {
+            let spirv =
+                hal::read_spirv(Cursor::new(&include_bytes!("data/quad.vert.spv")[..])).unwrap();
+            unsafe { device.create_shader_module(&spirv) }.unwrap()
+        };
+        let fs_module = {
+            let spirv =
+                hal::read_spirv(Cursor::new(&include_bytes!("./data/quad.frag.spv")[..])).unwrap();
+            unsafe { device.create_shader_module(&spirv) }.unwrap()
+        };
+
+        let pipeline = {
+            let (vs_entry, fs_entry) = (
+                pso::EntryPoint {
+                    entry: ENTRY_NAME,
+                    module: &vs_module,
+                    specialization: hal::spec_const_list![0.8f32],
+                },
+                pso::EntryPoint {
+                    entry: ENTRY_NAME,
+                    module: &fs_module,
+                    specialization: pso::Specialization::default(),
+                },
+            );
+
+            let shader_entries = pso::GraphicsShaderSet {
+                vertex: vs_entry,
+                hull: None,
+                domain: None,
+                geometry: None,
+                fragment: Some(fs_entry),
+            };
+
+            let subpass = Subpass {
+                index: 0,
+                main_pass: &render_pass,
+            };
+
+            let mut pipeline_desc = pso::GraphicsPipelineDesc::new(
+                shader_entries,
+                Primitive::TriangleList,
+                pso::Rasterizer::FILL,
+                &pipeline_layout,
+                subpass,
+            );
+            pipeline_desc.blender.targets.push(pso::ColorBlendDesc {
+                mask: pso::ColorMask::ALL,
+                blend: Some(pso::BlendState::ALPHA),
+            });
+            pipeline_desc.vertex_buffers.push(pso::VertexBufferDesc {
+                binding: 0,
+                stride: std::mem::size_of::<Vertex>() as u32,
+                rate: VertexInputRate::Vertex,
+            });
+
+            pipeline_desc.attributes.push(pso::AttributeDesc {
+                location: 0,
+                binding: 0,
+                element: pso::Element {
+                    format: f::Format::Rg32Sfloat,
+                    offset: 0,
+                },
+            });
+            pipeline_desc.attributes.push(pso::AttributeDesc {
+                location: 1,
+                binding: 0,
+                element: pso::Element {
+                    format: f::Format::Rg32Sfloat,
+                    offset: 8,
+                },
+            });
+
+            unsafe { device.create_graphics_pipeline(&pipeline_desc, None) }
+        };
+
+        unsafe {
+            device.destroy_shader_module(vs_module);
+        }
+        unsafe {
+            device.destroy_shader_module(fs_module);
+        }
+
+        pipeline.unwrap()
+    };
+
+    // Rendering setup
+    let mut viewport = pso::Viewport {
+        rect: pso::Rect {
+            x: 0,
+            y: 0,
+            w: extent.width as _,
+            h: extent.height as _,
+        },
+        depth: 0.0 .. 1.0,
+    };
+
+    //
+    let mut running = true;
+    let mut recreate_swapchain = false;
+    let mut resize_dims = Extent2D {
+        width: 0,
+        height: 0,
+    };
+    let mut frame: u64 = 0;
+    while running {
+        running = !cfg!(target_arch = "wasm32");
+        #[cfg(not(target_arch = "wasm32"))]
+        events_loop.poll_events(|event| {
+            if let winit::Event::WindowEvent { event, .. } = event {
+                #[allow(unused_variables)]
+                match event {
+                    winit::WindowEvent::KeyboardInput {
+                        input:
+                            winit::KeyboardInput {
+                                virtual_keycode: Some(winit::VirtualKeyCode::Escape),
+                                ..
+                            },
+                        ..
+                    }
+                    | winit::WindowEvent::CloseRequested => running = false,
+                    winit::WindowEvent::Resized(dims) => {
+                        println!("resized to {:?}", dims);
+                        #[cfg(feature = "gl")]
+                        {
+                            let context = surface.get_context();
+                            context.resize(dims.to_physical(window.get_hidpi_factor()));
+                        }
+                        recreate_swapchain = true;
+                        resize_dims.width = dims.width as u32;
+                        resize_dims.height = dims.height as u32;
+                    }
+                    _ => (),
+                }
+            }
+        });
+
+        // Window was resized so we must recreate swapchain and framebuffers
+        if recreate_swapchain {
+            device.wait_idle().unwrap();
+
+            let (caps, formats, _present_modes) =
+                surface.compatibility(&mut adapter.physical_device);
+            // Verify that previous format still exists so we may reuse it.
+            assert!(formats.iter().any(|fs| fs.contains(&format)));
+
+            let swap_config = SwapchainConfig::from_caps(&caps, format, resize_dims);
+            println!("{:?}", swap_config);
+            let extent = swap_config.extent.to_extent();
+
+            let (new_swap_chain, new_backbuffer) =
+                unsafe { device.create_swapchain(&mut surface, swap_config, Some(swap_chain)) }
+                    .expect("Can't create swapchain");
+
+            unsafe {
+                // Clean up the old framebuffers, images and swapchain
+                for framebuffer in framebuffers {
+                    device.destroy_framebuffer(framebuffer);
+                }
+                for (_, rtv) in frame_images {
+                    device.destroy_image_view(rtv);
+                }
+            }
+
+            backbuffer = new_backbuffer;
+            swap_chain = new_swap_chain;
+
+            let (new_frame_images, new_framebuffers) = {
+                let pairs = backbuffer
+                    .into_iter()
+                    .map(|image| unsafe {
+                        let rtv = device
+                            .create_image_view(
+                                &image,
+                                i::ViewKind::D2,
+                                format,
+                                Swizzle::NO,
+                                COLOR_RANGE.clone(),
+                            )
+                            .unwrap();
+                        (image, rtv)
+                    })
+                    .collect::<Vec<_>>();
+                let fbos = pairs
+                    .iter()
+                    .map(|&(_, ref rtv)| unsafe {
+                        device
+                            .create_framebuffer(&render_pass, Some(rtv), extent)
+                            .unwrap()
+                    })
+                    .collect();
+                (pairs, fbos)
+            };
+
+            framebuffers = new_framebuffers;
+            frame_images = new_frame_images;
+            viewport.rect.w = extent.width as _;
+            viewport.rect.h = extent.height as _;
+            recreate_swapchain = false;
+        }
+
+        // Use guaranteed unused acquire semaphore to get the index of the next frame we will render to
+        // by using acquire_image
+        let swap_image = unsafe {
+            match swap_chain.acquire_image(!0, Some(&free_acquire_semaphore), None) {
+                Ok((i, _)) => i as usize,
+                Err(_) => {
+                    recreate_swapchain = true;
+                    continue;
+                }
+            }
+        };
+
+        // Swap the acquire semaphore with the one previously associated with the image we are acquiring
+        core::mem::swap(
+            &mut free_acquire_semaphore,
+            &mut image_acquire_semaphores[swap_image],
+        );
+
+        // Compute index into our resource ring buffers based on the frame number
+        // and number of frames in flight. Pay close attention to where this index is needed
+        // versus when the swapchain image index we got from acquire_image is needed.
+        let frame_idx = frame as usize % frames_in_flight;
+
+        // Wait for the fence of the previous submission of this frame and reset it; ensures we are
+        // submitting only up to maximum number of frames_in_flight if we are submitting faster than
+        // the gpu can keep up with. This would also guarantee that any resources which need to be
+        // updated with a CPU->GPU data copy are not in use by the GPU, so we can perform those updates.
+        // In this case there are none to be done, however.
+        unsafe {
+            device
+                .wait_for_fence(&submission_complete_fences[frame_idx], !0)
+                .expect("Failed to wait for fence");
+            device
+                .reset_fence(&submission_complete_fences[frame_idx])
+                .expect("Failed to reset fence");
+            cmd_pools[frame_idx].reset(false);
+        }
+
+        // Rendering
+        let cmd_buffer = &mut cmd_buffers[frame_idx];
+        unsafe {
+            cmd_buffer.begin(false);
+
+            cmd_buffer.set_viewports(0, &[viewport.clone()]);
+            cmd_buffer.set_scissors(0, &[viewport.rect]);
+            cmd_buffer.bind_graphics_pipeline(&pipeline);
+            cmd_buffer.bind_vertex_buffers(0, Some((&vertex_buffer, 0)));
+            cmd_buffer.bind_graphics_descriptor_sets(&pipeline_layout, 0, Some(&desc_set), &[]);
+
+            {
+                let mut encoder = cmd_buffer.begin_render_pass_inline(
+                    &render_pass,
+                    &framebuffers[swap_image],
+                    viewport.rect,
+                    &[command::ClearValue::Color(command::ClearColor::Sfloat([
+                        0.8, 0.8, 0.8, 1.0,
+                    ]))],
+                );
+                encoder.draw(0 .. 6, 0 .. 1);
+            }
+
+            cmd_buffer.finish();
+
+            let submission = Submission {
+                command_buffers: Some(&*cmd_buffer),
+                wait_semaphores: Some((
+                    &image_acquire_semaphores[swap_image],
+                    PipelineStage::COLOR_ATTACHMENT_OUTPUT,
+                )),
+                signal_semaphores: Some(&submission_complete_semaphores[frame_idx]),
+            };
+            queue_group.queues[0].submit(submission, Some(&submission_complete_fences[frame_idx]));
+
+            // present frame
+            if let Err(_) = swap_chain.present(
+                &mut queue_group.queues[0],
+                swap_image as hal::SwapImageIndex,
+                Some(&submission_complete_semaphores[frame_idx]),
+            ) {
+                recreate_swapchain = true;
+            }
+        }
+        // Increment our frame
+        frame += 1;
+    }
+
+    // cleanup!
+    device.wait_idle().unwrap();
+    unsafe {
+        device.destroy_descriptor_pool(desc_pool);
+        device.destroy_descriptor_set_layout(set_layout);
+
+        device.destroy_buffer(vertex_buffer);
+        device.destroy_buffer(image_upload_buffer);
+        device.destroy_image(image_logo);
+        device.destroy_image_view(image_srv);
+        device.destroy_sampler(sampler);
+        device.destroy_semaphore(free_acquire_semaphore);
+        for p in cmd_pools {
+            device.destroy_command_pool(p.into_raw());
+        }
+        for s in image_acquire_semaphores {
+            device.destroy_semaphore(s);
+        }
+        for s in submission_complete_semaphores {
+            device.destroy_semaphore(s);
+        }
+        for f in submission_complete_fences {
+            device.destroy_fence(f);
+        }
+        device.destroy_render_pass(render_pass);
+        device.free_memory(buffer_memory);
+        device.free_memory(image_memory);
+        device.free_memory(image_upload_memory);
+        device.destroy_graphics_pipeline(pipeline);
+        device.destroy_pipeline_layout(pipeline_layout);
+        for framebuffer in framebuffers {
+            device.destroy_framebuffer(framebuffer);
+        }
+        for (_, rtv) in frame_images {
+            device.destroy_image_view(rtv);
+        }
+
+        device.destroy_swapchain(swap_chain);
     }
 }
 
+#[cfg(not(any(
+    feature = "vulkan",
+    feature = "dx11",
+    feature = "dx12",
+    feature = "metal",
+    feature = "gl",
+    feature = "wgl"
+)))]
 fn main() {
-    let mut app = HelloTriangleApplication::initialize();
-    app.main_loop();
+    println!("You need to enable the native API feature (vulkan/metal/dx11/dx12/gl/wgl) in order to test the LL");
 }

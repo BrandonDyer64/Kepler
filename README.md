@@ -3,5 +3,5 @@
 ## Run
 
 ```
-cargo run --bin kepler
+cargo run --features vulkan
 ```
