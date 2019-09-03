@@ -3,5 +3,5 @@
 ## Run
 
 ```
-cargo run --features vulkan
+cargo run --features=vulkan
 ```

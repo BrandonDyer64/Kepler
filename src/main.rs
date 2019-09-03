@@ -53,7 +53,7 @@ use hal::{Device, Instance, PhysicalDevice, Surface, Swapchain};
 use std::io::Cursor;
 
 #[cfg_attr(rustfmt, rustfmt_skip)]
-const DIMS: Extent2D = Extent2D { width: 1024,height: 768 };
+const DIMS: Extent2D = Extent2D { width: 1280,height: 720 };
 
 const ENTRY_NAME: &str = "main";
 
@@ -66,13 +66,13 @@ struct Vertex {
 
 #[cfg_attr(rustfmt, rustfmt_skip)]
 const QUAD: [Vertex; 6] = [
-    Vertex { a_Pos: [ -0.5, 0.33 ], a_Uv: [0.0, 1.0] },
-    Vertex { a_Pos: [  0.5, 0.33 ], a_Uv: [1.0, 1.0] },
-    Vertex { a_Pos: [  0.5,-0.33 ], a_Uv: [1.0, 0.0] },
+    Vertex { a_Pos: [ -3.0, 3.0 ], a_Uv: [-1.0, 1.0] },
+    Vertex { a_Pos: [  3.0, 3.0 ], a_Uv: [1.0, 1.0] },
+    Vertex { a_Pos: [  3.0,-3.0 ], a_Uv: [1.0, -1.0] },
 
-    Vertex { a_Pos: [ -0.5, 0.33 ], a_Uv: [0.0, 1.0] },
-    Vertex { a_Pos: [  0.5,-0.33 ], a_Uv: [1.0, 0.0] },
-    Vertex { a_Pos: [ -0.5,-0.33 ], a_Uv: [0.0, 0.0] },
+    Vertex { a_Pos: [ -3.0, 3.0 ], a_Uv: [-1.0, 1.0] },
+    Vertex { a_Pos: [  3.0,-3.0 ], a_Uv: [1.0, -1.0] },
+    Vertex { a_Pos: [ -3.0,-3.0 ], a_Uv: [-1.0, -1.0] },
 ];
 
 const COLOR_RANGE: i::SubresourceRange = i::SubresourceRange {
@@ -105,7 +105,7 @@ fn main() {
             DIMS.width as _,
             DIMS.height as _,
         ))
-        .with_title("quad".to_string());
+        .with_title("Kepler Game".to_string());
     // instantiate backend
     #[cfg(not(feature = "gl"))]
     let (_window, _instance, mut adapters, mut surface) = {
@@ -552,7 +552,7 @@ fn main() {
         };
         let fs_module = {
             let spirv =
-                hal::read_spirv(Cursor::new(&include_bytes!("./data/quad.frag.spv")[..])).unwrap();
+                hal::read_spirv(Cursor::new(&include_bytes!("./data/frag.spv")[..])).unwrap();
             unsafe { device.create_shader_module(&spirv) }.unwrap()
         };
 

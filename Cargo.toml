@@ -18,8 +18,9 @@ unstable = []
 env_logger = "0.6"
 image = "0.21"
 log = "0.4"
-gfx-hal = { version = "0.3" }
-gfx-backend-empty = { version = "0.3" }
+gfx-hal = "0.3"
+gfx-backend-empty = "0.3"
+specs = "0.15.0"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 winit = "0.19"
