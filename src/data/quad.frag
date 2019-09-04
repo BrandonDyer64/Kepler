@@ -7,9 +7,25 @@ layout(location = 0) out vec4 target0;
 #define iTime 0.0
 
 const int MAX_MARCHING_STEPS = 256;
+const int MAX_REFLECTION_BOUNCES = 2;
+const int MAX_REFLECTION_STEPS = 32;
+const int MAX_DIFFUSE_BOUNCES = 3;
+const int MAX_DIFFUSE_STEPS = 16;
+const int MAX_SUBSURF_STEPS = 16;
 const float MIN_DIST = 0.0;
 const float MAX_DIST = 100.0;
 const float EPSILON = 0.0001;
+
+struct Surface {
+    float base_color;
+    float subsurface;
+    float subsurface_color;
+    float metalic;
+    float specular;
+    float roughness;
+    float ior;
+    float transmission;
+};
 
 vec3 reflectVector(vec3 incident, vec3 normal) {
     return incident - 2. * normal * dot(incident, normal);
@@ -19,7 +35,7 @@ float hash(float seed) {
     return fract(sin(seed)*43758.5453 );
 }
 
-vec3 cosineDirection( in float seed, in vec3 nor) {
+vec3 cosineDirection(in float seed, in vec3 nor) {
     float u = hash( 78.233 + seed);
     float v = hash( 10.873 + seed);
 
@@ -382,9 +398,14 @@ vec3 getPixel(vec2 pixel, int samp) {
 const float SAMPLES = 32.;
 
 void main() {
-    vec3 the_out = vec3(0);
+    vec3 color = vec3(0);
+    float mlaa_width = sqrt(samples);
     for (int i = 0; i < SAMPLES; i++) {
-        the_out += getPixel(gl_FragCoord.xy, i) / SAMPLES;
+        vec2 xy = vec2(
+            gl_FragCoord.x % mlaa_width,
+            gl_FragCoord.y / mlaa_width
+        );
+        color += getPixel(xy, i) / SAMPLES;
     }
-    target0 = vec4(the_out, 1.0);
+    target0 = vec4(color, 1.0);
 }
