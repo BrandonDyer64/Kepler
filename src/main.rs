@@ -31,6 +31,8 @@ pub fn wasm_main() {
     main();
 }
 
+use shaderc;
+
 use hal::{
     buffer, command, format as f,
     format::{AsFormat, ChannelType, Rgba8Srgb as ColorFormat, Swizzle},
@@ -46,10 +48,11 @@ use hal::{
 
 use std::{
     borrow::Borrow,
-    io::Cursor,
+    fs,
+    io::{Cursor, Read},
     iter,
     mem::{self, ManuallyDrop},
-    ptr,
+    ptr, thread, time,
 };
 
 #[cfg_attr(rustfmt, rustfmt_skip)]
@@ -66,13 +69,13 @@ struct Vertex {
 
 #[cfg_attr(rustfmt, rustfmt_skip)]
 const QUAD: [Vertex; 6] = [
-    Vertex { a_Pos: [ -3.0, 3.0 ], a_Uv: [-1.0, 1.0] },
-    Vertex { a_Pos: [  3.0, 3.0 ], a_Uv: [1.0, 1.0] },
-    Vertex { a_Pos: [  3.0,-3.0 ], a_Uv: [1.0, -1.0] },
+    Vertex { a_Pos: [ -3.0,  3.0 ], a_Uv: [ -1.0,  1.0 ] },
+    Vertex { a_Pos: [  3.0,  3.0 ], a_Uv: [  1.0,  1.0 ] },
+    Vertex { a_Pos: [  3.0, -3.0 ], a_Uv: [  1.0, -1.0 ] },
 
-    Vertex { a_Pos: [ -3.0, 3.0 ], a_Uv: [-1.0, 1.0] },
-    Vertex { a_Pos: [  3.0,-3.0 ], a_Uv: [1.0, -1.0] },
-    Vertex { a_Pos: [ -3.0,-3.0 ], a_Uv: [-1.0, -1.0] },
+    Vertex { a_Pos: [ -3.0,  3.0 ], a_Uv: [ -1.0,  1.0 ] },
+    Vertex { a_Pos: [  3.0, -3.0 ], a_Uv: [  1.0, -1.0 ] },
+    Vertex { a_Pos: [ -3.0, -3.0 ], a_Uv: [ -1.0, -1.0 ] },
 ];
 
 const COLOR_RANGE: i::SubresourceRange = i::SubresourceRange {
@@ -642,9 +645,21 @@ where
                 unsafe { device.create_shader_module(&spirv) }.unwrap()
             };
             let fs_module = {
-                let spirv =
-                    pso::read_spirv(Cursor::new(&include_bytes!("./data/frag.spv")[..])).unwrap();
-                unsafe { device.create_shader_module(&spirv) }.unwrap()
+                let source = fs::read_to_string("src/data/quad.frag").unwrap();
+                let source = &source[..];
+                let mut compiler = shaderc::Compiler::new().unwrap();
+                let mut options = shaderc::CompileOptions::new().unwrap();
+                options.add_macro_definition("EP", Some("main"));
+                let binary_result = compiler
+                    .compile_into_spirv(
+                        source,
+                        shaderc::ShaderKind::Fragment,
+                        "shader.glsl",
+                        "main",
+                        Some(&options),
+                    )
+                    .unwrap();
+                unsafe { device.create_shader_module(binary_result.as_binary()) }.unwrap()
             };
 
             let pipeline = {
@@ -785,6 +800,7 @@ where
     }
 
     fn render(&mut self) {
+        thread::sleep(time::Duration::from_millis(10));
         let surface_image = unsafe {
             match self.surface.acquire_image(!0) {
                 Ok((image, _)) => image,
@@ -839,12 +855,12 @@ where
             cmd_buffer.set_scissors(0, &[self.viewport.rect]);
             cmd_buffer.bind_graphics_pipeline(&self.pipeline);
             cmd_buffer.bind_vertex_buffers(0, iter::once((&*self.vertex_buffer, 0)));
-            cmd_buffer.bind_graphics_descriptor_sets(
-                &self.pipeline_layout,
-                0,
-                iter::once(&self.desc_set),
-                &[],
-            );
+            // cmd_buffer.bind_graphics_descriptor_sets(
+            //     &self.pipeline_layout,
+            //     0,
+            //     iter::once(&self.desc_set),
+            //     &[],
+            // );
 
             cmd_buffer.begin_render_pass(
                 &self.render_pass,

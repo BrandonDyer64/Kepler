@@ -21,6 +21,7 @@ unstable = []
 [dependencies]
 image = "0.21"
 log = "0.4"
+shaderc = "0.6"
 hal = { git = "https://github.com/gfx-rs/gfx", version = "0.3", package = "gfx-hal" }
 gfx-backend-empty = { git = "https://github.com/gfx-rs/gfx", version = "0.3" }
 

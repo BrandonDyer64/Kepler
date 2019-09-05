@@ -1,22 +1,22 @@
 #version 450
-#extension GL_ARB_separate_shader_objects : enable
+#extension GL_ARB_separate_shader_objects:enable
 
-layout(location = 0) in vec2 v_uv;
-layout(location = 0) out vec4 target0;
+layout(location=0)in vec2 v_uv;
+layout(location=0)out vec4 target0;
 
-#define iTime 2.0
+#define iTime 2.
 
-const int MAX_MARCHING_STEPS = 256;
-const int MAX_REFLECTION_BOUNCES = 2;
-const int MAX_REFLECTION_STEPS = 128;
-const int MAX_DIFFUSE_BOUNCES = 3;
-const int MAX_DIFFUSE_STEPS = 16;
-const int MAX_SUBSURF_STEPS = 16;
-const float MIN_DIST = 0.0;
-const float MAX_DIST = 100.0;
-const float EPSILON = 0.0001;
+const int MAX_MARCHING_STEPS=64;
+const int MAX_REFLECTION_BOUNCES=1;
+const int MAX_REFLECTION_STEPS=32;
+const int MAX_DIFFUSE_BOUNCES=1;
+const int MAX_DIFFUSE_STEPS=16;
+const int MAX_SUBSURF_STEPS=16;
+const float MIN_DIST=0.;
+const float MAX_DIST=100.;
+const float EPSILON=.0001;
 
-struct Surface {
+struct Surface{
     float base_color;
     float subsurface;
     float subsurface_color;
@@ -28,45 +28,44 @@ struct Surface {
     float emission;
 };
 
-float hash(float seed) {
-    return fract(sin(seed)*43758.5453 );
+float hash(float seed){
+    return fract(sin(seed)*43758.5453);
 }
 
-vec3 cosineDirection(in float seed, in vec3 nor) {
-    float u = hash( 78.233 + seed);
-    float v = hash( 10.873 + seed);
-
+vec3 cosineDirection(in float seed,in vec3 nor){
+    float u=hash(78.233+seed);
+    float v=hash(10.873+seed);
     
     // Method 1 and 2 first generate a frame of reference to use with an arbitrary
-    // distribution, cosine in this case. Method 3 (invented by fizzer) specializes 
-    // the whole math to the cosine distribution and simplfies the result to a more 
+    // distribution, cosine in this case. Method 3 (invented by fizzer) specializes
+    // the whole math to the cosine distribution and simplfies the result to a more
     // compact version that does not depend on a full frame of reference.
-
-    #if 0
-        // method 1 by http://orbit.dtu.dk/fedora/objects/orbit:113874/datastreams/file_75b66578-222e-4c7d-abdf-f7e255100209/content
-        vec3 tc = vec3( 1.0+nor.z-nor.xy*nor.xy, -nor.x*nor.y)/(1.0+nor.z);
-        vec3 uu = vec3( tc.x, tc.z, -nor.x );
-        vec3 vv = vec3( tc.z, tc.y, -nor.y );
-
-        float a = 6.2831853 * v;
-        return sqrt(u)*(cos(a)*uu + sin(a)*vv) + sqrt(1.0-u)*nor;
-    #endif
-	#if 1
-    	// method 2 by pixar:  http://jcgt.org/published/0006/01/01/paper.pdf
-    	float ks = (nor.z>=0.0)?1.0:-1.0;     //do not use sign(nor.z), it can produce 0.0
-        float ka = 1.0 / (1.0 + abs(nor.z));
-        float kb = -ks * nor.x * nor.y * ka;
-        vec3 uu = vec3(1.0 - nor.x * nor.x * ka, ks*kb, -ks*nor.x);
-        vec3 vv = vec3(kb, ks - nor.y * nor.y * ka * ks, -nor.y);
     
-        float a = 6.2831853 * v;
-        return sqrt(u)*(cos(a)*uu + sin(a)*vv) + sqrt(1.0-u)*nor;
+    #if 0
+    // method 1 by http://orbit.dtu.dk/fedora/objects/orbit:113874/datastreams/file_75b66578-222e-4c7d-abdf-f7e255100209/content
+    vec3 tc=vec3(1.+nor.z-nor.xy*nor.xy,-nor.x*nor.y)/(1.+nor.z);
+    vec3 uu=vec3(tc.x,tc.z,-nor.x);
+    vec3 vv=vec3(tc.z,tc.y,-nor.y);
+    
+    float a=6.2831853*v;
+    return sqrt(u)*(cos(a)*uu+sin(a)*vv)+sqrt(1.-u)*nor;
+    #endif
+    #if 1
+    // method 2 by pixar:  http://jcgt.org/published/0006/01/01/paper.pdf
+    float ks=(nor.z>=0.)?1.:-1.;//do not use sign(nor.z), it can produce 0.0
+    float ka=1./(1.+abs(nor.z));
+    float kb=-ks*nor.x*nor.y*ka;
+    vec3 uu=vec3(1.-nor.x*nor.x*ka,ks*kb,-ks*nor.x);
+    vec3 vv=vec3(kb,ks-nor.y*nor.y*ka*ks,-nor.y);
+    
+    float a=6.2831853*v;
+    return sqrt(u)*(cos(a)*uu+sin(a)*vv)+sqrt(1.-u)*nor;
     #endif
     #if 0
-    	// method 3 by fizzer: http://www.amietia.com/lambertnotangent.html
-        float a = 6.2831853 * v;
-        u = 2.0*u - 1.0;
-        return normalize( nor + vec3(sqrt(1.0-u*u) * vec2(cos(a), sin(a)), u) );
+    // method 3 by fizzer: http://www.amietia.com/lambertnotangent.html
+    float a=6.2831853*v;
+    u=2.*u-1.;
+    return normalize(nor+vec3(sqrt(1.-u*u)*vec2(cos(a),sin(a)),u));
     #endif
 }
 
@@ -169,7 +168,7 @@ float cylinderSDF(vec3 p, float h, float r) {
     // Assuming p is inside the cylinder, how far is it from the surface?
     // Result will be negative or zero.
     float insideDistance = min(max(inOutRadius, inOutHeight), 0.0);
-
+    
     // Assuming p is outside the cylinder, how far is it from the surface?
     // Result will be positive or zero.
     float outsideDistance = length(max(vec2(inOutRadius, inOutHeight), 0.0));
@@ -209,7 +208,7 @@ float sceneSDF(vec3 samplePoint) {
     
     
     float csgNut = differenceSDF(intersectSDF(cube, sphere),
-                         unionSDF(cylinder1, unionSDF(cylinder2, cylinder3)));
+    unionSDF(cylinder1, unionSDF(cylinder2, cylinder3)));
     
     return unionSDF(balls, csgNut);
 }
@@ -253,88 +252,88 @@ vec3 rayDirection(float fieldOfView, vec2 size, vec2 fragCoord) {
  */
 vec3 estimateNormal(vec3 p) {
     return normalize(vec3(
-        sceneSDF(vec3(p.x + EPSILON, p.y, p.z)) - sceneSDF(vec3(p.x - EPSILON, p.y, p.z)),
-        sceneSDF(vec3(p.x, p.y + EPSILON, p.z)) - sceneSDF(vec3(p.x, p.y - EPSILON, p.z)),
-        sceneSDF(vec3(p.x, p.y, p.z  + EPSILON)) - sceneSDF(vec3(p.x, p.y, p.z - EPSILON))
-    ));
-}
-
-/**
- * Lighting contribution of a single point light source via Phong illumination.
- * 
- * The vec3 returned is the RGB color of the light's contribution.
- *
- * k_a: Ambient color
- * k_d: Diffuse color
- * k_s: Specular color
- * alpha: Shininess coefficient
- * p: position of point being lit
- * eye: the position of the camera
- * lightPos: the position of the light
- * lightIntensity: color/intensity of the light
- *
- * See https://en.wikipedia.org/wiki/Phong_reflection_model#Description
- */
-vec3 phongContribForLight(
-    vec3 k_d, vec3 k_s,
-    float alpha, vec3 p, vec3 eye,
-    vec3 lightPos, vec3 lightIntensity
-) {
-    vec3 N = estimateNormal(p);
-    vec3 L = normalize(lightPos - p);
-    vec3 V = normalize(eye - p);
-    vec3 R = normalize(reflect(-L, N));
-    
-    float dotLN = dot(L, N);
-    float dotRV = dot(R, V);
-    
-    if (dotLN < 0.0) {
-        // Light not visible from this point on the surface
-        return vec3(0.0, 0.0, 0.0);
-    } 
-    
-    if (dotRV < 0.0) {
-        // Light reflection in opposite direction as viewer, apply only diffuse
-        // component
-        return lightIntensity * (k_d * dotLN);
+            sceneSDF(vec3(p.x + EPSILON, p.y, p.z)) - sceneSDF(vec3(p.x - EPSILON, p.y, p.z)),
+            sceneSDF(vec3(p.x, p.y + EPSILON, p.z)) - sceneSDF(vec3(p.x, p.y - EPSILON, p.z)),
+            sceneSDF(vec3(p.x, p.y, p.z  + EPSILON)) - sceneSDF(vec3(p.x, p.y, p.z - EPSILON))
+        ));
     }
-    return lightIntensity * (k_d * dotLN + k_s * pow(dotRV, alpha));
-}
-
-/**
- * Lighting via Phong illumination.
- * 
- * The vec3 returned is the RGB color of that point after lighting is applied.
- * k_a: Ambient color
- * k_d: Diffuse color
- * k_s: Specular color
- * alpha: Shininess coefficient
- * p: position of point being lit
- * eye: the position of the camera
- *
- * See https://en.wikipedia.org/wiki/Phong_reflection_model#Description
- */
-vec3 phongIllumination(vec3 k_a, vec3 k_d, vec3 k_s, float alpha, vec3 p, vec3 eye) {
-    const vec3 ambientLight = 0.5 * vec3(1.0, 1.0, 1.0);
-    vec3 color = ambientLight * k_a;
     
-    vec3 light1Pos = vec3(4.0 * sin(iTime),
-                          2.0,
-                          4.0 * cos(iTime));
-    vec3 light1Intensity = vec3(0.4, 0.4, 0.4);
+    /**
+    * Lighting contribution of a single point light source via Phong illumination.
+    *
+    * The vec3 returned is the RGB color of the light's contribution.
+    *
+    * k_a: Ambient color
+    * k_d: Diffuse color
+    * k_s: Specular color
+    * alpha: Shininess coefficient
+    * p: position of point being lit
+    * eye: the position of the camera
+    * lightPos: the position of the light
+    * lightIntensity: color/intensity of the light
+    *
+    * See https://en.wikipedia.org/wiki/Phong_reflection_model#Description
+    */
+    vec3 phongContribForLight(
+        vec3 k_d, vec3 k_s,
+        float alpha, vec3 p, vec3 eye,
+        vec3 lightPos, vec3 lightIntensity
+    ) {
+        vec3 N = estimateNormal(p);
+        vec3 L = normalize(lightPos - p);
+        vec3 V = normalize(eye - p);
+        vec3 R = normalize(reflect(-L, N));
+        
+        float dotLN = dot(L, N);
+        float dotRV = dot(R, V);
+        
+        if (dotLN < 0.0) {
+            // Light not visible from this point on the surface
+            return vec3(0.0, 0.0, 0.0);
+        }
+        
+        if (dotRV < 0.0) {
+            // Light reflection in opposite direction as viewer, apply only diffuse
+            // component
+            return lightIntensity * (k_d * dotLN);
+        }
+        return lightIntensity * (k_d * dotLN + k_s * pow(dotRV, alpha));
+    }
     
-    color += phongContribForLight(k_d, k_s, alpha, p, eye,
-                                  light1Pos,
-                                  light1Intensity);
-    
-    vec3 light2Pos = vec3(2.0 * sin(0.37 * iTime),
-                          2.0 * cos(0.37 * iTime),
-                          2.0);
+    /**
+    * Lighting via Phong illumination.
+    *
+    * The vec3 returned is the RGB color of that point after lighting is applied.
+    * k_a: Ambient color
+    * k_d: Diffuse color
+    * k_s: Specular color
+    * alpha: Shininess coefficient
+    * p: position of point being lit
+    * eye: the position of the camera
+    *
+    * See https://en.wikipedia.org/wiki/Phong_reflection_model#Description
+    */
+    vec3 phongIllumination(vec3 k_a, vec3 k_d, vec3 k_s, float alpha, vec3 p, vec3 eye) {
+        const vec3 ambientLight = 0.5 * vec3(1.0, 1.0, 1.0);
+        vec3 color = ambientLight * k_a;
+        
+        vec3 light1Pos = vec3(4.0 * sin(iTime),
+        2.0,
+        4.0 * cos(iTime));
+        vec3 light1Intensity = vec3(0.4, 0.4, 0.4);
+        
+        color += phongContribForLight(k_d, k_s, alpha, p, eye,
+            light1Pos,
+        light1Intensity);
+        
+        vec3 light2Pos = vec3(2.0 * sin(0.37 * iTime),
+        2.0 * cos(0.37 * iTime),
+    2.0);
     vec3 light2Intensity = vec3(0.4, 0.4, 0.4);
     
     color += phongContribForLight(k_d, k_s, alpha, p, eye,
-                                  light2Pos,
-                                  light2Intensity);    
+        light2Pos,
+    light2Intensity);
     return color;
 }
 
@@ -345,65 +344,65 @@ vec3 phongIllumination(vec3 k_a, vec3 k_d, vec3 k_s, float alpha, vec3 p, vec3 e
  * This assumes that the center of the camera is aligned with the negative z axis in
  * view space when calculating the ray marching direction. See rayDirection.
  */
-mat3 viewMatrix(vec3 eye, vec3 center, vec3 up) {
+mat3 viewMatrix(vec3 eye,vec3 center,vec3 up){
     // Based on gluLookAt man page
-    vec3 f = normalize(center - eye);
-    vec3 s = normalize(cross(f, up));
-    vec3 u = cross(s, f);
-    return mat3(s, u, -f);
+    vec3 f=normalize(center-eye);
+    vec3 s=normalize(cross(f,up));
+    vec3 u=cross(s,f);
+    return mat3(s,u,-f);
 }
 
-const vec2 iResolution = vec2(1280, 720);
+const vec2 iResolution=vec2(1280,720);
 
-vec3 getPixel(vec2 pixel, int samp) {
-    vec3 viewDir = rayDirection(45.0, iResolution.xy, vec2(pixel.x, iResolution.y - pixel.y));
-    vec3 eye = vec3(8.0, 5.0 * sin(0.2 * iTime), 7.0);
+vec3 getPixel(vec2 pixel,int samp){
+    vec3 viewDir=rayDirection(45.,iResolution.xy,vec2(pixel.x,iResolution.y-pixel.y));
+    vec3 eye=vec3(8.,5.*sin(.2*iTime),7.);
     
-    mat3 viewToWorld = viewMatrix(eye, vec3(0.0, 0.0, 0.0), vec3(0.0, 1.0, 0.0));
+    mat3 viewToWorld=viewMatrix(eye,vec3(0.,0.,0.),vec3(0.,1.,0.));
     
-    vec3 worldDir = viewToWorld * viewDir;
+    vec3 worldDir=viewToWorld*viewDir;
     
-    float dist = shortestDistanceToSurface(eye, worldDir, MIN_DIST, MAX_DIST, MAX_MARCHING_STEPS);
+    float dist=shortestDistanceToSurface(eye,worldDir,MIN_DIST,MAX_DIST,MAX_MARCHING_STEPS);
     
-    if (dist > MAX_DIST - EPSILON) {
+    if(dist>MAX_DIST-EPSILON){
         // Didn't hit anything
-		return vec3(0);
+        return vec3(0);
     }
     
     // The closest point on the surface to the eyepoint along the view ray
-    vec3 p = eye + dist * worldDir;
+    vec3 p=eye+dist*worldDir;
     
     // Use the surface normal as the ambient color of the material
-    vec3 normal = estimateNormal(p);
-    vec3 K_a = (normal + vec3(1.0)) / 2.0;
-    vec3 K_d = K_a;
-    vec3 K_s = vec3(1.0, 1.0, 1.0);
-    float shininess = 10.0;
+    vec3 normal=estimateNormal(p);
+    vec3 K_a=(normal+vec3(1.))/2.;
+    vec3 K_d=K_a;
+    vec3 K_s=vec3(1.,1.,1.);
+    float shininess=10.;
     
     // vec3 color = phongIllumination(K_a, K_d, K_s, shininess, p, eye);
-    vec3 color = vec3(0.5);
-
-    dist = shortestDistanceToSurface(p + normal / 1000., mix(reflect(worldDir, normal),cosineDirection( gl_FragCoord.x * gl_FragCoord.y + float(samp), normal),0.1), MIN_DIST, MAX_DIST, MAX_REFLECTION_STEPS);
+    vec3 color=vec3(.5);
     
-    if (dist > MAX_DIST - EPSILON) {
+    dist=shortestDistanceToSurface(p+normal/1000.,mix(reflect(worldDir,normal),cosineDirection(gl_FragCoord.x*gl_FragCoord.y+float(samp),normal),.1),MIN_DIST,MAX_DIST,MAX_REFLECTION_STEPS);
+    
+    if(dist>MAX_DIST-EPSILON){
         // Didn't hit anything
         return color;
     }
     
-    return vec3(0.1);
+    return vec3(.1);
 }
 
-const float SAMPLES = 16.;
+const float SAMPLES=1.;
 
-void main() {
-    vec3 color = vec3(0);
-    float mlaa_width = sqrt(SAMPLES);
-    for (int i = 0; i < SAMPLES; i++) {
-        vec2 xy = vec2(
-            gl_FragCoord.x + mod(float(i), mlaa_width) / mlaa_width,
-            gl_FragCoord.y + float(i) / SAMPLES
+void main(){
+    vec3 color=vec3(0);
+    float mlaa_width=sqrt(SAMPLES);
+    for(int i=0;i<SAMPLES;i++){
+        vec2 xy=vec2(
+            gl_FragCoord.x+mod(float(i),mlaa_width)/mlaa_width,
+            gl_FragCoord.y+float(i)/SAMPLES
         );
-        color += getPixel(xy, i) / SAMPLES;
+        color+=getPixel(xy,i)/SAMPLES;
     }
-    target0 = vec4(color, 1.0);
+    target0=vec4(color,1.);
 }
