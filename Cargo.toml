@@ -2,6 +2,10 @@
 name = "kepler"
 version = "0.1.0"
 authors = ["Brandon Dyer <BrandonDyer64@gmail.com>"]
+description = "Backend for Kepler Engine, a ray marching, path traced game engine"
+license = "MIT"
+homepage = "https://keplerengine.com"
+repository = "https://github.com/BrandonDyer64/Kepler"
 edition = "2018"
 
 [features]

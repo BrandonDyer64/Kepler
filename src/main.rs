@@ -32,13 +32,9 @@ pub fn wasm_main() {
 }
 
 use hal::{
-    buffer,
-    command,
-    format as f,
+    buffer, command, format as f,
     format::{AsFormat, ChannelType, Rgba8Srgb as ColorFormat, Swizzle},
-    image as i,
-    memory as m,
-    pass,
+    image as i, memory as m, pass,
     pass::Subpass,
     pool,
     prelude::*,
@@ -81,8 +77,8 @@ const QUAD: [Vertex; 6] = [
 
 const COLOR_RANGE: i::SubresourceRange = i::SubresourceRange {
     aspects: f::Aspects::COLOR,
-    levels: 0 .. 1,
-    layers: 0 .. 1,
+    levels: 0..1,
+    layers: 0..1,
 };
 
 #[cfg(any(
@@ -117,8 +113,8 @@ fn main() {
     #[cfg(not(feature = "gl"))]
     let (_window, _instance, mut adapters, surface) = {
         let window = wb.build(&event_loop).unwrap();
-        let instance = back::Instance::create("gfx-rs quad", 1)
-            .expect("Failed to create an instance!");
+        let instance =
+            back::Instance::create("gfx-rs quad", 1).expect("Failed to create an instance!");
         let surface = instance.create_surface(&window);
         let adapters = instance.enumerate_adapters();
         (window, instance, adapters, surface)
@@ -340,9 +336,13 @@ where
 
         // TODO: check transitions: read/write mapping and vertex buffer read
         let buffer_memory = unsafe {
-            let memory = device.allocate_memory(upload_type, buffer_req.size).unwrap();
-            device.bind_buffer_memory(&memory, 0, &mut vertex_buffer).unwrap();
-            let mapping = device.map_memory(&memory, 0 .. buffer_len).unwrap();
+            let memory = device
+                .allocate_memory(upload_type, buffer_req.size)
+                .unwrap();
+            device
+                .bind_buffer_memory(&memory, 0, &mut vertex_buffer)
+                .unwrap();
+            let mapping = device.map_memory(&memory, 0..buffer_len).unwrap();
             ptr::copy_nonoverlapping(QUAD.as_ptr() as *const u8, mapping, buffer_len as usize);
             device.unmap_memory(&memory);
             ManuallyDrop::new(memory)
@@ -368,12 +368,16 @@ where
 
         // copy image data into staging buffer
         let image_upload_memory = unsafe {
-            let memory = device.allocate_memory(upload_type, image_mem_reqs.size).unwrap();
-            device.bind_buffer_memory(&memory, 0, &mut image_upload_buffer).unwrap();
-            let mapping = device.map_memory(&memory, 0 .. upload_size).unwrap();
-            for y in 0 .. height as usize {
+            let memory = device
+                .allocate_memory(upload_type, image_mem_reqs.size)
+                .unwrap();
+            device
+                .bind_buffer_memory(&memory, 0, &mut image_upload_buffer)
+                .unwrap();
+            let mapping = device.map_memory(&memory, 0..upload_size).unwrap();
+            for y in 0..height as usize {
                 let row = &(*img)[y * (width as usize) * image_stride
-                    .. (y + 1) * (width as usize) * image_stride];
+                    ..(y + 1) * (width as usize) * image_stride];
                 ptr::copy_nonoverlapping(
                     row.as_ptr(),
                     mapping.offset(y as isize * row_pitch as isize),
@@ -461,14 +465,14 @@ where
 
             let image_barrier = m::Barrier::Image {
                 states: (i::Access::empty(), i::Layout::Undefined)
-                    .. (i::Access::TRANSFER_WRITE, i::Layout::TransferDstOptimal),
+                    ..(i::Access::TRANSFER_WRITE, i::Layout::TransferDstOptimal),
                 target: &*image_logo,
                 families: None,
                 range: COLOR_RANGE.clone(),
             };
 
             cmd_buffer.pipeline_barrier(
-                PipelineStage::TOP_OF_PIPE .. PipelineStage::TRANSFER,
+                PipelineStage::TOP_OF_PIPE..PipelineStage::TRANSFER,
                 m::Dependencies::empty(),
                 &[image_barrier],
             );
@@ -484,7 +488,7 @@ where
                     image_layers: i::SubresourceLayers {
                         aspects: f::Aspects::COLOR,
                         level: 0,
-                        layers: 0 .. 1,
+                        layers: 0..1,
                     },
                     image_offset: i::Offset { x: 0, y: 0, z: 0 },
                     image_extent: i::Extent {
@@ -497,13 +501,13 @@ where
 
             let image_barrier = m::Barrier::Image {
                 states: (i::Access::TRANSFER_WRITE, i::Layout::TransferDstOptimal)
-                    .. (i::Access::SHADER_READ, i::Layout::ShaderReadOnlyOptimal),
+                    ..(i::Access::SHADER_READ, i::Layout::ShaderReadOnlyOptimal),
                 target: &*image_logo,
                 families: None,
                 range: COLOR_RANGE.clone(),
             };
             cmd_buffer.pipeline_barrier(
-                PipelineStage::TRANSFER .. PipelineStage::FRAGMENT_SHADER,
+                PipelineStage::TRANSFER..PipelineStage::FRAGMENT_SHADER,
                 m::Dependencies::empty(),
                 &[image_barrier],
             );
@@ -550,7 +554,7 @@ where
                     pass::AttachmentStoreOp::Store,
                 ),
                 stencil_ops: pass::AttachmentOps::DONT_CARE,
-                layouts: i::Layout::Undefined .. i::Layout::Present,
+                layouts: i::Layout::Undefined..i::Layout::Present,
             };
 
             let subpass = pass::SubpassDesc {
@@ -562,11 +566,11 @@ where
             };
 
             let dependency = pass::SubpassDependency {
-                passes: pass::SubpassRef::External .. pass::SubpassRef::Pass(0),
+                passes: pass::SubpassRef::External..pass::SubpassRef::Pass(0),
                 stages: PipelineStage::COLOR_ATTACHMENT_OUTPUT
-                    .. PipelineStage::COLOR_ATTACHMENT_OUTPUT,
+                    ..PipelineStage::COLOR_ATTACHMENT_OUTPUT,
                 accesses: i::Access::empty()
-                    .. (i::Access::COLOR_ATTACHMENT_READ | i::Access::COLOR_ATTACHMENT_WRITE),
+                    ..(i::Access::COLOR_ATTACHMENT_READ | i::Access::COLOR_ATTACHMENT_WRITE),
             };
 
             ManuallyDrop::new(
@@ -595,7 +599,7 @@ where
         let mut cmd_buffers = Vec::with_capacity(frames_in_flight);
 
         cmd_pools.push(command_pool);
-        for _ in 1 .. frames_in_flight {
+        for _ in 1..frames_in_flight {
             unsafe {
                 cmd_pools.push(
                     device
@@ -608,7 +612,7 @@ where
             }
         }
 
-        for i in 0 .. frames_in_flight {
+        for i in 0..frames_in_flight {
             submission_complete_semaphores.push(
                 device
                     .create_semaphore()
@@ -626,7 +630,7 @@ where
             unsafe {
                 device.create_pipeline_layout(
                     iter::once(&*set_layout),
-                    &[(pso::ShaderStageFlags::VERTEX, 0 .. 8)],
+                    &[(pso::ShaderStageFlags::VERTEX, 0..8)],
                 )
             }
             .expect("Can't create pipeline layout"),
@@ -639,8 +643,7 @@ where
             };
             let fs_module = {
                 let spirv =
-                    pso::read_spirv(Cursor::new(&include_bytes!("./data/frag.spv")[..]))
-                        .unwrap();
+                    pso::read_spirv(Cursor::new(&include_bytes!("./data/frag.spv")[..])).unwrap();
                 unsafe { device.create_shader_module(&spirv) }.unwrap()
             };
 
@@ -726,7 +729,7 @@ where
                 w: extent.width as _,
                 h: extent.height as _,
             },
-            depth: 0.0 .. 1.0,
+            depth: 0.0..1.0,
         };
 
         Renderer {
@@ -854,7 +857,7 @@ where
                 }],
                 command::SubpassContents::Inline,
             );
-            cmd_buffer.draw(0 .. 6, 0 .. 1);
+            cmd_buffer.draw(0..6, 0..1);
             cmd_buffer.end_render_pass();
             cmd_buffer.finish();
 
