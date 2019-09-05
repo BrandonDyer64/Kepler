@@ -6,12 +6,12 @@ layout(location=0)out vec4 target0;
 
 #define iTime 2.
 
-const int MAX_MARCHING_STEPS=64;
+const int MAX_MARCHING_STEPS=128;
 const int MAX_REFLECTION_BOUNCES=1;
-const int MAX_REFLECTION_STEPS=32;
+const int MAX_REFLECTION_STEPS=64;
 const int MAX_DIFFUSE_BOUNCES=1;
-const int MAX_DIFFUSE_STEPS=16;
-const int MAX_SUBSURF_STEPS=16;
+const int MAX_DIFFUSE_STEPS=8;
+const int MAX_SUBSURF_STEPS=4;
 const float MIN_DIST=0.;
 const float MAX_DIST=100.;
 const float EPSILON=.0001;
@@ -183,9 +183,10 @@ float cylinderSDF(vec3 p, float h, float r) {
  * Sign indicates whether the point is inside or outside the surface,
  * negative indicating inside.
  */
-float sceneSDF(vec3 samplePoint) {    
+float sceneSDF(vec3 samplePoint) {
     // Slowly spin the whole scene
     samplePoint = rotateY(iTime / 2.0) * samplePoint;
+    samplePoint = mod(samplePoint+5., 10.)-5.;
     
     float cylinderRadius = 0.4 + (1.0 - 0.4) * (1.0 + sin(1.7 * iTime)) / 2.0;
     float cylinder1 = cylinderSDF(samplePoint, 2.0, cylinderRadius);
@@ -392,7 +393,7 @@ vec3 getPixel(vec2 pixel,int samp){
     return vec3(.1);
 }
 
-const float SAMPLES=1.;
+const float SAMPLES=2.;
 
 void main(){
     vec3 color=vec3(0);
