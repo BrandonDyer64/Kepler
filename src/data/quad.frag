@@ -4,11 +4,11 @@
 layout(location = 0) in vec2 v_uv;
 layout(location = 0) out vec4 target0;
 
-#define iTime 0.0
+#define iTime 2.0
 
 const int MAX_MARCHING_STEPS = 256;
 const int MAX_REFLECTION_BOUNCES = 2;
-const int MAX_REFLECTION_STEPS = 32;
+const int MAX_REFLECTION_STEPS = 128;
 const int MAX_DIFFUSE_BOUNCES = 3;
 const int MAX_DIFFUSE_STEPS = 16;
 const int MAX_SUBSURF_STEPS = 16;
@@ -25,11 +25,8 @@ struct Surface {
     float roughness;
     float ior;
     float transmission;
+    float emission;
 };
-
-vec3 reflectVector(vec3 incident, vec3 normal) {
-    return incident - 2. * normal * dot(incident, normal);
-}
 
 float hash(float seed) {
     return fract(sin(seed)*43758.5453 );
@@ -227,9 +224,9 @@ float sceneSDF(vec3 samplePoint) {
  * start: the starting distance away from the eye
  * end: the max distance away from the ey to march before giving up
  */
-float shortestDistanceToSurface(vec3 eye, vec3 marchingDirection, float start, float end) {
+float shortestDistanceToSurface(vec3 eye, vec3 marchingDirection, float start, float end, const int steps) {
     float depth = start;
-    for (int i = 0; i < MAX_MARCHING_STEPS; i++) {
+    for (int i = 0; i < steps; i++) {
         vec3 pos = eye + depth * marchingDirection;
         float dist = sceneSDF(pos);
         depth += dist;
@@ -366,7 +363,7 @@ vec3 getPixel(vec2 pixel, int samp) {
     
     vec3 worldDir = viewToWorld * viewDir;
     
-    float dist = shortestDistanceToSurface(eye, worldDir, MIN_DIST, MAX_DIST);
+    float dist = shortestDistanceToSurface(eye, worldDir, MIN_DIST, MAX_DIST, MAX_MARCHING_STEPS);
     
     if (dist > MAX_DIST - EPSILON) {
         // Didn't hit anything
@@ -383,9 +380,10 @@ vec3 getPixel(vec2 pixel, int samp) {
     vec3 K_s = vec3(1.0, 1.0, 1.0);
     float shininess = 10.0;
     
-    vec3 color = phongIllumination(K_a, K_d, K_s, shininess, p, eye);
+    // vec3 color = phongIllumination(K_a, K_d, K_s, shininess, p, eye);
+    vec3 color = vec3(0.5);
 
-    dist = shortestDistanceToSurface(p + normal / 1000., cosineDirection(21.01 * gl_FragCoord.x * 28.39 * gl_FragCoord.y + float(samp) * 33.67, normal), MIN_DIST, MAX_DIST);
+    dist = shortestDistanceToSurface(p + normal / 1000., mix(reflect(worldDir, normal),cosineDirection( gl_FragCoord.x * gl_FragCoord.y + float(samp), normal),0.1), MIN_DIST, MAX_DIST, MAX_REFLECTION_STEPS);
     
     if (dist > MAX_DIST - EPSILON) {
         // Didn't hit anything
@@ -395,15 +393,15 @@ vec3 getPixel(vec2 pixel, int samp) {
     return vec3(0.1);
 }
 
-const float SAMPLES = 32.;
+const float SAMPLES = 4.;
 
 void main() {
     vec3 color = vec3(0);
-    float mlaa_width = sqrt(samples);
+    float mlaa_width = sqrt(SAMPLES);
     for (int i = 0; i < SAMPLES; i++) {
         vec2 xy = vec2(
-            gl_FragCoord.x % mlaa_width,
-            gl_FragCoord.y / mlaa_width
+            gl_FragCoord.x + mod(float(i), mlaa_width) / mlaa_width,
+            gl_FragCoord.y + float(i) / SAMPLES
         );
         color += getPixel(xy, i) / SAMPLES;
     }
