@@ -393,7 +393,7 @@ vec3 getPixel(vec2 pixel, int samp) {
     return vec3(0.1);
 }
 
-const float SAMPLES = 4.;
+const float SAMPLES = 16.;
 
 void main() {
     vec3 color = vec3(0);
