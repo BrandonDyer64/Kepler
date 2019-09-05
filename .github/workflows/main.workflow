@@ -1,9 +1,9 @@
-workflow "Quickstart" {
+workflow "Main" {
   on = "push"
-  resolves = ["Quickstart"]
+  resolves = ["Build"]
 }
 
-action "Quickstart" {
+action "Build" {
   uses = "icepuma/rust-action@master"
   args = "cargo fmt -- --check && cargo clippy -- -Dwarnings && cargo test"
 }
