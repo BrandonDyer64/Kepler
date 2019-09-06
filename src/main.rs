@@ -362,7 +362,7 @@ where
         let row_alignment_mask = limits.optimal_buffer_copy_pitch_alignment as u32 - 1;
         let image_stride = 4usize;
         let row_pitch = (width * image_stride as u32 + row_alignment_mask) & !row_alignment_mask;
-        let upload_size = (height * row_pitch) as u64;
+        let upload_size = u64::from(height * row_pitch);
 
         let mut image_upload_buffer = ManuallyDrop::new(
             unsafe { device.create_buffer(upload_size, buffer::Usage::TRANSFER_SRC) }.unwrap(),
@@ -517,8 +517,7 @@ where
 
             cmd_buffer.finish();
 
-            queue_group.queues[0]
-                .submit_without_semaphores(Some(&cmd_buffer), Some(&mut copy_fence));
+            queue_group.queues[0].submit_without_semaphores(Some(&cmd_buffer), Some(&copy_fence));
 
             device
                 .wait_for_fence(&copy_fence, !0)
@@ -529,13 +528,13 @@ where
             device.destroy_fence(copy_fence);
         }
 
-        let (caps, formats, _present_modes) = surface.compatibility(&mut adapter.physical_device);
+        let (caps, formats, _present_modes) = surface.compatibility(&adapter.physical_device);
         println!("formats: {:?}", formats);
         let format = formats.map_or(f::Format::Rgba8Srgb, |formats| {
             formats
                 .iter()
                 .find(|format| format.base_format().1 == ChannelType::Srgb)
-                .map(|format| *format)
+                .copied()
                 .unwrap_or(formats[0])
         });
 
@@ -615,7 +614,7 @@ where
             }
         }
 
-        for i in 0..frames_in_flight {
+        for cmd_pool in cmd_pools.iter_mut().take(frames_in_flight) {
             submission_complete_semaphores.push(
                 device
                     .create_semaphore()
@@ -626,7 +625,7 @@ where
                     .create_fence(true)
                     .expect("Could not create semaphore"),
             );
-            cmd_buffers.push(cmd_pools[i].allocate_one(command::Level::Primary));
+            cmd_buffers.push(cmd_pool.allocate_one(command::Level::Primary));
         }
 
         let pipeline_layout = ManuallyDrop::new(
@@ -778,9 +777,8 @@ where
     }
 
     fn recreate_swapchain(&mut self) {
-        let (caps, formats, _present_modes) = self
-            .surface
-            .compatibility(&mut self.adapter.physical_device);
+        let (caps, formats, _present_modes) =
+            self.surface.compatibility(&self.adapter.physical_device);
         // Verify that previous format still exists so we may reuse it.
         assert!(formats.iter().any(|fs| fs.contains(&self.format)));
 
