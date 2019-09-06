@@ -1,6 +1,12 @@
 name: Rust
 
-on: [push]
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
 
 jobs:
   build:
@@ -8,11 +14,16 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+        os: [ubuntu-latest]
 
     steps:
     - uses: actions/checkout@v1
-    - name: Build
-      run: cargo build --verbose
+    - name: Rust Action
+      uses: icepuma/rust-action@1.37.0
+      args: "cd integration-test && cargo fmt -- --check && cargo clippy -- -Dwarnings && cargo test"
+    - name: Formatting
+      run: cargo fmt -- --check
+    - name: Clippy
+      run: cargo clippy -- -Dwarnings
     - name: Test
-      run: cargo test --verbose
+      run: cargo tust
