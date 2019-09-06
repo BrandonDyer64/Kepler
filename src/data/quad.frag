@@ -4,12 +4,12 @@
 layout(location=0)in vec2 v_uv;
 layout(location=0)out vec4 target0;
 
-#define iTime 2.
+#define iTime 2.1
 
 const int MAX_MARCHING_STEPS=128;
 const int MAX_REFLECTION_BOUNCES=1;
 const int MAX_REFLECTION_STEPS=64;
-const int MAX_DIFFUSE_BOUNCES=1;
+const int MAX_DIFFUSE_BOUNCES=3;
 const int MAX_DIFFUSE_STEPS=8;
 const int MAX_SUBSURF_STEPS=4;
 const float MIN_DIST=0.;
@@ -185,7 +185,8 @@ float cylinderSDF(vec3 p, float h, float r) {
  */
 float sceneSDF(vec3 samplePoint) {
     // Slowly spin the whole scene
-    samplePoint = rotateY(iTime / 2.0) * samplePoint;
+    float num = iTime / 2.0;
+    samplePoint = rotateY(num) * samplePoint;
     samplePoint = mod(samplePoint+5., 10.)-5.;
     
     float cylinderRadius = 0.4 + (1.0 - 0.4) * (1.0 + sin(1.7 * iTime)) / 2.0;
@@ -223,6 +224,7 @@ float sceneSDF(vec3 samplePoint) {
  * marchingDirection: the normalized direction to march in
  * start: the starting distance away from the eye
  * end: the max distance away from the ey to march before giving up
+ * steps: the number of steps
  */
 float shortestDistanceToSurface(vec3 eye, vec3 marchingDirection, float start, float end, const int steps) {
     float depth = start;
@@ -257,86 +259,7 @@ vec3 estimateNormal(vec3 p) {
             sceneSDF(vec3(p.x, p.y + EPSILON, p.z)) - sceneSDF(vec3(p.x, p.y - EPSILON, p.z)),
             sceneSDF(vec3(p.x, p.y, p.z  + EPSILON)) - sceneSDF(vec3(p.x, p.y, p.z - EPSILON))
         ));
-    }
-    
-    /**
-    * Lighting contribution of a single point light source via Phong illumination.
-    *
-    * The vec3 returned is the RGB color of the light's contribution.
-    *
-    * k_a: Ambient color
-    * k_d: Diffuse color
-    * k_s: Specular color
-    * alpha: Shininess coefficient
-    * p: position of point being lit
-    * eye: the position of the camera
-    * lightPos: the position of the light
-    * lightIntensity: color/intensity of the light
-    *
-    * See https://en.wikipedia.org/wiki/Phong_reflection_model#Description
-    */
-    vec3 phongContribForLight(
-        vec3 k_d, vec3 k_s,
-        float alpha, vec3 p, vec3 eye,
-        vec3 lightPos, vec3 lightIntensity
-    ) {
-        vec3 N = estimateNormal(p);
-        vec3 L = normalize(lightPos - p);
-        vec3 V = normalize(eye - p);
-        vec3 R = normalize(reflect(-L, N));
-        
-        float dotLN = dot(L, N);
-        float dotRV = dot(R, V);
-        
-        if (dotLN < 0.0) {
-            // Light not visible from this point on the surface
-            return vec3(0.0, 0.0, 0.0);
-        }
-        
-        if (dotRV < 0.0) {
-            // Light reflection in opposite direction as viewer, apply only diffuse
-            // component
-            return lightIntensity * (k_d * dotLN);
-        }
-        return lightIntensity * (k_d * dotLN + k_s * pow(dotRV, alpha));
-    }
-    
-    /**
-    * Lighting via Phong illumination.
-    *
-    * The vec3 returned is the RGB color of that point after lighting is applied.
-    * k_a: Ambient color
-    * k_d: Diffuse color
-    * k_s: Specular color
-    * alpha: Shininess coefficient
-    * p: position of point being lit
-    * eye: the position of the camera
-    *
-    * See https://en.wikipedia.org/wiki/Phong_reflection_model#Description
-    */
-    vec3 phongIllumination(vec3 k_a, vec3 k_d, vec3 k_s, float alpha, vec3 p, vec3 eye) {
-        const vec3 ambientLight = 0.5 * vec3(1.0, 1.0, 1.0);
-        vec3 color = ambientLight * k_a;
-        
-        vec3 light1Pos = vec3(4.0 * sin(iTime),
-        2.0,
-        4.0 * cos(iTime));
-        vec3 light1Intensity = vec3(0.4, 0.4, 0.4);
-        
-        color += phongContribForLight(k_d, k_s, alpha, p, eye,
-            light1Pos,
-        light1Intensity);
-        
-        vec3 light2Pos = vec3(2.0 * sin(0.37 * iTime),
-        2.0 * cos(0.37 * iTime),
-    2.0);
-    vec3 light2Intensity = vec3(0.4, 0.4, 0.4);
-    
-    color += phongContribForLight(k_d, k_s, alpha, p, eye,
-        light2Pos,
-    light2Intensity);
-    return color;
-}
+}   
 
 /**
  * Return a transform matrix that will transform a ray from view space
@@ -375,23 +298,58 @@ vec3 getPixel(vec2 pixel,int samp){
     
     // Use the surface normal as the ambient color of the material
     vec3 normal=estimateNormal(p);
-    vec3 K_a=(normal+vec3(1.))/2.;
-    vec3 K_d=K_a;
-    vec3 K_s=vec3(1.,1.,1.);
-    float shininess=10.;
     
-    // vec3 color = phongIllumination(K_a, K_d, K_s, shininess, p, eye);
+
     vec3 color=vec3(.5);
     
-    dist=shortestDistanceToSurface(p+normal/1000.,mix(reflect(worldDir,normal),cosineDirection(gl_FragCoord.x*gl_FragCoord.y+float(samp),normal),.1),MIN_DIST,MAX_DIST,MAX_REFLECTION_STEPS);
+    dist=shortestDistanceToSurface(
+        p+normal/1000.,
+        mix(
+            reflect(worldDir, normal),
+            cosineDirection(gl_FragCoord.x * gl_FragCoord.y + float(samp), normal),
+            .1
+        ),
+        MIN_DIST,MAX_DIST,MAX_REFLECTION_STEPS
+    );
     
     if(dist>MAX_DIST-EPSILON){
         // Didn't hit anything
         return color;
     }
     
-    return vec3(.1);
+return vec3(.1);
 }
+
+
+vec3 do_diffuse_lighting(vec3 eye, vec3 normal, vec3 point, vec3 color, float samp){
+    int bounces;
+    for (int i = 0; i < MAX_DIFFUSE_BOUNCES; i++){
+        float dist = shortestDistanceToSurface(
+            eye,
+            cosineDirection(gl_FragCoord.x * gl_FragCoord.y + float(samp), normal),
+            MIN_DIST,
+            MAX_DIST,
+            MAX_DIFFUSE_STEPS
+        );
+        if(dist > MAX_DIST - EPSILON)
+            //Didn't hit anything
+            return color;
+        bounces++;
+    }
+    //Replace with color retrieved from surface.
+    switch(bounces) {
+        case 1:
+            return (color * vec3(1.0, 0.8, 0.8));
+        case 2:
+            return (color * vec3(1.0, 0.5, 0.5));
+        case 3:
+            return (color * vec3(1.0, 0.0, 0.0));
+        case 4:
+            return (vec3(0.0, 1.0, 0.0));
+    }
+}
+
+
 
 const float SAMPLES=2.;
 
