@@ -1,0 +1,5 @@
+[hooks]
+pre-commit = "cargo fmt && cargo test"
+
+[logging]
+verbose = true
