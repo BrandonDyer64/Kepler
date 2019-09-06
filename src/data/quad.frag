@@ -4,19 +4,18 @@
 layout(location=0)in vec2 v_uv;
 layout(location=0)out vec4 target0;
 
-#define iTime 2.1
+#define iTime 2.
 
-const int MAX_MARCHING_STEPS=128;
+const int MAX_MARCHING_STEPS=512;
 const int MAX_REFLECTION_BOUNCES=1;
-const int MAX_REFLECTION_STEPS=64;
-const int MAX_DIFFUSE_BOUNCES=3;
+const int MAX_REFLECTION_STEPS=128;
+const int MAX_DIFFUSE_BOUNCES=1;
 const int MAX_DIFFUSE_STEPS=8;
 const int MAX_SUBSURF_STEPS=4;
 const float MIN_DIST=0.;
-const float MAX_DIST=100.;
 const float EPSILON=.0001;
 
-struct Surface{
+struct Surface {
     float base_color;
     float subsurface;
     float subsurface_color;
@@ -28,18 +27,13 @@ struct Surface{
     float emission;
 };
 
-float hash(float seed){
+float hash(float seed) {
     return fract(sin(seed)*43758.5453);
 }
 
-vec3 cosineDirection(in float seed,in vec3 nor){
+vec3 cosine_direction(in float seed,in vec3 nor) {
     float u=hash(78.233+seed);
     float v=hash(10.873+seed);
-    
-    // Method 1 and 2 first generate a frame of reference to use with an arbitrary
-    // distribution, cosine in this case. Method 3 (invented by fizzer) specializes
-    // the whole math to the cosine distribution and simplfies the result to a more
-    // compact version that does not depend on a full frame of reference.
     
     #if 0
     // method 1 by http://orbit.dtu.dk/fedora/objects/orbit:113874/datastreams/file_75b66578-222e-4c7d-abdf-f7e255100209/content
@@ -50,7 +44,7 @@ vec3 cosineDirection(in float seed,in vec3 nor){
     float a=6.2831853*v;
     return sqrt(u)*(cos(a)*uu+sin(a)*vv)+sqrt(1.-u)*nor;
     #endif
-    #if 1
+    #if 0
     // method 2 by pixar:  http://jcgt.org/published/0006/01/01/paper.pdf
     float ks=(nor.z>=0.)?1.:-1.;//do not use sign(nor.z), it can produce 0.0
     float ka=1./(1.+abs(nor.z));
@@ -61,7 +55,7 @@ vec3 cosineDirection(in float seed,in vec3 nor){
     float a=6.2831853*v;
     return sqrt(u)*(cos(a)*uu+sin(a)*vv)+sqrt(1.-u)*nor;
     #endif
-    #if 0
+    #if 1
     // method 3 by fizzer: http://www.amietia.com/lambertnotangent.html
     float a=6.2831853*v;
     u=2.*u-1.;
@@ -118,7 +112,7 @@ float intersectSDF(float distA, float distB) {
 /**
  * Constructive solid geometry union operation on SDF-calculated distances.
  */
-float unionSDF(float distA, float distB) {
+float sdf_union(float distA, float distB) {
     return min(distA, distB);
 }
 
@@ -158,7 +152,7 @@ float sphereSDF(vec3 p, float r) {
  * Signed distance function for an XY aligned cylinder centered at the origin with
  * height h and radius r.
  */
-float cylinderSDF(vec3 p, float h, float r) {
+float sdf_cylinder(vec3 p, float h, float r) {
     // How far inside or outside the cylinder the point is, radially
     float inOutRadius = length(p.xy) - r;
     
@@ -176,43 +170,35 @@ float cylinderSDF(vec3 p, float h, float r) {
     return insideDistance + outsideDistance;
 }
 
-/**
- * Signed distance function describing the scene.
- * 
- * Absolute value of the return value indicates the distance to the surface.
- * Sign indicates whether the point is inside or outside the surface,
- * negative indicating inside.
- */
-float sceneSDF(vec3 samplePoint) {
+float sdf_scene(vec3 sample_point) {
     // Slowly spin the whole scene
-    float num = iTime / 2.0;
-    samplePoint = rotateY(num) * samplePoint;
-    samplePoint = mod(samplePoint+5., 10.)-5.;
+    sample_point = rotateY(iTime / 2.0) * sample_point;
+    sample_point = mod(sample_point+5., 10.)-5.;
     
     float cylinderRadius = 0.4 + (1.0 - 0.4) * (1.0 + sin(1.7 * iTime)) / 2.0;
-    float cylinder1 = cylinderSDF(samplePoint, 2.0, cylinderRadius);
-    float cylinder2 = cylinderSDF(rotateX(radians(90.0)) * samplePoint, 2.0, cylinderRadius);
-    float cylinder3 = cylinderSDF(rotateY(radians(90.0)) * samplePoint, 2.0, cylinderRadius);
+    float cylinder1 = sdf_cylinder(sample_point, 2.0, cylinderRadius);
+    float cylinder2 = sdf_cylinder(rotateX(radians(90.0)) * sample_point, 2.0, cylinderRadius);
+    float cylinder3 = sdf_cylinder(rotateY(radians(90.0)) * sample_point, 2.0, cylinderRadius);
     
-    float cube = boxSDF(samplePoint, vec3(1.8, 1.8, 1.8));
+    float cube = boxSDF(sample_point, vec3(1.8, 1.8, 1.8));
     
-    float sphere = sphereSDF(samplePoint, 1.2);
+    float sphere = sphereSDF(sample_point, 1.2);
     
     float ballOffset = 0.4 + 1.0 + sin(1.7 * iTime);
     float ballRadius = 0.3;
-    float balls = sphereSDF(samplePoint - vec3(ballOffset, 0.0, 0.0), ballRadius);
-    balls = unionSDF(balls, sphereSDF(samplePoint + vec3(ballOffset, 0.0, 0.0), ballRadius));
-    balls = unionSDF(balls, sphereSDF(samplePoint - vec3(0.0, ballOffset, 0.0), ballRadius));
-    balls = unionSDF(balls, sphereSDF(samplePoint + vec3(0.0, ballOffset, 0.0), ballRadius));
-    balls = unionSDF(balls, sphereSDF(samplePoint - vec3(0.0, 0.0, ballOffset), ballRadius));
-    balls = unionSDF(balls, sphereSDF(samplePoint + vec3(0.0, 0.0, ballOffset), ballRadius));
+    float balls = sphereSDF(sample_point - vec3(ballOffset, 0.0, 0.0), ballRadius);
+    balls = sdf_union(balls, sphereSDF(sample_point + vec3(ballOffset, 0.0, 0.0), ballRadius));
+    balls = sdf_union(balls, sphereSDF(sample_point - vec3(0.0, ballOffset, 0.0), ballRadius));
+    balls = sdf_union(balls, sphereSDF(sample_point + vec3(0.0, ballOffset, 0.0), ballRadius));
+    balls = sdf_union(balls, sphereSDF(sample_point - vec3(0.0, 0.0, ballOffset), ballRadius));
+    balls = sdf_union(balls, sphereSDF(sample_point + vec3(0.0, 0.0, ballOffset), ballRadius));
     
     
     
     float csgNut = differenceSDF(intersectSDF(cube, sphere),
-    unionSDF(cylinder1, unionSDF(cylinder2, cylinder3)));
+    sdf_union(cylinder1, sdf_union(cylinder2, cylinder3)));
     
-    return unionSDF(balls, csgNut);
+    return sdf_union(balls, csgNut);
 }
 
 /**
@@ -221,19 +207,21 @@ float sceneSDF(vec3 samplePoint) {
  * return end.
  * 
  * eye: the eye point, acting as the origin of the ray
- * marchingDirection: the normalized direction to march in
+ * marching_direction: the normalized direction to march in
  * start: the starting distance away from the eye
  * end: the max distance away from the ey to march before giving up
- * steps: the number of steps
  */
-float shortestDistanceToSurface(vec3 eye, vec3 marchingDirection, float start, float end, const int steps) {
+float shortest_distance_to_surface(vec3 eye, vec3 marching_direction, float start, const int steps) {
     float depth = start;
     for (int i = 0; i < steps; i++) {
-        vec3 pos = eye + depth * marchingDirection;
-        float dist = sceneSDF(pos);
+        vec3 pos = eye + depth * marching_direction;
+        float dist = sdf_scene(pos);
+        if (dist < EPSILON) {
+            return depth;
+        }
         depth += dist;
     }
-    return depth;
+    return -1.;
 }
             
 
@@ -244,7 +232,7 @@ float shortestDistanceToSurface(vec3 eye, vec3 marchingDirection, float start, f
  * size: resolution of the output image
  * fragCoord: the x,y coordinate of the pixel in the output image
  */
-vec3 rayDirection(float fieldOfView, vec2 size, vec2 fragCoord) {
+vec3 ray_dir(float fieldOfView, vec2 size, vec2 fragCoord) {
     vec2 xy = fragCoord - size / 2.0;
     float z = size.y / tan(radians(fieldOfView) / 2.0);
     return normalize(vec3(xy, -z));
@@ -253,91 +241,39 @@ vec3 rayDirection(float fieldOfView, vec2 size, vec2 fragCoord) {
 /**
  * Using the gradient of the SDF, estimate the normal on the surface at point p.
  */
-vec3 estimateNormal(vec3 p) {
+vec3 get_normal(vec3 pos) {
     return normalize(vec3(
-            sceneSDF(vec3(p.x + EPSILON, p.y, p.z)) - sceneSDF(vec3(p.x - EPSILON, p.y, p.z)),
-            sceneSDF(vec3(p.x, p.y + EPSILON, p.z)) - sceneSDF(vec3(p.x, p.y - EPSILON, p.z)),
-            sceneSDF(vec3(p.x, p.y, p.z  + EPSILON)) - sceneSDF(vec3(p.x, p.y, p.z - EPSILON))
-        ));
-}   
-
-/**
- * Return a transform matrix that will transform a ray from view space
- * to world coordinates, given the eye point, the camera target, and an up vector.
- *
- * This assumes that the center of the camera is aligned with the negative z axis in
- * view space when calculating the ray marching direction. See rayDirection.
- */
-mat3 viewMatrix(vec3 eye,vec3 center,vec3 up){
+        sdf_scene(vec3(pos.x, pos.y + EPSILON, pos.z)) - sdf_scene(vec3(pos.x, pos.y - EPSILON, pos.z)),
+        sdf_scene(vec3(pos.x + EPSILON, pos.y, pos.z)) - sdf_scene(vec3(pos.x - EPSILON, pos.y, pos.z)),
+        sdf_scene(vec3(pos.x, pos.y, pos.z  + EPSILON)) - sdf_scene(vec3(pos.x, pos.y, pos.z - EPSILON))
+    ));
+}
+mat3 view_matrix(vec3 eye, vec3 center, vec3 up) {
     // Based on gluLookAt man page
-    vec3 f=normalize(center-eye);
-    vec3 s=normalize(cross(f,up));
-    vec3 u=cross(s,f);
-    return mat3(s,u,-f);
+
+    vec3 f = normalize(center - eye);
+    vec3 s = normalize(cross(f, up));
+    vec3 u = cross(s, f);
+    return mat3(s, u, -f);
 }
-
-const vec2 iResolution=vec2(1280,720);
-
-vec3 getPixel(vec2 pixel,int samp){
-    vec3 viewDir=rayDirection(45.,iResolution.xy,vec2(pixel.x,iResolution.y-pixel.y));
-    vec3 eye=vec3(8.,5.*sin(.2*iTime),7.);
-    
-    mat3 viewToWorld=viewMatrix(eye,vec3(0.,0.,0.),vec3(0.,1.,0.));
-    
-    vec3 worldDir=viewToWorld*viewDir;
-    
-    float dist=shortestDistanceToSurface(eye,worldDir,MIN_DIST,MAX_DIST,MAX_MARCHING_STEPS);
-    
-    if(dist>MAX_DIST-EPSILON){
-        // Didn't hit anything
-        return vec3(0);
-    }
-    
-    // The closest point on the surface to the eyepoint along the view ray
-    vec3 p=eye+dist*worldDir;
-    
-    // Use the surface normal as the ambient color of the material
-    vec3 normal=estimateNormal(p);
-    
-
-    vec3 color=vec3(.5);
-    
-    dist=shortestDistanceToSurface(
-        p+normal/1000.,
-        mix(
-            reflect(worldDir, normal),
-            cosineDirection(gl_FragCoord.x * gl_FragCoord.y + float(samp), normal),
-            .1
-        ),
-        MIN_DIST,MAX_DIST,MAX_REFLECTION_STEPS
-    );
-    
-    if(dist>MAX_DIST-EPSILON){
-        // Didn't hit anything
-        return color;
-    }
-    
-return vec3(.1);
-}
-
-
 vec3 do_diffuse_lighting(vec3 eye, vec3 normal, vec3 point, vec3 color, float samp){
     int bounces;
-    for (int i = 0; i < MAX_DIFFUSE_BOUNCES; i++){
-        float dist = shortestDistanceToSurface(
+
+    for (int i = 0; i < MAX_DIFFUSE_BOUNCES; i++) {
+        float dist = shortest_distance_to_surface(
             eye,
-            cosineDirection(gl_FragCoord.x * gl_FragCoord.y + float(samp), normal),
+            cosine_direction(gl_FragCoord.x * gl_FragCoord.y + float(samp), normal),
             MIN_DIST,
-            MAX_DIST,
             MAX_DIFFUSE_STEPS
         );
-        if(dist > MAX_DIST - EPSILON)
+        if (dist < 0) {
             //Didn't hit anything
             return color;
+        }
         bounces++;
     }
     //Replace with color retrieved from surface.
-    switch(bounces) {
+    switch (bounces) {
         case 1:
             return (color * vec3(1.0, 0.8, 0.8));
         case 2:
@@ -349,19 +285,53 @@ vec3 do_diffuse_lighting(vec3 eye, vec3 normal, vec3 point, vec3 color, float sa
     }
 }
 
+const vec2 iResolution = vec2(1280, 720);
 
-
-const float SAMPLES=2.;
-
-void main(){
-    vec3 color=vec3(0);
-    float mlaa_width=sqrt(SAMPLES);
-    for(int i=0;i<SAMPLES;i++){
-        vec2 xy=vec2(
-            gl_FragCoord.x+mod(float(i),mlaa_width)/mlaa_width,
-            gl_FragCoord.y+float(i)/SAMPLES
-        );
-        color+=getPixel(xy,i)/SAMPLES;
+vec3 get_pixel(vec2 pixel, int samp) {
+    vec3 viewDir = ray_dir(45., iResolution.xy, vec2(pixel.x, iResolution.y - pixel.y));
+    vec3 eye = vec3(8., 5. * sin(.2 * iTime), 7.);
+    
+    mat3 viewToWorld = view_matrix(eye,vec3(0.,0.,0.),vec3(0.,1.,0.));
+    
+    vec3 worldDir = viewToWorld * viewDir;
+    
+    float dist = shortest_distance_to_surface(eye, worldDir, MIN_DIST, MAX_MARCHING_STEPS);
+    
+    if(dist < 0) {
+        // Didn't hit anything
+        return vec3(0);
     }
-    target0=vec4(color,1.);
+    
+    // The closest point on the surface to the eyepoint along the view ray
+    vec3 p = eye + dist * worldDir;
+    
+    // Use the surface normal as the ambient color of the material
+    vec3 normal = get_normal(p);
+    
+    // vec3 color = phongIllumination(K_a, K_d, K_s, shininess, p, eye);
+    vec3 color = vec3(.5);
+    
+    dist = shortest_distance_to_surface(p+normal/1000.,mix(reflect(worldDir,normal),cosine_direction(gl_FragCoord.x*gl_FragCoord.y+float(samp),normal),0.0),MIN_DIST,MAX_REFLECTION_STEPS);
+    
+    if(dist < 0) {
+        // Didn't hit anything
+        return color;
+    }
+    
+    return vec3(.1);
+}
+
+const float SAMPLES = 4.;
+
+void main() {
+    vec3 color = vec3(0);
+    float mlaa_width = sqrt(SAMPLES);
+    for(int i = 0; i < SAMPLES; i++) {
+        vec2 xy = vec2(
+            gl_FragCoord.x + mod(float(i), mlaa_width) / mlaa_width,
+            gl_FragCoord.y + float(i) / SAMPLES
+        );
+        color += get_pixel(xy, i) / SAMPLES;
+    }
+    target0 = vec4(color, 1.);
 }
