@@ -1,0 +1,28 @@
+name: Rust
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  build:
+    name: Test for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Rust Action
+      uses: icepuma/rust-action@1.37.0
+    - name: Formatting
+      run: cargo fmt -- --check
+    - name: Clippy
+      run: cargo clippy -- -Dwarnings
+    - name: Test
+      run: cargo tust
