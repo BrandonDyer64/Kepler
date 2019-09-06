@@ -237,7 +237,7 @@ impl<B> Renderer<B>
 where
     B: hal::Backend,
 {
-    fn new(mut surface: B::Surface, mut adapter: hal::adapter::Adapter<B>) -> Renderer<B> {
+    fn new(mut surface: B::Surface, adapter: hal::adapter::Adapter<B>) -> Renderer<B> {
         let memory_types = adapter.physical_device.memory_properties().memory_types;
         let limits = adapter.physical_device.limits();
 
@@ -461,7 +461,7 @@ where
         }
 
         // copy buffer to texture
-        let mut copy_fence = device.create_fence(false).expect("Could not create fence");
+        let copy_fence = device.create_fence(false).expect("Could not create fence");
         unsafe {
             let mut cmd_buffer = command_pool.allocate_one(command::Level::Primary);
             cmd_buffer.begin_primary(command::CommandBufferFlags::ONE_TIME_SUBMIT);
