@@ -55,7 +55,7 @@ use std::{
     ptr, thread, time,
 };
 
-#[cfg_attr(rustfmt, rustfmt_skip)]
+#[rustfmt::skip]
 const DIMS: window::Extent2D = window::Extent2D { width: 1280, height: 720 };
 
 const ENTRY_NAME: &str = "main";
@@ -67,7 +67,7 @@ struct Vertex {
     a_Uv: [f32; 2],
 }
 
-#[cfg_attr(rustfmt, rustfmt_skip)]
+#[rustfmt::skip]
 const QUAD: [Vertex; 6] = [
     Vertex { a_Pos: [ -3.0,  3.0 ], a_Uv: [ -1.0,  1.0 ] },
     Vertex { a_Pos: [  3.0,  3.0 ], a_Uv: [  1.0,  1.0 ] },
@@ -646,13 +646,12 @@ where
             };
             let fs_module = {
                 let source = fs::read_to_string("src/data/quad.frag").unwrap();
-                let source = &source[..];
                 let mut compiler = shaderc::Compiler::new().unwrap();
                 let mut options = shaderc::CompileOptions::new().unwrap();
                 options.add_macro_definition("EP", Some("main"));
                 let binary_result = compiler
                     .compile_into_spirv(
-                        source,
+                        &source[..],
                         shaderc::ShaderKind::Fragment,
                         "shader.glsl",
                         "main",
