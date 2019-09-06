@@ -7,14 +7,16 @@ layout(location=0)out vec4 target0;
 #define iTime 2.
 
 const int SAMPLES=4;
-const int MAX_MARCHING_STEPS=512;
-const int MAX_DIFFUSE_BOUNCES=3;
-const int MAX_DIFFUSE_STEPS=8;
-const int MAX_REFLECTION_BOUNCES=2;
-const int MAX_REFLECTION_STEPS=128;
+const int MAX_BOUNCES=2;
+const int MAX_RAYS=6;
+const int MAX_MARCHING_STEPS=128;
+const int MAX_DIFFUSE_STEPS=32;
+const int MAX_REFLECTION_STEPS=64;
 const int MAX_SUBSURF_STEPS=4;
 const float MIN_DIST=0.;
 const float EPSILON=.0001;
+
+const vec2 RESOLUTION=vec2(640,400);
 
 struct Surface{
     float base_color;
@@ -149,30 +151,89 @@ vec3 ray_dir(float fieldOfView,vec2 size,vec2 fragCoord){
 }
 
 vec3 get_normal(vec3 pos){
-    return normalize(vec3(
+    return normalize(
+        vec3(
             sdf_scene(vec3(pos.x,pos.y+EPSILON,pos.z))-sdf_scene(vec3(pos.x,pos.y-EPSILON,pos.z)),
             sdf_scene(vec3(pos.x+EPSILON,pos.y,pos.z))-sdf_scene(vec3(pos.x-EPSILON,pos.y,pos.z)),
             sdf_scene(vec3(pos.x,pos.y,pos.z+EPSILON))-sdf_scene(vec3(pos.x,pos.y,pos.z-EPSILON))
-        ));
-    }
+        )
+    );
+}
+
+mat3 view_matrix(vec3 eye,vec3 center,vec3 up){
+    vec3 f=normalize(center-eye);
+    vec3 s=normalize(cross(f,up));
+    vec3 u=cross(s,f);
+    return mat3(s,u,-f);
+}
+
+#define RAY_STAGE_START=0
+#define RAY_STAGE_DIFFUSE=1
+#define RAY_STAGE_REFLECT=2
+#define RAY_STAGE_END=3
+
+struct Ray{
+    vec3 eye;
+    vec3 dir;
+};
+
+struct Hit{
+    vec3 pos;
+    vec3 normal;
+}
+
+struct StackFrame{
+    Ray ray;
+    Hit hit;
+    vec3 color;
+    int stage;
+};
+
+vec3 get_pixel(vec3 eye,vec3 view_dir,float seed,int bounce){
+    mat3 view_to_world=view_matrix(frame.ray.eye,vec3(0.,0.,0.),vec3(0.,1.,0.));
+    vec3 world_dir=view_to_world*view_dir;
     
-    mat3 view_matrix(vec3 eye,vec3 center,vec3 up){
-        vec3 f=normalize(center-eye);
-        vec3 s=normalize(cross(f,up));
-        vec3 u=cross(s,f);
-        return mat3(s,u,-f);
-    }
+    StackFrame stack[MAX_RAYS];
+    stack[0]=StackFrame{
+        Ray{eye,world_dir},
+        Hit{},
+        RAY_STAGE_START
+    };
+    int stack_ptr=0;
     
-    const vec2 iResolution=vec2(1280,720);
-    
-    vec3 get_pixel(vec3 eye,vec3 view_dir,float seed,int bounce){
-        if(bounce<0)return vec3(0);
+    for(int i=0;i<MAX_RAYS;i++){
+        seed+=.1034021;
+        StackFrame frame=stack[stack_ptr];
         
-        mat3 view_to_world=view_matrix(eye,vec3(0.,0.,0.),vec3(0.,1.,0.));
+        vec3 dir;
+        switch(frame.stage){
+            
+            case RAY_STAGE_START:
+            float dist=shortest_distance_to_surface(frame.ray.eye,frame.ray.dir,MIN_DIST,MAX_MARCHING_STEPS);
+            frame.hit.pos=eye+dist*world_dir;
+            frame.hit.normal=get_normal(frame.hit.pos);
+            frame.hit.pos+=frame.hit.normal*EPSILON;
+            frame.stage++;
+            continue;
+            
+            case RAY_STAGE_DIFFUSE:
+            dir=cosine_direction(gl_FragCoord.x*gl_FragCoord.y+seed,normal);
+            break;
+            
+            case RAY_STAGE_REFLECT:
+            dir=reflect(world_dir,normal);
+            break;
+            
+            case RAY_STAGE_END:
+            stack_ptr--;
+            continue;
+            
+        }
         
-        vec3 world_dir=view_to_world*view_dir;
+        float dist=shortest_distance_to_surface(frame.hit.pos,dir,EPSILON,MAX_MARCHING_STEPS);
         
-        float dist=shortest_distance_to_surface(eye,world_dir,MIN_DIST,MAX_MARCHING_STEPS);
+        frame.stage+=1;
+        stack_ptr++;
         
         if(dist<0)return vec3(0);
         
@@ -192,20 +253,20 @@ vec3 get_normal(vec3 pos){
             REFLECTIVITY
         );
     }
-    
-    void main(){
-        float samples=float(SAMPLES);
-        vec3 color=vec3(0);
-        float mlaa_width=sqrt(samples);
-        vec3 eye=vec3(8.,5.*sin(.2*iTime),7.);
-        for(int i=0;i<samples;i++){
-            vec2 pixel=vec2(
-                gl_FragCoord.x+mod(float(i),mlaa_width)/mlaa_width,
-                gl_FragCoord.y+float(i)/samples
-            );
-            vec3 view_dir=ray_dir(45.,iResolution.xy,vec2(pixel.x,iResolution.y-pixel.y));
-            color+=get_pixel(eye,view_dir,float(i),MAX_BOUNCES)/samples;
-        }
-        target0=vec4(color,1.);
+}
+
+void main(){
+    float samples=float(SAMPLES);
+    vec3 color=vec3(0);
+    float mlaa_width=sqrt(samples);
+    vec3 eye=vec3(8.,5.*sin(.2*iTime),7.);
+    for(int i=0;i<samples;i++){
+        vec2 pixel=vec2(
+            gl_FragCoord.x+mod(float(i),mlaa_width)/mlaa_width,
+            gl_FragCoord.y+float(i)/samples
+        );
+        vec3 view_dir=ray_dir(45.,RESOLUTION.xy,vec2(pixel.x,RESOLUTION.y-pixel.y));
+        color+=get_pixel(eye,view_dir,float(i),MAX_BOUNCES)/samples;
     }
-    
+    target0=vec4(color,1.);
+}

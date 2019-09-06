@@ -56,7 +56,7 @@ use std::{
 };
 
 #[rustfmt::skip]
-const DIMS: window::Extent2D = window::Extent2D { width: 1280, height: 720 };
+const DIMS: window::Extent2D = window::Extent2D { width: 640, height: 400 };
 
 const ENTRY_NAME: &str = "main";
 
