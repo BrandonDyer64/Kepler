@@ -6,19 +6,13 @@ layout(location=0)out vec4 target0;
 
 #define iTime 2.
 
-const int SAMPLES=4;
-const int MAX_BOUNCES=2;
-const int MAX_RAYS=6;
 const int MAX_MARCHING_STEPS=128;
-const int MAX_DIFFUSE_STEPS=32;
-const int MAX_REFLECTION_STEPS=64;
+const int MAX_RAY_BOUNCES=3;
 const int MAX_SUBSURF_STEPS=4;
 const float MIN_DIST=0.;
 const float EPSILON=.0001;
 
-const vec2 RESOLUTION=vec2(640,400);
-
-struct Surface{
+struct Material{
     float base_color;
     float subsurface;
     float subsurface_color;
@@ -37,236 +31,276 @@ float hash(float seed){
 vec3 cosine_direction(in float seed,in vec3 nor){
     float u=hash(78.233+seed);
     float v=hash(10.873+seed);
+    
+    #if 0
+    // method 1 by http://orbit.dtu.dk/fedora/objects/orbit:113874/datastreams/file_75b66578-222e-4c7d-abdf-f7e255100209/content
+    vec3 tc=vec3(1.+nor.z-nor.xy*nor.xy,-nor.x*nor.y)/(1.+nor.z);
+    vec3 uu=vec3(tc.x,tc.z,-nor.x);
+    vec3 vv=vec3(tc.z,tc.y,-nor.y);
+    
+    float a=6.2831853*v;
+    return sqrt(u)*(cos(a)*uu+sin(a)*vv)+sqrt(1.-u)*nor;
+    #endif
+    #if 1
+    // method 2 by pixar:  http://jcgt.org/published/0006/01/01/paper.pdf
+    float ks=(nor.z>=0.)?1.:-1.;//do not use sign(nor.z), it can produce 0.0
+    float ka=1./(1.+abs(nor.z));
+    float kb=-ks*nor.x*nor.y*ka;
+    vec3 uu=vec3(1.-nor.x*nor.x*ka,ks*kb,-ks*nor.x);
+    vec3 vv=vec3(kb,ks-nor.y*nor.y*ka*ks,-nor.y);
+    
+    float a=6.2831853*v;
+    return sqrt(u)*(cos(a)*uu+sin(a)*vv)+sqrt(1.-u)*nor;
+    #endif
+    #if 0
+    // method 3 by fizzer: http://www.amietia.com/lambertnotangent.html
     float a=6.2831853*v;
     u=2.*u-1.;
     return normalize(nor+vec3(sqrt(1.-u*u)*vec2(cos(a),sin(a)),u));
+    #endif
 }
 
-mat3 rotateX(float theta){
-    float c=cos(theta);
-    float s=sin(theta);
+/**
+ * Rotation matrix around the X axis.
+ */
+mat3 rotateX(float theta) {
+    float c = cos(theta);
+    float s = sin(theta);
     return mat3(
-        vec3(1,0,0),
-        vec3(0,c,-s),
-        vec3(0,s,c)
+        vec3(1, 0, 0),
+        vec3(0, c, -s),
+        vec3(0, s, c)
     );
 }
 
-mat3 rotateY(float theta){
-    float c=cos(theta);
-    float s=sin(theta);
+/**
+ * Rotation matrix around the Y axis.
+ */
+mat3 rotateY(float theta) {
+    float c = cos(theta);
+    float s = sin(theta);
     return mat3(
-        vec3(c,0,s),
-        vec3(0,1,0),
-        vec3(-s,0,c)
+        vec3(c, 0, s),
+        vec3(0, 1, 0),
+        vec3(-s, 0, c)
     );
 }
 
-mat3 rotateZ(float theta){
-    float c=cos(theta);
-    float s=sin(theta);
+/**
+ * Rotation matrix around the Z axis.
+ */
+mat3 rotateZ(float theta) {
+    float c = cos(theta);
+    float s = sin(theta);
     return mat3(
-        vec3(c,-s,0),
-        vec3(s,c,0),
-        vec3(0,0,1)
+        vec3(c, -s, 0),
+        vec3(s, c, 0),
+        vec3(0, 0, 1)
     );
 }
 
-float intersectSDF(float distA,float distB){
-    return max(distA,distB);
+/**
+ * Constructive solid geometry intersection operation on SDF-calculated distances.
+ */
+float intersectSDF(float distA, float distB) {
+    return max(distA, distB);
 }
 
-float sdf_union(float distA,float distB){
-    return min(distA,distB);
+/**
+ * Constructive solid geometry union operation on SDF-calculated distances.
+ */
+float sdf_union(float distA, float distB) {
+    return min(distA, distB);
 }
 
-float differenceSDF(float distA,float distB){
-    return max(distA,-distB);
+/**
+ * Constructive solid geometry difference operation on SDF-calculated distances.
+ */
+float differenceSDF(float distA, float distB) {
+    return max(distA, -distB);
 }
 
-float boxSDF(vec3 p,vec3 size){
-    vec3 d=abs(p)-(size/2.);
-    float inside_distance=min(max(d.x,max(d.y,d.z)),0.);
-    float outside_distance=length(max(d,0.));
-    return inside_distance+outside_distance;
-}
-
-float sdf_sphere(vec3 pos,float radius){
-    return length(pos)-radius;
-}
-
-float sdf_cylinder(vec3 p,float h,float r){
-    float in_out_radius=length(p.xy)-r;
-    float in_out_height=abs(p.z)-h/2.;
-    float inside_distance=min(max(in_out_radius,in_out_height),0.);
-    float outside_distance=length(max(vec2(in_out_radius,in_out_height),0.));
-    return inside_distance+outside_distance;
-}
-
-float sdf_scene(vec3 sample_point){
-    sample_point=rotateY(iTime/2.)*sample_point;
-    sample_point=mod(sample_point+5.,10.)-5.;
+/**
+ * Signed distance function for a cube centered at the origin
+ * with dimensions specified by size.
+ */
+float boxSDF(vec3 p, vec3 size) {
+    vec3 d = abs(p) - (size / 2.0);
     
-    float cylinderRadius=.4+(1.-.4)*(1.+sin(1.7*iTime))/2.;
-    float cylinder1=sdf_cylinder(sample_point,2.,cylinderRadius);
-    float cylinder2=sdf_cylinder(rotateX(radians(90.))*sample_point,2.,cylinderRadius);
-    float cylinder3=sdf_cylinder(rotateY(radians(90.))*sample_point,2.,cylinderRadius);
+    // Assuming p is inside the cube, how far is it from the surface?
+    // Result will be negative or zero.
+    float insideDistance = min(max(d.x, max(d.y, d.z)), 0.0);
     
-    float cube=boxSDF(sample_point,vec3(1.8,1.8,1.8));
+    // Assuming p is outside the cube, how far is it from the surface?
+    // Result will be positive or zero.
+    float outsideDistance = length(max(d, 0.0));
     
-    float sphere=sdf_sphere(sample_point,1.2);
-    
-    float ballOffset=.4+1.+sin(1.7*iTime);
-    float ballRadius=.3;
-    float balls=sdf_sphere(sample_point-vec3(ballOffset,0.,0.),ballRadius);
-    balls=sdf_union(balls,sdf_sphere(sample_point+vec3(ballOffset,0.,0.),ballRadius));
-    balls=sdf_union(balls,sdf_sphere(sample_point-vec3(0.,ballOffset,0.),ballRadius));
-    balls=sdf_union(balls,sdf_sphere(sample_point+vec3(0.,ballOffset,0.),ballRadius));
-    balls=sdf_union(balls,sdf_sphere(sample_point-vec3(0.,0.,ballOffset),ballRadius));
-    balls=sdf_union(balls,sdf_sphere(sample_point+vec3(0.,0.,ballOffset),ballRadius));
-    
-    float csgNut=differenceSDF(intersectSDF(cube,sphere),
-    sdf_union(cylinder1,sdf_union(cylinder2,cylinder3)));
-    
-    return sdf_union(balls,csgNut);
+    return insideDistance + outsideDistance;
 }
 
-float shortest_distance_to_surface(vec3 eye,vec3 marching_direction,float start,const int steps){
-    float depth=start;
-    for(int i=0;i<steps;i++){
-        vec3 pos=eye+depth*marching_direction;
-        float dist=sdf_scene(pos);
-        if(dist<EPSILON){
+/**
+ * Signed distance function for a sphere centered at the origin with radius r.
+ */
+float sphereSDF(vec3 p, float r) {
+    return length(p) - r;
+}
+
+/**
+ * Signed distance function for an XY aligned cylinder centered at the origin with
+ * height h and radius r.
+ */
+float sdf_cylinder(vec3 p, float h, float r) {
+    // How far inside or outside the cylinder the point is, radially
+    float inOutRadius = length(p.xy) - r;
+    
+    // How far inside or outside the cylinder is, axially aligned with the cylinder
+    float inOutHeight = abs(p.z) - h/2.0;
+    
+    // Assuming p is inside the cylinder, how far is it from the surface?
+    // Result will be negative or zero.
+    float insideDistance = min(max(inOutRadius, inOutHeight), 0.0);
+    
+    // Assuming p is outside the cylinder, how far is it from the surface?
+    // Result will be positive or zero.
+    float outsideDistance = length(max(vec2(inOutRadius, inOutHeight), 0.0));
+    
+    return insideDistance + outsideDistance;
+}
+
+float sdf_scene(vec3 sample_point) {
+    // Slowly spin the whole scene
+    sample_point = rotateY(iTime / 2.0) * sample_point;
+    sample_point = mod(sample_point+5., 20.)-5.;
+    
+    float cylinderRadius = 0.4 + (1.0 - 0.4) * (1.0 + sin(1.7 * iTime)) / 2.0;
+    float cylinder1 = sdf_cylinder(sample_point, 2.0, cylinderRadius);
+    float cylinder2 = sdf_cylinder(rotateX(radians(90.0)) * sample_point, 2.0, cylinderRadius);
+    float cylinder3 = sdf_cylinder(rotateY(radians(90.0)) * sample_point, 2.0, cylinderRadius);
+    
+    float cube = boxSDF(sample_point, vec3(1.8, 1.8, 1.8));
+    
+    float sphere = sphereSDF(sample_point, 1.2);
+    
+    float ballOffset = 0.4 + 1.0 + sin(1.7 * iTime);
+    float ballRadius = 0.3;
+    float balls = sphereSDF(sample_point - vec3(ballOffset, 0.0, 0.0), ballRadius);
+    balls = sdf_union(balls, sphereSDF(sample_point + vec3(ballOffset, 0.0, 0.0), ballRadius));
+    balls = sdf_union(balls, sphereSDF(sample_point - vec3(0.0, ballOffset, 0.0), ballRadius));
+    balls = sdf_union(balls, sphereSDF(sample_point + vec3(0.0, ballOffset, 0.0), ballRadius));
+    balls = sdf_union(balls, sphereSDF(sample_point - vec3(0.0, 0.0, ballOffset), ballRadius));
+    balls = sdf_union(balls, sphereSDF(sample_point + vec3(0.0, 0.0, ballOffset), ballRadius));
+    
+    
+    
+    float csgNut = differenceSDF(intersectSDF(cube, sphere),
+    sdf_union(cylinder1, sdf_union(cylinder2, cylinder3)));
+    
+    return sdf_union(balls, csgNut);
+}
+
+/**
+ * Return the shortest distance from the eyepoint to the scene surface along
+ * the marching direction. If no part of the surface is found between start and end,
+ * return end.
+ * 
+ * eye: the eye point, acting as the origin of the ray
+ * marching_direction: the normalized direction to march in
+ * start: the starting distance away from the eye
+ * end: the max distance away from the ey to march before giving up
+ */
+float shortest_distance_to_surface(vec3 eye, vec3 marching_direction, float start, const int steps) {
+    float depth = start;
+    for (int i = 0; i < steps; i++) {
+        vec3 pos = eye + depth * marching_direction;
+        float dist = sdf_scene(pos);
+        if (dist < EPSILON) {
             return depth;
         }
-        depth+=dist;
+        depth += dist;
     }
-    return-1.;
+    return -1.;
+}
+            
+
+/**
+ * Return the normalized direction to march in from the eye point for a single pixel.
+ * 
+ * fieldOfView: vertical field of view in degrees
+ * size: resolution of the output image
+ * fragCoord: the x,y coordinate of the pixel in the output image
+ */
+vec3 ray_dir(float fieldOfView, vec2 size, vec2 fragCoord) {
+    vec2 xy = fragCoord - size / 2.0;
+    float z = size.y / tan(radians(fieldOfView) / 2.0);
+    return normalize(vec3(xy, -z));
 }
 
-vec3 ray_dir(float fieldOfView,vec2 size,vec2 fragCoord){
-    vec2 xy=fragCoord-size/2.;
-    float z=size.y/tan(radians(fieldOfView)/2.);
-    return normalize(vec3(xy,-z));
-}
-
+/**
+ * Using the gradient of the SDF, estimate the normal on the surface at point p.
+ */
 vec3 get_normal(vec3 pos){
     return normalize(
         vec3(
-            sdf_scene(vec3(pos.x,pos.y+EPSILON,pos.z))-sdf_scene(vec3(pos.x,pos.y-EPSILON,pos.z)),
             sdf_scene(vec3(pos.x+EPSILON,pos.y,pos.z))-sdf_scene(vec3(pos.x-EPSILON,pos.y,pos.z)),
+            sdf_scene(vec3(pos.x,pos.y+EPSILON,pos.z))-sdf_scene(vec3(pos.x,pos.y-EPSILON,pos.z)),
             sdf_scene(vec3(pos.x,pos.y,pos.z+EPSILON))-sdf_scene(vec3(pos.x,pos.y,pos.z-EPSILON))
         )
     );
 }
-
 mat3 view_matrix(vec3 eye,vec3 center,vec3 up){
+    // Based on gluLookAt man page
     vec3 f=normalize(center-eye);
     vec3 s=normalize(cross(f,up));
     vec3 u=cross(s,f);
     return mat3(s,u,-f);
 }
 
-#define RAY_STAGE_START=0
-#define RAY_STAGE_DIFFUSE=1
-#define RAY_STAGE_REFLECT=2
-#define RAY_STAGE_END=3
+const vec2 iResolution=vec2(1280,720);
 
-struct Ray{
-    vec3 eye;
-    vec3 dir;
-};
+const float ROUGHNESS=.1;
+const float SPECULAR=.5;
 
-struct Hit{
-    vec3 pos;
-    vec3 normal;
-}
-
-struct StackFrame{
-    Ray ray;
-    Hit hit;
-    vec3 color;
-    int stage;
-};
-
-vec3 get_pixel(vec3 eye,vec3 view_dir,float seed,int bounce){
-    mat3 view_to_world=view_matrix(frame.ray.eye,vec3(0.,0.,0.),vec3(0.,1.,0.));
-    vec3 world_dir=view_to_world*view_dir;
+vec3 get_pixel(vec2 pixel,int samp){
+    vec3 viewDir=ray_dir(45.,iResolution.xy,vec2(pixel.x,iResolution.y-pixel.y));
+    vec3 pos=vec3(8.,5.*sin(.2*iTime),7.);
     
-    StackFrame stack[MAX_RAYS];
-    stack[0]=StackFrame{
-        Ray{eye,world_dir},
-        Hit{},
-        RAY_STAGE_START
-    };
-    int stack_ptr=0;
+    mat3 viewToWorld=view_matrix(pos,vec3(0.,0.,0.),vec3(0.,1.,0.));
     
-    for(int i=0;i<MAX_RAYS;i++){
-        seed+=.1034021;
-        StackFrame frame=stack[stack_ptr];
-        
-        vec3 dir;
-        switch(frame.stage){
-            
-            case RAY_STAGE_START:
-            float dist=shortest_distance_to_surface(frame.ray.eye,frame.ray.dir,MIN_DIST,MAX_MARCHING_STEPS);
-            frame.hit.pos=eye+dist*world_dir;
-            frame.hit.normal=get_normal(frame.hit.pos);
-            frame.hit.pos+=frame.hit.normal*EPSILON;
-            frame.stage++;
-            continue;
-            
-            case RAY_STAGE_DIFFUSE:
-            dir=cosine_direction(gl_FragCoord.x*gl_FragCoord.y+seed,normal);
+    vec3 dir=viewToWorld*viewDir;
+    vec3 transmit=vec3(1);
+    vec3 light=vec3(0);
+    
+    for(int i=0;i<MAX_RAY_BOUNCES+1;i++){
+        float dist=shortest_distance_to_surface(pos,dir,MIN_DIST,MAX_MARCHING_STEPS);
+        if(dist<0){
+            light+=transmit*(dir/2.+.5);
             break;
-            
-            case RAY_STAGE_REFLECT:
-            dir=reflect(world_dir,normal);
-            break;
-            
-            case RAY_STAGE_END:
-            stack_ptr--;
-            continue;
-            
         }
-        
-        float dist=shortest_distance_to_surface(frame.hit.pos,dir,EPSILON,MAX_MARCHING_STEPS);
-        
-        frame.stage+=1;
-        stack_ptr++;
-        
-        if(dist<0)return vec3(0);
-        
-        vec3 p=eye+dist*world_dir;
-        vec3 normal=get_normal(p);
-        p+=normal*EPSILON;
-        
-        // TODO: use actual color
-        vec3 color=vec3(.5);
-        
-        vec3 dir_diffuse=cosine_direction(gl_FragCoord.x*gl_FragCoord.y+seed,normal);
-        vec3 dir_reflect=reflect(world_dir,normal);
-        
-        return mix(
-            get_pixel(p,dir_diffuse,seed*31.65983,bounce-1),
-            get_pixel(p,dir_diffuse,seed*31.65983,bounce-1),
-            REFLECTIVITY
-        );
+        transmit*=vec3(1);
+        pos+=dir*dist;
+        vec3 normal=get_normal(pos);
+        pos+=normal*EPSILON*3;
+        vec3 dir_diffuse=cosine_direction(pixel.x*pixel.y+float(i+2)+iTime,normal);
+        if(hash(pixel.x*pixel.y*float(i+3))>SPECULAR){
+            dir=dir_diffuse;
+        }else{
+            dir=mix(reflect(dir,normal),dir_diffuse,ROUGHNESS);
+        }
     }
+    return light;
 }
+
+const float SAMPLES=8.;
 
 void main(){
-    float samples=float(SAMPLES);
     vec3 color=vec3(0);
-    float mlaa_width=sqrt(samples);
-    vec3 eye=vec3(8.,5.*sin(.2*iTime),7.);
-    for(int i=0;i<samples;i++){
-        vec2 pixel=vec2(
+    float mlaa_width=sqrt(SAMPLES);
+    for(int i=0;i<SAMPLES;i++){
+        vec2 xy=vec2(
             gl_FragCoord.x+mod(float(i),mlaa_width)/mlaa_width,
-            gl_FragCoord.y+float(i)/samples
+            gl_FragCoord.y+float(i)/SAMPLES
         );
-        vec3 view_dir=ray_dir(45.,RESOLUTION.xy,vec2(pixel.x,RESOLUTION.y-pixel.y));
-        color+=get_pixel(eye,view_dir,float(i),MAX_BOUNCES)/samples;
+        color+=get_pixel(xy,i)/SAMPLES;
     }
     target0=vec4(color,1.);
 }
